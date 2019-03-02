@@ -7,6 +7,40 @@ from sklearn import datasets
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Dividir la muestra proporcionalmente según el ratio
+def stratify_sample(in_vec, labels, ratio=0.8):
+    sample = np.c_[in_vec, labels]               # Juntar por columnas vec. características y etiquetas en una matriz 
+    group_set = np.unique(y)                     # Grupos únicos que existen
+    np.random.shuffle(sample)                    # Mezclar la muestra para distribuirla aleatoriamente
+    
+    # Listas donde se guardarán las selecciones
+    train_list = []
+    test_list = []
+    
+    # De la muestra mezclada, escoger los n primeros elementos de cada grupo
+    # y juntarlos en la lista de entrenamiento, el resto en la de test
+    # Cada grupo de elementos  escogidos es una lista, por tanto
+    # se tienen que combinar luego
+    # n = num_elementos_grupo * ratio
+    for group in group_set:
+        elem_group = sample[sample[:, -1] == group]
+        n_elem = elem_group.shape[0]
+        n_selected_elem = int(n_elem * ratio)
+        
+        train_list.append(elem_group[:n_selected_elem, :])
+        test_list.append(elem_group[n_selected_elem:, :])
+    
+    # Juntar las sub-listas en una única matriz
+    training = np.concatenate(train_list)
+    test = np.concatenate(test_list)
+    
+    # Volver a mezclar las muestras para distribuirlas aleatoriamente
+    np.random.shuffle(training)
+    np.random.shuffle(test)
+    
+    return training, test
+        
+
 # #############################################################################
 # Parte 1
 
@@ -21,13 +55,13 @@ y = iris.target
 x_last_cols = x[:, -2:]
 
 # Visualización
-# Diccionario de colores K = numero_grupo, V = color
-color_dict = {0: 'red', 1: 'green', 2: 'blue'}
+color_dict = {0: 'red', 1: 'green', 2: 'blue'}      # Diccionario de colores K = numero_grupo, V = color
+group_set = np.unique(y)
 
 # Recorrer los grupos únicos y pintarlos de un color cada uno
-for sub_group in np.unique(y):
-    index = np.where(y == sub_group)
-    plt.scatter(x_last_cols[index, 0], x_last_cols[index, 1], c = color_dict[sub_group], label = 'Group {}'.format(sub_group))
+for group in group_set:
+    index = np.where(y == group)
+    plt.scatter(x_last_cols[index, 0], x_last_cols[index, 1], c = color_dict[group], label = 'Group {}'.format(group))
 
 plt.xlabel('Petal length')
 plt.ylabel('Petal width')
@@ -40,19 +74,20 @@ plt.show()
 # #############################################################################
 # Parte 2
 
-# Obtener el número de grupos únicos, dividir la población en grupos de igual
-# tamaño en función de su grupo (se sabe que hay el mismo número de elementos)
-# y ver cuántos elementos se tienen que usar para el set de training
-num_groups = len(np.unique(y))
-elements_group = len(y) // num_groups
-num_train_elem = int(elements_group * 0.8)
+training, test = stratify_sample(x_last_cols, y)
 
-# Obtener los índices de dónde empieza cada elemento de la poblacion
-group_0_start = np.where(y == 0)[0][0]
-group_1_start = np.where(y == 1)[0][0]
-group_2_start = np.where(y == 2)[0][0]
+print("Number of Group 0 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 0)))
+print("Number of Group 1 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 1)))
+print("Number of Group 2 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 2)))
+print("Size of training sample: {}".format(training.shape))
+print("Training sample:\n{}".format(training))
 
-#print(np.random.choice(np.arange(np.where(y == 0)[0][0], np.where(y == 0)[0][0] + elements_group), num_train_elem))
+print("Number of Group 0 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 0)))
+print("Number of Group 1 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 1)))
+print("Number of Group 2 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 2)))
+print("Size of test sample: {}".format(test.shape))
+print("Test sample:\n{}".format(test))
+
 
 # #############################################################################
 # Parte 3
