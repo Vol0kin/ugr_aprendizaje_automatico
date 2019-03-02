@@ -55,13 +55,13 @@ y = iris.target
 x_last_cols = x[:, -2:]
 
 # Visualización
-color_dict = {0: 'red', 1: 'green', 2: 'blue'}      # Diccionario de colores K = numero_grupo, V = color
+color_dict = {0: 'red', 1: 'green', 2: 'blue'}      # Diccionario de colores {K = numero_grupo, V = color}
 group_set = np.unique(y)
 
 # Recorrer los grupos únicos y pintarlos de un color cada uno
 for group in group_set:
     index = np.where(y == group)
-    plt.scatter(x_last_cols[index, 0], x_last_cols[index, 1], c = color_dict[group], label = 'Group {}'.format(group))
+    plt.scatter(x_last_cols[index, 0], x_last_cols[index, 1], c=color_dict[group], label='Group {}'.format(group))
 
 plt.xlabel('Petal length')
 plt.ylabel('Petal width')
@@ -101,12 +101,11 @@ cos_x = np.cos(x_axis)
 sin_cos_x = sin_x + cos_x
 
 # Visualización
-# Limpiar la figura
-plt.clf()
+plt.clf()           # Limpiar la figura
 
-plt.plot(x_axis, sin_x, 'k--', label = 'sin(x)')
-plt.plot(x_axis, cos_x, 'b--', label = 'cos(x)')
-plt.plot(x_axis, sin_cos_x, 'r--', label = 'sin(x) + cos(x)')
+plt.plot(x_axis, sin_x, 'k--', label='sin(x)')
+plt.plot(x_axis, cos_x, 'b--', label='cos(x)')
+plt.plot(x_axis, sin_cos_x, 'r--', label='sin(x) + cos(x)')
 
 plt.xlabel('X axis')
 plt.ylabel('Y axis')
