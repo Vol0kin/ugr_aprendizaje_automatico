@@ -20,24 +20,39 @@ y = iris.target
 # Obtener dos últimas columnas de x
 x_last_cols = x[:, -2:]
 
-# Visualizacion
-
+# Visualización
 # Diccionario de colores K = numero_grupo, V = color
 color_dict = {0: 'red', 1: 'green', 2: 'blue'}
 
-# Recorrer los grupos unicos y pintarlos de un color cada uno
+# Recorrer los grupos únicos y pintarlos de un color cada uno
 for sub_group in np.unique(y):
     index = np.where(y == sub_group)
     plt.scatter(x_last_cols[index, 0], x_last_cols[index, 1], c = color_dict[sub_group], label = 'Group {}'.format(sub_group))
 
 plt.xlabel('Petal length')
 plt.ylabel('Petal width')
+
+plt.title('Iris dataset classification')
 plt.legend()
 
 plt.show()
 
 # #############################################################################
 # Parte 2
+
+# Obtener el número de grupos únicos, dividir la población en grupos de igual
+# tamaño en función de su grupo (se sabe que hay el mismo número de elementos)
+# y ver cuántos elementos se tienen que usar para el set de training
+num_groups = len(np.unique(y))
+elements_group = len(y) // num_groups
+num_train_elem = int(elements_group * 0.8)
+
+# Obtener los índices de dónde empieza cada elemento de la poblacion
+group_0_start = np.where(y == 0)[0][0]
+group_1_start = np.where(y == 1)[0][0]
+group_2_start = np.where(y == 2)[0][0]
+
+#print(np.random.choice(np.arange(np.where(y == 0)[0][0], np.where(y == 0)[0][0] + elements_group), num_train_elem))
 
 # #############################################################################
 # Parte 3
@@ -51,7 +66,6 @@ cos_x = np.cos(x_axis)
 sin_cos_x = sin_x + cos_x
 
 # Visualización
-
 # Limpiar la figura
 plt.clf()
 
