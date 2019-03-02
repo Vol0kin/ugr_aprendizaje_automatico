@@ -76,18 +76,27 @@ plt.show()
 
 training, test = stratify_sample(x_last_cols, y)
 
-print("Number of Group 0 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 0)))
-print("Number of Group 1 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 1)))
-print("Number of Group 2 elements in training sample: {}".format(np.count_nonzero(training[:, -1] == 2)))
-print("Size of training sample: {}".format(training.shape))
-print("Training sample:\n{}".format(training))
+# Separar las muestras en x e y
+training_x = training[:, :-1]
+training_y = training[:, -1]
+test_x = test[:, :-1]
+test_y = test[:, -1]
 
-print("Number of Group 0 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 0)))
-print("Number of Group 1 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 1)))
-print("Number of Group 2 elements in test sample: {}".format(np.count_nonzero(test[:, -1] == 2)))
-print("Size of test sample: {}".format(test.shape))
-print("Test sample:\n{}".format(test))
+print('Number of Group 0 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 0)))
+print('Number of Group 1 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 1)))
+print('Number of Group 2 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 2)))
+print('Size of training sample: {}'.format(training.shape))
+print('Training sample:\n{}'.format(training))
+print('Training sample x:\n{}'.format(training_x))
+print('Training sample y:\n{}'.format(training_y))
 
+print('Number of Group 0 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 0)))
+print('Number of Group 1 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 1)))
+print('Number of Group 2 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 2)))
+print('Size of test sample: {}'.format(test.shape))
+print('Test sample:\n{}'.format(test))
+print('Test sample x:\n{}'.format(test_x))
+print('Test sample y:\n{}'.format(test_y))
 
 # #############################################################################
 # Parte 3
