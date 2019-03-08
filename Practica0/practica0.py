@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Práctica 0
-# Autor: Vladislav Nikolov Vasilev
-
+"""
+Práctica 0
+Autor: Vladislav Nikolov Vasilev
+"""
 from sklearn import datasets
 import numpy as np
 import matplotlib.pyplot as plt
@@ -82,6 +83,10 @@ training_y = training[:, -1]
 test_x = test[:, :-1]
 test_y = test[:, -1]
 
+# Mostrar información sobre la muestra de entrenamiento
+# Mostrar número de elementos de cada grupo, el tamaño y la muestra de dos formas:
+# - x,y juntos
+# - x,y por separado
 print('Number of Group 0 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 0)))
 print('Number of Group 1 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 1)))
 print('Number of Group 2 elements in training sample: {}'.format(np.count_nonzero(training[:, -1] == 2)))
@@ -90,6 +95,10 @@ print('Training sample:\n{}'.format(training))
 print('Training sample x:\n{}'.format(training_x))
 print('Training sample y:\n{}'.format(training_y))
 
+# Mostrar información sobre la muestra de pruebas
+# Mostrar número de elementos de cada grupo, el tamaño y la muestra de dos formas:
+# - x,y juntos
+# - x,y por separado
 print('Number of Group 0 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 0)))
 print('Number of Group 1 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 1)))
 print('Number of Group 2 elements in test sample: {}'.format(np.count_nonzero(test[:, -1] == 2)))
