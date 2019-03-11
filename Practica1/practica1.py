@@ -125,12 +125,12 @@ def Err(x,y,w):
     return 
 
 # Gradiente Descendente Estocastico
-def sgd(?):
+def sgd():
     #
     return w
 
 # Pseudoinversa	
-def pseudoinverse(?):
+def pseudoinverse():
     #
     return w
 
@@ -145,7 +145,7 @@ def simula_unif(N, d, size):
 ###############################################################################
 
 print('EJERCICIO SOBRE LA BÚSQUEDA ITERATIVA DE ÓPTIMOS')
-print('Ejercicio 1')
+print('Ejercicio 1\n')
 
 # Se fijan los parámetros que se van a usar en el cómputo de la gradiente descendente
 # (w inicial, num. iteraciones, valor mínimo)
@@ -175,9 +175,11 @@ ax.set_xlabel('u')
 ax.set_ylabel('v')
 ax.set_zlabel('E(u,v)')
 
+plt.show()
+
 input("\n--- Pulsar tecla para continuar ---\n")
 
-print('Ejercicio 3 a')
+print('Ejercicio 3 a\n')
 
 # Se fijan los parámetros que se van a usar en el cómputo de la gradiente descendente
 # en los dos casos
@@ -259,6 +261,7 @@ df = pandas.DataFrame(rows, index=row_header, columns=column_header)
 # Mostrarlo por pantalla
 print(df)
 
+input("\n--- Pulsar tecla para continuar ---\n")
 print('\n\n\n')
 
 ###############################################################################
@@ -278,7 +281,7 @@ x, y = readData('datos/X_train.npy', 'datos/y_train.npy')
 x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy')
 
 
-w = sgd(?)
+w = sgd( )
 print ('Bondad del resultado para grad. descendente estocastico:\n')
 print ("Ein: ", Err(x,y,w))
 print ("Eout: ", Err(x_test, y_test, w))
