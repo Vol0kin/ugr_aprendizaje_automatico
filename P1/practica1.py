@@ -54,7 +54,7 @@ def gradient_f(x, y):
 
 def descent_gradient(initial_w, function, gradient, eta=0.01, threshold=None, iterations=100):
     """
-    Función para el cálculo de la gradiente descendente
+    Función para el cálculo del gradiente descendente
     
     :param initial_w: Pesos iniciales
     :param function: Función a evaluar
@@ -122,7 +122,11 @@ def readData(file_x, file_y):
 
 # Funcion para calcular el error
 def Err(x,y,w):
-    return 
+    error = (x.dot(w) - y.reshape(-1, 1))**2        # Calcular el error cuadrático para cada vector de características
+    error = error.sum(axis=0)                       # Sumar todos los errores
+    error = error[0] / x.shape[0]                   # Dividir la suma de errores entre el número de elementos
+    
+    return error
 
 # Gradiente Descendente Estocastico
 def sgd():
@@ -130,8 +134,24 @@ def sgd():
     return w
 
 # Pseudoinversa	
-def pseudoinverse():
-    #
+def pseudoinverse(X, y):
+    """
+    Función para el cálculo de pesos mediante el algoritmo de la pseudoderivada
+    
+    :param X: Matriz que contiene las caracterísiticas
+    :param y: Matriz que contiene las etiquetas relacionadas a las características
+    """
+    
+    X_transpose = X.transpose()                     # Guardamos la transpuesta de X
+    y_transpose = y.reshape(-1, 1)                  # Convertimos y en una matriz columna (1 fila con n columnas)
+    
+    # Aplicamos el algoritmo para calcular la pseudoinversa
+    w = np.linalg.inv(X_transpose.dot(X))
+    w = w.dot(X_transpose)
+    
+    # Hacemos el producto de matrices de la pseudoinversa y la matriz columna y
+    w = w.dot(y_transpose)
+    
     return w
 
 # Simula datos en un cuadrado [-size,size]x[-size,size]
@@ -280,8 +300,13 @@ x, y = readData('datos/X_train.npy', 'datos/y_train.npy')
 # Lectura de los datos para el test
 x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy')
 
-
-w = sgd( )
+print(x.shape)
+print(y.shape)
+print(np.where(y == 1)[0].shape)
+w = pseudoinverse(x, y)
+print(w)
+print(w.shape)
+#w = sgd( )
 print ('Bondad del resultado para grad. descendente estocastico:\n')
 print ("Ein: ", Err(x,y,w))
 print ("Eout: ", Err(x_test, y_test, w))
