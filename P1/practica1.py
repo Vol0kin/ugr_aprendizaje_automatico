@@ -122,9 +122,8 @@ def readData(file_x, file_y):
 
 # Funcion para calcular el error
 def Err(x,y,w):
-    error = (x.dot(w) - y.reshape(-1, 1))**2        # Calcular el error cuadrático para cada vector de características
-    error = error.sum(axis=0)                       # Sumar todos los errores
-    error = error[0] / x.shape[0]                   # Dividir la suma de errores entre el número de elementos
+    error = np.square(x.dot(w) - y.reshape(-1, 1))  # Calcular el error cuadrático para cada vector de características
+    error = error.mean()                            # Calcular la media de los errors cuadráticos
     
     return error
 
@@ -158,6 +157,22 @@ def pseudoinverse(X, y):
 def simula_unif(N, d, size):
 	return np.random.uniform(-size,size,(N,d))
 
+# Crea una matriz de etiquetas a partir de las entradas
+def sign_labels(X):
+    return np.sign(np.square(X[:, 0] - 0.2) + np.square(X[:, 1]) - 0.6)
+
+# Inserta ruido en un porcentaje de las etiquetas de la población
+def insert_noise(labels, ratio=0.1):
+    # Calcular el número de elementos con ruido según el ratio
+    n = labels.shape[0]
+    noisy_elements = int(n * ratio)
+    
+    # Obtener una muestra aleatoria entre [0, n) de n * ratio elementos sin repeticiones
+    index = np.random.choice(np.arange(n), noisy_elements, replace=False)
+    
+    # Cambiar el signo del porcentaje de etiquetas
+    labels[index] = -labels[index]
+
 
 ###############################################################################
 ###############################################################################
@@ -165,6 +180,9 @@ def simula_unif(N, d, size):
 ###############################################################################
 
 print('EJERCICIO SOBRE LA BÚSQUEDA ITERATIVA DE ÓPTIMOS')
+
+#############################################################
+
 print('Ejercicio 1\n')
 
 # Se fijan los parámetros que se van a usar en el cómputo de la gradiente descendente
@@ -198,6 +216,8 @@ ax.set_zlabel('E(u,v)')
 plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
+
+#############################################################
 
 print('Ejercicio 3 a\n')
 
@@ -246,6 +266,8 @@ plt.legend()
 plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
+
+#############################################################
 
 print('Ejercicio 3 b\n')
 
@@ -313,9 +335,84 @@ print ("Eout: ", Err(x_test, y_test, w))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
-#Seguir haciendo el ejercicio...
+###############################################################################
 
 print('Ejercicio 2\n')
 
+#############################################################
 
-#Seguir haciendo el ejercicio...
+print('Apartado a\n')
+
+# Obtener una muestra de tamaño 1000 en el cuadrado [-1, 1] x [-1, 1]
+test_sample = simula_unif(1000, 2, 1)
+
+# VISUALIZACIÓN
+plt.clf()               # Limpiar ventana de visualización
+
+plt.scatter(test_sample[:, 0], test_sample[:, 1])           # Crear una nube de puntos
+
+# Poner título y etiquetas en los ejes
+plt.xlabel('$x_1$ axis')
+plt.ylabel('$x_2$ axis')
+
+plt.title(r'Random points in $[-1, 1] \times [-1, 1]$ square')
+
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#############################################################
+
+print('Apartado b\n')
+
+# Generar las etiquetas
+test_labels = sign_labels(test_sample)
+
+# Preparar datos de visualizacion: colores y conjunto de etiquetas
+color_dict = {1.0: 'red', -1.0: 'green'}
+label_set = np.unique(test_labels)
+
+# VISUALIZACIÓN DE LOS DATOS ANTES DE INSERTAR RUIDO EN LA MUESTRA
+plt.clf()           # Limpiar ventana de visualización
+
+# Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
+for label in label_set:
+    index = np.where(test_labels == label)
+    plt.scatter(test_sample[index, 0], test_sample[index, 1], c=color_dict[label], label='Group {}'.format(label))
+
+# Poner etiquetas a los ejes, título y leyenda
+plt.xlabel('$x_1$ axis')
+plt.ylabel('$x_2$ axis')
+
+plt.title(r'Random points in $[-1, 1] \times [-1, 1]$ square before inserting noise in the sample')
+plt.legend()
+
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# Insertamos ruido en la muestra
+insert_noise(test_labels)
+
+# VISUALIZACIÓN DE LOS DATOS DESPUÉS DE INSERTAR RUIDO EN LA MUESTRA
+plt.clf()           # Limpiar ventana de visualización
+
+# Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
+for label in label_set:
+    index = np.where(test_labels == label)
+    plt.scatter(test_sample[index, 0], test_sample[index, 1], c=color_dict[label], label='Group {}'.format(label))
+
+# Poner etiquetas a los ejes, título y leyenda
+plt.xlabel('$x_1$ axis')
+plt.ylabel('$x_2$ axis')
+
+plt.title(r'Random points in $[-1, 1] \times [-1, 1]$ square after inserting noise in the sample')
+plt.legend()
+
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#############################################################
+
+print ('Apartado c\n')
