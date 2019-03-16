@@ -270,12 +270,8 @@ def newtons_method(initial_w, iterations=50):
         
         # Calcular la Hessiana, invertirla (pseudoinversa) y calcular el gradiente
         hessian = hessian_f(*w)
-        hessian = np.linalg.pinv(hessian)
-        gradient = gradient_f(*w)
-        
-        # Si la pseudoinversa de la Hessiana tiene más de dos dimensiones, quedarse con la primera matriz
-        if hessian.ndim > 2:
-            hessian = hessian[0]
+        hessian = np.linalg.inv(hessian)
+        gradient = gradient_f(*w)        
         
         # Calcular theta (producto vectorial del Hessiana invertida y el gradiente)
         theta = hessian.dot(gradient.reshape(-1, 1))
@@ -291,6 +287,22 @@ def newtons_method(initial_w, iterations=50):
     
     return w, iter, np.array(w_list), np.array(f_list)
 
+# Función para pintar las comparaciones entre el Método de Newton y el GD
+def plot_comparison(x_axis, newton_vals, gd_vals ,point):
+    plt.clf()
+
+    # Dibujar rectas
+    plt.plot(x_axis, newton_vals, 'r-', label="Newton's Method")
+    plt.plot(x_axis, gd_vals, 'g-', label='Gradient Descent')
+    
+    plt.xlabel('Iterations')
+    plt.ylabel('Function value')
+    
+    plt.title("Comparison between Newton's Method and GD for ${}$".format(point))
+    plt.legend()
+    
+    plt.show()
+    
 
 ###############################################################################
 ###############################################################################
@@ -686,10 +698,10 @@ initial_w_3 = np.array([-0.5, -0.5])
 initial_w_4 = np.array([-1.0, -1.0])
 
 # Cálculo del gradiente descendente para cada caso
-w_1, it_1, w_array_1, func_val_1 = newtons_method(initial_w_1)
-w_2, it_2, w_array_2, func_val_2 = newtons_method(initial_w_2)
-w_3, it_3, w_array_3, func_val_3 = newtons_method(initial_w_3)
-w_4, it_4, w_array_4, func_val_4 = newtons_method(initial_w_4)
+w_1, it_1, w_array_1, func_val_1_n = newtons_method(initial_w_1)
+w_2, it_2, w_array_2, func_val_2_n = newtons_method(initial_w_2)
+w_3, it_3, w_array_3, func_val_3_n = newtons_method(initial_w_3)
+w_4, it_4, w_array_4, func_val_4_n = newtons_method(initial_w_4)
 
 # Mostrar por pantalla los resultados obtenidos usando pandas
 # Crear una lista con los nombres de las columnas
@@ -697,10 +709,10 @@ column_header = ['x_0', 'y_0', 'x_f', 'y_f', 'Valor punto final']
 row_header = ['Punto 1', 'Punto 2', 'Punto 3', 'Punto 4']
 
 # Crear un array con los valores de cada fila
-rows = np.array([[initial_w_1[0], initial_w_1[1], w_array_1[-1, 0], w_array_1[-1, 1], func_val_1[-1]],
-                [initial_w_2[0], initial_w_2[1], w_array_2[-1, 0], w_array_2[-1, 1], func_val_2[-1]],
-                [initial_w_3[0], initial_w_3[1], w_array_3[-1, 0], w_array_3[-1, 1], func_val_3[-1]],
-                [initial_w_4[0], initial_w_4[1], w_array_4[-1, 0], w_array_4[-1, 1], func_val_4[-1]]])
+rows = np.array([[initial_w_1[0], initial_w_1[1], w_array_1[-1, 0], w_array_1[-1, 1], func_val_1_n[-1]],
+                [initial_w_2[0], initial_w_2[1], w_array_2[-1, 0], w_array_2[-1, 1], func_val_2_n[-1]],
+                [initial_w_3[0], initial_w_3[1], w_array_3[-1, 0], w_array_3[-1, 1], func_val_3_n[-1]],
+                [initial_w_4[0], initial_w_4[1], w_array_4[-1, 0], w_array_4[-1, 1], func_val_4_n[-1]]])
 
 # Crear un nuevo DataFrame
 df = pandas.DataFrame(rows, index=row_header, columns=column_header)
@@ -708,25 +720,44 @@ df = pandas.DataFrame(rows, index=row_header, columns=column_header)
 # Mostrarlo por pantalla
 print(df)
 
+# Crear un eje X para la visualización
 x_axis = np.linspace(0, 50, 51)
 
-# Visualización
+# VISUALIZACIÓN DEL MÉTODO DE NEWTON PARA TODOS LOS PUNTOS
 
 plt.clf()
 
 # Dibujar rectas
-plt.plot(x_axis, func_val_1, 'r-', label='Point 1')
-plt.plot(x_axis, func_val_2, 'g-', label='Point 2')
-plt.plot(x_axis, func_val_3, 'b-', label='Point 3')
-plt.plot(x_axis, func_val_4, 'y-', label='Point 4')
+plt.plot(x_axis, func_val_1_n, 'r-', label='Point 1')
+plt.plot(x_axis, func_val_2_n, 'g-', label='Point 2')
+plt.plot(x_axis, func_val_3_n, 'b-', label='Point 3')
+plt.plot(x_axis, func_val_4_n, 'y-', label='Point 4')
 
 plt.xlabel('Iterations')
 plt.ylabel('Function value')
 
-plt.title("Newton's Method to compute Descent Gradient")
+plt.title("Newton's Method to compute Gradient Descent")
 plt.legend()
 
 plt.show()
 
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# VISUALIZACIÓN DE COMPARACIÓN ENTRE EL MÉTODO DE NEWTON Y EL GRADIENTE DESCENDENTE
+# Llamada a la función para comparar
+plot_comparison(x_axis, func_val_1_n, func_val_1, '(0.1, 0.1)')
 
 input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_2_n, func_val_2, '(1.0, 1.0)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_3_n, func_val_3, '(-0.5, -0.5)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_4_n, func_val_4, '(-1.0, -1.0)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
