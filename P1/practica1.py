@@ -222,8 +222,74 @@ def insert_noise(labels, ratio=0.1):
 #################################################################
 # EJERCICIO BONUS
 
-def newtons_method():
+# Derivada segunda de f respecto a x
+def ddiff_fx(x, y):
+    return 2 - 8 * np.pi**2 * np.sin(2 * np.pi * x) * np.sin(2 * np.pi * y)
+
+# Derivada segunda de f respecto a y
+def ddiff_fy(x, y):
+    return 4 - 8 * np.pi**2 * np.sin(2 * np.pi * x) * np.sin(2 * np.pi * y)
+
+# Derivada segunda de f respecto a x, y (equivale a derivada segunda resepcto a y, x)
+def ddiff_fxy(x, y):
+    return 8 * np.pi**2 * np.cos(2 * np.pi * x) * np.cos(2 * np.pi * y)
+
+# Matriz Hessiana
+def hessian_f(x, y):
+    return np.array([[ddiff_fx(x, y), ddiff_fxy(x, y)], [ddiff_fxy(x, y), ddiff_fy(x, y)]])
+
+# Método de Newton
+def newtons_method(initial_w, iterations=50):
+    """
+    Función para el cálculo de pesos mediante el Método de Newton
+    Es una modificación del algoritmo de Gradiente Descendente usando
+    la invertida de la matriz Hessiana como ratio de aprendizaje
     
+    :param initial_w: Valor de w inicial
+    :param iterations: Número máximo de iteraciones (por defecto 50) 
+    
+    :return Devuelve los pesos ajustados (w), el número de iteraciones
+            para llegar a esos pesos (iter), un array con los valores
+            de w (w_list) y un array con los valores de la función
+            (f_list)
+    """
+    
+    w = np.copy(initial_w)        # Copiar los w iniciales para no modificarlos
+    iter = 0                      # Iniciar las iteraciones a 0
+    w_list = []                   # Se inicializa una lista vacía con los valors de w
+    f_list = []                   # Se inicializa una lista vacía con los valors de la función
+    
+    w_list.append(w)              # Añadir valor inicial de w
+    f_list.append(f(*w))          # Añadir valor inicial de w evaluado en function
+    
+    # Mientras el número de iteraciones no supere el máximo, calcular
+    # la hessiana, invertirla, calcular el gradiente y ajustar w
+    # Añadir además a las listas correspondientes los valores de w y de w evaluado en f
+    while iter < iterations:
+        iter += 1
+        
+        # Calcular la Hessiana, invertirla (pseudoinversa) y calcular el gradiente
+        hessian = hessian_f(*w)
+        hessian = np.linalg.pinv(hessian)
+        gradient = gradient_f(*w)
+        
+        # Si la pseudoinversa de la Hessiana tiene más de dos dimensiones, quedarse con la primera matriz
+        if hessian.ndim > 2:
+            hessian = hessian[0]
+        
+        # Calcular theta (producto vectorial del Hessiana invertida y el gradiente)
+        theta = hessian.dot(gradient.reshape(-1, 1))
+        theta = theta.reshape(-1,)                      # Hacer que theta sea un vector fila
+       
+        # Actualizar w
+        w = w - theta
+        
+        # Añadir w y su valor a las listas correspondientes
+        w_list.append(w)
+        f_list.append(f(*w))
+        
+    
+    return w, iter, np.array(w_list), np.array(f_list)
 
 
 ###############################################################################
@@ -612,3 +678,55 @@ print('\n\n\n')
 ###############################################################################
 print('BONUS\n')
 print('Método de Newton\n')
+
+# Definición de puntos iniciales
+initial_w_1 = np.array([0.1, 0.1])
+initial_w_2 = np.array([1.0, 1.0])
+initial_w_3 = np.array([-0.5, -0.5])
+initial_w_4 = np.array([-1.0, -1.0])
+
+# Cálculo del gradiente descendente para cada caso
+w_1, it_1, w_array_1, func_val_1 = newtons_method(initial_w_1)
+w_2, it_2, w_array_2, func_val_2 = newtons_method(initial_w_2)
+w_3, it_3, w_array_3, func_val_3 = newtons_method(initial_w_3)
+w_4, it_4, w_array_4, func_val_4 = newtons_method(initial_w_4)
+
+# Mostrar por pantalla los resultados obtenidos usando pandas
+# Crear una lista con los nombres de las columnas
+column_header = ['x_0', 'y_0', 'x_f', 'y_f', 'Valor punto final']
+row_header = ['Punto 1', 'Punto 2', 'Punto 3', 'Punto 4']
+
+# Crear un array con los valores de cada fila
+rows = np.array([[initial_w_1[0], initial_w_1[1], w_array_1[-1, 0], w_array_1[-1, 1], func_val_1[-1]],
+                [initial_w_2[0], initial_w_2[1], w_array_2[-1, 0], w_array_2[-1, 1], func_val_2[-1]],
+                [initial_w_3[0], initial_w_3[1], w_array_3[-1, 0], w_array_3[-1, 1], func_val_3[-1]],
+                [initial_w_4[0], initial_w_4[1], w_array_4[-1, 0], w_array_4[-1, 1], func_val_4[-1]]])
+
+# Crear un nuevo DataFrame
+df = pandas.DataFrame(rows, index=row_header, columns=column_header)
+
+# Mostrarlo por pantalla
+print(df)
+
+x_axis = np.linspace(0, 50, 51)
+
+# Visualización
+
+plt.clf()
+
+# Dibujar rectas
+plt.plot(x_axis, func_val_1, 'r-', label='Point 1')
+plt.plot(x_axis, func_val_2, 'g-', label='Point 2')
+plt.plot(x_axis, func_val_3, 'b-', label='Point 3')
+plt.plot(x_axis, func_val_4, 'y-', label='Point 4')
+
+plt.xlabel('Iterations')
+plt.ylabel('Function value')
+
+plt.title("Newton's Method to compute Descent Gradient")
+plt.legend()
+
+plt.show()
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
