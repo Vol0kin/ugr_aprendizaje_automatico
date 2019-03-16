@@ -8,7 +8,7 @@ Autor: Vladislav Nikolov Vasilev
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import pandas   # Tablas
+import pandas                                 # Mostrar los datos como tablas
 
 ###############################################################################
 # Funciones necesarias
@@ -21,7 +21,6 @@ import pandas   # Tablas
 # Función E(u,v)
 def E(u, v):
     return (u**2 * np.exp(v) - 2 * v**2 * np.exp(-u))**2
-
 
 # Derivada parcial de E respecto a u
 def diff_Eu(u, v):
@@ -121,15 +120,56 @@ def readData(file_x, file_y):
 	return x, y
 
 # Funcion para calcular el error
-def Err(x,y,w):
-    error = np.square(x.dot(w) - y.reshape(-1, 1))  # Calcular el error cuadrático para cada vector de características
-    error = error.mean()                            # Calcular la media de los errors cuadráticos
+def Err(x, y, w):
+    error = np.square(x.dot(w) - y.reshape(-1, 1))        # Calcular el error cuadrático para cada vector de características
+    error = error.mean()                                  # Calcular la media de los errors cuadráticos (matriz con una columna)
     
     return error
 
+# Derivada de la función del error
+def diff_Err(x,y,w):
+    d_error = x.dot(w) - y.reshape(-1, 1)           # Calcular producto vectorial de x*w y restarle y
+    d_error =  2 * np.mean(x * d_error, axis=0)     # Realizar la media del producto escalar de x*error y la media en el eje 0
+    
+    d_error = d_error.reshape(-1, 1)                # Cambiar la forma para que tenga 3 filas y 1 columna
+    
+    return d_error
+
 # Gradiente Descendente Estocastico
-def sgd():
-    #
+def sgd(X, y, eta, M=64, iterations=200):
+    """
+    Función para calcular el Gradiente Descendente Estocástico.
+    Selecciona minibatches aleatorios de tamaño M de la muestra original
+    y ajusta en un número de iteraciones los pesos.
+    
+    :param X: Muestra de entrenamiento
+    :param y: Vector de etiquetas
+    :param eta: Ratio de aprendizaje
+    :param M: Tamaño de un minibatch (64 por defecto)
+    :param iterations: Número máximo de iteraciones
+    
+    :return w: Pesos ajustados
+    """
+    
+    # Crear un nuevo vector de pesos inicializado a 0, establecer el número de iteraciones
+    # inicial y obtener el número de elementos (N)
+    w = np.zeros((3, 1), np.float64)
+    N = X.shape[0]
+    iter = 0
+    
+    # Mientras el número de iteraciones sea menor al máximo, obtener un minibatch
+    # de tamaño M con valores aleatorios de X y ajustar los pesos con estos valores
+    while iter < iterations:
+        iter += 1
+        
+        # Escoger valores aleatorios de índices sin repeticiones y obtener los elementos
+        index = np.random.choice(N, M, replace=False)
+        minibatch_x = X[index]
+        minibatch_y = y[index]
+        
+        # Actualizar w
+        w = w - eta * diff_Err(minibatch_x, minibatch_y, w)
+    
     return w
 
 # Pseudoinversa	
@@ -139,6 +179,8 @@ def pseudoinverse(X, y):
     
     :param X: Matriz que contiene las caracterísiticas
     :param y: Matriz que contiene las etiquetas relacionadas a las características
+    
+    :returns w: Pesos calculados mediante ecuaciones normales
     """
     
     X_transpose = X.transpose()                     # Guardamos la transpuesta de X
@@ -172,6 +214,16 @@ def insert_noise(labels, ratio=0.1):
     
     # Cambiar el signo del porcentaje de etiquetas
     labels[index] = -labels[index]
+
+
+#################################################################
+#################################################################
+#################################################################
+#################################################################
+# EJERCICIO BONUS
+
+def newtons_method():
+    
 
 
 ###############################################################################
@@ -310,7 +362,7 @@ print('\n\n\n')
 ###############################################################################
 ###############################################################################
 ###############################################################################
-print('EJERCICIO SOBRE REGRESION LINEAL\n')
+print('EJERCICIO SOBRE REGRESIÓN LINEAL\n')
 print('Ejercicio 1\n')
 
 # Etiquetas que se asignarán a los datos
@@ -322,14 +374,67 @@ x, y = readData('datos/X_train.npy', 'datos/y_train.npy')
 # Lectura de los datos para el test
 x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy')
 
-print(x.shape)
-print(y.shape)
-print(np.where(y == 1)[0].shape)
-w = pseudoinverse(x, y)
-print(w)
-print(w.shape)
-#w = sgd( )
+# Diccionario de colores y tupla de etiquetas
+color_dict = {label1: 'blue', label5: 'red'}
+labels = (label1, label5)
+label_values = {label1: 1, label5: 5}
+
+# Cálculo de w mediante SGD
+w = sgd(x, y, 0.05)
+
+# VISUALIZACIÓN DEL AJUSTE
+plt.clf()           # Limpiar ventana de visualización
+
+# Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
+for l in labels:
+    index = np.where(y == l)
+    plt.scatter(x[index, 1], x[index, 2], c=color_dict[l], label='{}'.format(label_values[l]))
+
+# Pintar recta de ajuste (y = w0 + w1 * x1 + w2 * x2)
+# En cada caso obtener valor de x2 a partir de x1 y las predicciones, igualando a 0
+plt.plot([0, 1], [-w[0]/w[2], (-w[0] - w[1])/w[2]], 'k-')
+
+# Poner etiquetas a los ejes, título y leyenda
+plt.xlabel('Average Intensity')
+plt.ylabel('Symmetry')
+
+plt.title('Linear Regression using $SGD$')
+plt.legend()
+
+plt.show()
+
 print ('Bondad del resultado para grad. descendente estocastico:\n')
+print ("Ein: ", Err(x,y,w))
+print ("Eout: ", Err(x_test, y_test, w))
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+
+# Cálculo de w mediante la pseudoinversa
+w = pseudoinverse(x, y)
+
+# VISUALIZACIÓN DEL AJUSTE
+plt.clf()           # Limpiar ventana de visualización
+
+# Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
+for l in labels:
+    index = np.where(y == l)
+    plt.scatter(x[index, 1], x[index, 2], c=color_dict[l], label='{}'.format(label_values[l]))
+
+# Pintar recta de ajuste (y = w0 + w1 * x1 + w2 * x2)
+# En cada caso obtener valor de x2 a partir de x1 y las predicciones, igualando a 0
+plt.plot([0, 1], [-w[0]/w[2], (-w[0] - w[1])/w[2]], 'k-')
+
+# Poner etiquetas a los ejes, título y leyenda
+plt.xlabel('Average Intensity')
+plt.ylabel('Symmetry')
+
+plt.title('Linear Regression using Pseudoinverse')
+plt.legend()
+
+plt.show()
+
+print ('Bondad del resultado para pseudoinversa:\n')
 print ("Ein: ", Err(x,y,w))
 print ("Eout: ", Err(x_test, y_test, w))
 
@@ -344,12 +449,18 @@ print('Ejercicio 2\n')
 print('Apartado a\n')
 
 # Obtener una muestra de tamaño 1000 en el cuadrado [-1, 1] x [-1, 1]
-test_sample = simula_unif(1000, 2, 1)
+# Preparar parámetros y obtener muestra
+N = 1000
+dim = 2
+size = 1
+
+train_x = simula_unif(N, dim, size)
 
 # VISUALIZACIÓN
-plt.clf()               # Limpiar ventana de visualización
+plt.clf()
 
-plt.scatter(test_sample[:, 0], test_sample[:, 1])           # Crear una nube de puntos
+# Crear nube de puntos
+plt.scatter(train_x[:, 0], train_x[:, 1])
 
 # Poner título y etiquetas en los ejes
 plt.xlabel('$x_1$ axis')
@@ -366,19 +477,19 @@ input("\n--- Pulsar tecla para continuar ---\n")
 print('Apartado b\n')
 
 # Generar las etiquetas
-test_labels = sign_labels(test_sample)
+train_y = sign_labels(train_x)
 
 # Preparar datos de visualizacion: colores y conjunto de etiquetas
 color_dict = {1.0: 'red', -1.0: 'green'}
-label_set = np.unique(test_labels)
+label_set = np.unique(train_y)
 
 # VISUALIZACIÓN DE LOS DATOS ANTES DE INSERTAR RUIDO EN LA MUESTRA
-plt.clf()           # Limpiar ventana de visualización
+plt.clf()
 
 # Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
 for label in label_set:
-    index = np.where(test_labels == label)
-    plt.scatter(test_sample[index, 0], test_sample[index, 1], c=color_dict[label], label='Group {}'.format(label))
+    index = np.where(train_y == label)
+    plt.scatter(train_x[index, 0], train_x[index, 1], c=color_dict[label], label='Group {}'.format(label))
 
 # Poner etiquetas a los ejes, título y leyenda
 plt.xlabel('$x_1$ axis')
@@ -392,15 +503,15 @@ plt.show()
 input("\n--- Pulsar tecla para continuar ---\n")
 
 # Insertamos ruido en la muestra
-insert_noise(test_labels)
+insert_noise(train_y)
 
 # VISUALIZACIÓN DE LOS DATOS DESPUÉS DE INSERTAR RUIDO EN LA MUESTRA
-plt.clf()           # Limpiar ventana de visualización
+plt.clf()
 
 # Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
 for label in label_set:
-    index = np.where(test_labels == label)
-    plt.scatter(test_sample[index, 0], test_sample[index, 1], c=color_dict[label], label='Group {}'.format(label))
+    index = np.where(train_y == label)
+    plt.scatter(train_x[index, 0], train_x[index, 1], c=color_dict[label], label='Group {}'.format(label))
 
 # Poner etiquetas a los ejes, título y leyenda
 plt.xlabel('$x_1$ axis')
@@ -416,3 +527,88 @@ input("\n--- Pulsar tecla para continuar ---\n")
 #############################################################
 
 print ('Apartado c\n')
+
+# Crear vector columna de 1's 
+ones = np.ones((N, 1), dtype=np.float64)
+
+# Obtener x juntando el vector de 1's con train_x
+train_x = np.c_[ones, train_x]
+
+w = sgd(train_x, train_y, 0.05)
+
+# VISUALIZACIÓN DE LOS DATOS DESPUÉS DE INSERTAR RUIDO EN LA MUESTRA
+plt.clf()
+
+# Recorrer el conjunto de puntos y pintarlos de un color según su etiqueta
+for label in label_set:
+    index = np.where(train_y == label)
+    plt.scatter(train_x[index, 1], train_x[index, 2], c=color_dict[label], label='Group {}'.format(label))
+
+# Pintar recta de ajuste (y = w0 + w1 * x1 + w2 * x2)
+# En cada caso obtener valor de x2 a partir de x1 y las predicciones, igualando a 0
+plt.plot([-1, 1], [(-w[0] + w[1])/w[2], (-w[0] - w[1])/w[2]], 'k-')
+
+# Poner etiquetas a los ejes, título, leyenda y poner el rango del eje Y en [-1.2, 1.2]
+plt.xlabel('$x_1$ axis')
+plt.ylabel('$x_2$ axis')
+
+plt.ylim(-1.2, 1.2)
+
+plt.title(r'Linear Regression in $[-1, 1] \times [-1, 1]$ square using $SGD$')
+plt.legend()
+
+plt.show()
+
+# Mostrar bondad del ajuste
+print ('Bondad del resultado para grad. descendente estocastico:\n')
+print ("Ein: ", Err(train_x ,train_y, w))
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#############################################################
+
+print ('Apartado d\n')
+
+# Crear listas de errores
+e_in_l = []
+e_out_l = []
+
+# Realizar 1000 experimentos
+for _ in range(0, N):
+    # Generar datos de entrenamiento
+    train_x = simula_unif(N, dim, size)
+    train_y = sign_labels(train_x)
+    
+    train_x = np.c_[ones, train_x]
+    insert_noise(train_y)
+    
+    # Generar datos de prueba
+    test_x = simula_unif(N, dim, size)
+    test_y = sign_labels(test_x)
+    test_x = np.c_[ones, test_x]
+    
+    w = sgd(train_x, train_y, 0.05)
+    
+    # Calcular los errores dentro y fuera de la muestra y añadirlos
+    e_in_l.append(Err(train_x, train_y, w))
+    e_out_l.append(Err(test_x, test_y, w))
+
+# Convertir listas de errores a arrays
+e_in = np.array(e_in_l)
+e_out = np.array(e_out_l)
+
+# Mostrar por pantalla el resultado de los errores medios
+print ('Valor medio de la bondad del resultado para grad. descendente estocastico:\n')
+print ("Ein: ", e_in.mean())
+print ("Eout: ", e_out.mean())
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+print('\n\n\n')
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+print('BONUS\n')
+print('Método de Newton\n')
