@@ -80,7 +80,7 @@ def descent_gradient(initial_w, function, gradient, eta=0.01, threshold=None, it
     # el número máximo de iteraciones.
     while iter < iterations:
         iter += 1
-        w = w - eta * gradient(*w)              # Actualización de w con los nuevos valores (wj = wj - eta * gradient(wj))
+        w = w - eta * gradient(*w)              # Actualización de w con los nuevos valores
         
         w_list.append(w)                        # Añadir nuevo w
         func_values_list.append(function(*w))   # Añadir nueva evaluación de w en function
