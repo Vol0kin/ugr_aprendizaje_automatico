@@ -389,7 +389,7 @@ plt.plot(x_axis, func_val_2, 'g', label='$\eta = 0.1$')
 plt.xlabel('Iterations')
 plt.ylabel('Function value')
 
-plt.title('Comparation between different learning ratios')
+plt.title('Comparison between different learning ratios')
 plt.legend()
 
 # Mostrar
