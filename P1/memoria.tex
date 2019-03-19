@@ -313,6 +313,72 @@ Primero, vamos a observar las funciones implementadas para realizar los ajustes:
 \caption{Implementación del Gradiente Descendente Estocástico.}
 \end{figure}
 
+Para realizar los ajustes utilizando el Gradiente Descendente Estocástico vamos a suponer una serie de cosas, ya que no
+se especifican en el enunciado del problema:
+
+\begin{itemize}[label=\textbullet]
+	\item Como no se especifica cuántas iteraciones tiene que dar el algoritmo, vamos a suponer que, por defecto, da
+	\textbf{200 iteraciones}.
+	\item Como tampoco se especifica que $\eta$ utilizar, vamos a utilizar $\eta = 0.05$, ya que en combinación con el
+	número de iteraciones, ofrece un buen resultado. También se ha probado con un $\eta = 0.01$ y se han conseguido
+	resultados muy similares, pero con la contra de tener que realizar un mayor número de iteraciones.
+	\item Como no se especifica ningún criterio para crear los \textit{batches}, vamos a escoger en cada iteración una
+	parte aleatoria de la muestra de tamaño $M$, siendo $M = 64$ por defecto (y también el valor utilizado).
+	\item Como tampoco se especifica un valor inicial para $w$, vamos a suponer que $w = \lbrace 0, 0, 0 \rbrace$.
+\end{itemize}
+
+Una vez dicho esto, vamos a ver los resultados de cada ajuste, comenzando con el Gradiente Descendente Estocástico:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/sgd_regression.png}
+\caption{Gráfica del ajuste de regresión mediante SGD.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/sgd_regression_error.png}
+\end{figure}
+
+Como se puede comprobar, con los datos especificados anteriormente ($\eta = 0.05$, 200 iteraciones y $M = 64$) se obtiene
+un ajuste muy bueno, si bien es cierto que van a haber algunos datos que no sean clasificados correctamente, ya que los
+datos no son linealmente independientes del todo (se puede ver claramente que hay algunos datos cuyos valores no se
+corresponden con la clase que supuestamente les toca).\\
+
+Para poder pintar la recta, se ha pintado en el rango $[0, 1]$ (eje $X$) según los valores de $w$. Para ello, se ha
+resuleto la ecuación $y = w_0 + w_1 x_1 + w_2 x_2$, donde $y$ es la clase obtenida, $x_1$ el valor en el eje $X$ y $x_2$ el
+valor en el eje $Y$. En este caso se quería obtener el valor de $x_2$, ya que se han supuesto los casos en los que $x_1 = 0$
+(extremo inferior del intervalo en el que se quiere pintar la recta) y $x_1 = 1$ (extremo superior del intervalo en el que se
+quiere pintar la recta). Suponiento que $y = 0$ en ambos casos, se ha obtenido lo siguiente:
+
+\[x_1 = 0, \: x_2 = \frac{-w_0}{w_2} \]
+\[x_1 = 1, \: x_2 = \frac{-w_0 - w_1}{w_2} \]
+
+Por tanto, los valores en el eje $Y$ tendrán en los extremos $[0, 1]$ los valores $[\frac{-w_0}{w_2}, \frac{-w_0 - w_1}{w_2}]$,
+interpolando el resto de valores para poder formar la recta. Este mismo proceso se ha seguido para la pseudoinversa.\\
+
+A continuación, vamos a observar los resultados del ajuste de regresión mediante la pseudoinversa:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/pinv_regression.png}
+\caption{Gráfica del ajuste de regresión mediante el algoritmo de la pseudoinversa.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/pinv_error.png}
+\caption{Resultados de los errores obtenidos con el ajuste de regresión para $E_{in}$ y $E_{out}$.}
+\end{figure}
+
+Como se puede ver, existen unas pequeñas diferencias. En este caso, la recta obtenida tiene un poco más de pendiente, y permite
+obtener un error un poco menor en $E_{in}$, conservando sin embargo un error similar en $E_{out}$.\\
+
+Ambas técnicas permiten obtener buenos resultados. Sin embargo, en este caso, la pseudoinversa permite obtener unos resultados
+algo mejores, ya que intenta calcular los valores de $w$ resolviendo un sistema de ecuaciones, mientras que en el caso del
+Gradiente Descendente Estocástico se intentan ajustar los valores de $w$ de forma iterativa y, al seleccionar elementos
+aleatorios de la muestra, no se asegura que se realice un ajuste con todos los datos, lo cuál puede hacer que sea necesario
+dar más iteraciones.
 
 \subsection*{Apartado 2}
 \noindent En este apartado exploramos como se transforman los errores $E_{in}$ y $E_{out}$ cuando aumentamos la complejidad
@@ -326,17 +392,79 @@ puntos uniformemente muestreados dentro del cuadrado definido por $[-size, size]
 		Pintar el mapa de puntos 2D. (ver función de ayuda)
 	\end{enumerate}
 	
+	Para generar los datos, hemos utilizado esta función:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{img/simula_unif.png}
+	\end{figure}
+	
+	Al generar los 1000 puntos, hemos obtenido el siguiente gráfico:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/random_points.png}
+	\end{figure}
+	
 	\begin{enumerate}[resume, label=\alph*)]
 		\item Consideremos la función $f(x_1, x_2) = \sign((x_1 - 0.2)^2 + x_2^2 - 0.6)$ que usaremos para asignar una
 		etiqueta a cada punto de la muestra anterior. Introducimos ruido sobre las etiquetas cambiando aleatoriamente
 		el signo de un 10\% de las mismas. Pintar el mapa de etiquetas obtenido.
 	\end{enumerate}
 	
+	La implementación de la función es la siguiente:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{img/sign_func.png}
+	\end{figure}
+	
+	Al generar el signo para los puntos, se ha obtenido el siguiente gráfico:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/sign_points.png}
+	\end{figure}
+	
+	La función para insertar ruido es la siguiene:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{img/noise_func.png}
+	\end{figure}
+	
+	Tras insertar ruido, se ha obtenido el siguiente gráfico:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/random_noise.png}
+	\end{figure}
+	
 	\begin{enumerate}[resume, label=\alph*)]
 		\item Usando como vector de características $(1, x_1, x_2)$ ajustar un modelo de regresión lineal al conjunto de
 		datos generado y estimar los pesos $w$. Estimar el error de ajuste $E_{in}$ usando Gradiente Descendente Estocástico
 		(SGD).
 	\end{enumerate}
+	
+	Al realizar el ajuste de regresión con el Gradiente Descendente Estocástico, hemos obtenido lo siguiente:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/random_regression.png}
+	\caption{Gráfico del ajuste por regresión.}
+	\end{figure}
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/random_error.png}
+	\caption{Error para $E_{in}$.}
+	\end{figure}
+	
+	Para dibujar la recta, se ha resuelto la misma ecuación que en el ejercicio anterior, solo que esta vez en el rango
+	$[-1, 1]$, y se han obtenido los siguientes valores:
+	
+	\[x_1 = -1, \: x_2 = \frac{-w_0 + w_1}{w_2}\]
+	\[x_1 = 1, \: x_2 = \frac{-w_0 - w_1}{w_2}\]
 	
 	\begin{enumerate}[resume, label=\alph*)]
 		\item Ejecutar todo el experimento definido por (a)-(c) 1000 veces (generamos 1000 muestras diferentes) y
@@ -347,10 +475,27 @@ puntos uniformemente muestreados dentro del cuadrado definido por $[-size, size]
 		\end{itemize}
 	\end{enumerate}
 	
+	Para el experimento repetido 1000 veces, se han obtenido los siguientes resultados:
+	
+	\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{img/random_1000_error.png}
+	\end{figure}
+	
 	\begin{enumerate}[resume, label=\alph*)]
 		\item Valore que tan bueno considera que es el ajuste con este modelo lineal a la vista de los valores medios
 		obtenidos de $E_{in}$ y $E_{out}$.
 	\end{enumerate}
+	
+	Los dos valores de los errores son muy malos, ya que están próximos a 1. Esto se debe a que una parte de los datos está
+	dentro de la otra, y los modelos lineales están muy limitados en este aspecto, ya que una recta no puede dividir
+	perfectamente los datos por mucho que se intente. Habría que utilizar otras funciones, como por ejemplo las hiperbólicas
+	para intentar obtener un mejor ajuste.\\
+	
+	En el caso de $E_{in}$, el error obtendo es mayor que el de $E_{out}$, ya que al haber introducido ruido en la muestra
+	de entrenamiento, los datos no serán linealmente independientes, y por tanto va a fallar más que de costumbre. En
+	$E_{out}$, como no se ha metido ruido en las etiquetas, los datos no estarán tan dispersos, pero igualmente, no se
+	podrá obtener un ajuste bueno por los motivos comentados anteriormente.
 \end{itemize}
 
 
@@ -366,15 +511,51 @@ dada en el ejercicio 3. Desarrolle los mismos experimentos usando los mismos pun
 	calculada en el apartado anterior y la correspondiente obtenida con el gradiente descendente.
 \end{itemize}
 
-\newpage
+Antes de empezar, vamos a calcular analíticamente el valor de la \textit{Hessiana}. Para ello, necesitamos calcular antes
+$\frac{\partial^2 f}{\partial x^2}$, $\frac{\partial^2 f}{\partial y^2}$ y $\frac{\partial^2 f}{\partial xy}$:
 
-\begin{thebibliography}{5}
+\begin{equation}
+\frac{\partial^2 f}{\partial x^2} = \frac{\partial^2}{\partial x^2} \Big(x^2 + 2y^2 + 2\sin(2 \pi x)\sin(2 \pi y)\Big) =
+2 - 8 \pi ^ 2 \sin(2 \pi x)\sin(2 \pi y)
+\end{equation}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\begin{equation}
+\frac{\partial^2 f}{\partial y^2} = \frac{\partial^2}{\partial y^2} \Big(x^2 + 2y^2 + 2\sin(2 \pi x)\sin(2 \pi y)\Big) =
+4 - 8 \pi ^ 2 \sin(2 \pi x)\sin(2 \pi y)
+\end{equation}
 
-\end{thebibliography}
+\begin{equation}
+\frac{\partial^2 f}{\partial xy} = \frac{\partial^2}{\partial xy} \Big(x^2 + 2y^2 + 2\sin(2 \pi x)\sin(2 \pi y)\Big) =
+8 \pi ^ 2 \cos(2 \pi x)\cos(2 \pi y)
+\end{equation}
+
+Con lo cuál, tenemos que:
+
+\begin{equation}
+H =
+\left[
+{
+\begin{array}{ccc}
+	\frac{\partial^2 f}{\partial x^2} & & \frac{\partial^2 f}{\partial xy} \\
+	\\
+	\frac{\partial^2 f}{\partial xy} & & \frac{\partial^2 f}{\partial y^2}
+\end{array}
+}
+\right]
+\end{equation}
+
+\begin{equation}
+H =
+\left[
+{
+\begin{array}{ccc}
+	2 - 8 \pi ^ 2 \sin(2 \pi x)\sin(2 \pi y) & & 8 \pi ^ 2 \cos(2 \pi x)\cos(2 \pi y) \\
+	\\
+	8 \pi ^ 2 \cos(2 \pi x)\cos(2 \pi y) & & 4 - 8 \pi ^ 2 \sin(2 \pi x)\sin(2 \pi y)
+\end{array}
+}
+\right]
+\end{equation}
 
 \end{document}
 
