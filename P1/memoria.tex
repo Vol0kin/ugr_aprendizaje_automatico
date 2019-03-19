@@ -291,7 +291,28 @@ usando tanto el algoritmo de la pseudoinversa como Gradiente descendente estocá
 $ \lbrace -1, 1 \rbrace $, una para cada vector de cada uno de los números. Pintar las soluciones obtenidas junto con los
 datos usados en el ajuste. Valorar la bondad del resultado usando $E_{in}$ y $E_{out}$ (para $E_{out}$ calcular las
 predicciones usando los datos del fichero de test). ( usar $Regress\_Lin(datos, label)$ como llamada para la función
-(opcional)).
+(opcional)).\\
+
+Primero, vamos a observar las funciones implementadas para realizar los ajustes:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/func_error.png}
+\caption{Función de error y derivada de ésta para el gradiente.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/pseudoinverse.png}
+\caption{Implementación del algoritmo de la pseudoinversa.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/sgd.png}
+\caption{Implementación del Gradiente Descendente Estocástico.}
+\end{figure}
+
 
 \subsection*{Apartado 2}
 \noindent En este apartado exploramos como se transforman los errores $E_{in}$ y $E_{out}$ cuando aumentamos la complejidad
