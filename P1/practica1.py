@@ -239,14 +239,15 @@ def hessian_f(x, y):
     return np.array([[ddiff_fx(x, y), ddiff_fxy(x, y)], [ddiff_fxy(x, y), ddiff_fy(x, y)]])
 
 # Método de Newton
-def newtons_method(initial_w, iterations=50):
+def newtons_method(initial_w, iterations=50, eta=None):
     """
     Función para el cálculo de pesos mediante el Método de Newton
     Es una modificación del algoritmo de Gradiente Descendente usando
     la invertida de la matriz Hessiana como ratio de aprendizaje
     
     :param initial_w: Valor de w inicial
-    :param iterations: Número máximo de iteraciones (por defecto 50) 
+    :param iterations: Número máximo de iteraciones (por defecto 50)
+    :param eta: Ratio de aprendizaje (por defecto None)
     
     :return Devuelve los pesos ajustados (w), el número de iteraciones
             para llegar a esos pesos (iter), un array con los valores
@@ -277,6 +278,10 @@ def newtons_method(initial_w, iterations=50):
         theta = hessian.dot(gradient.reshape(-1, 1))
         theta = theta.reshape(-1,)                      # Hacer que theta sea un vector fila
        
+        # Multiplicar theta por eta, en caso de que se haya especificado
+        if eta:
+            theta = eta * theta
+        
         # Actualizar w
         w = w - theta
         
@@ -761,3 +766,68 @@ plot_comparison(x_axis, func_val_4_n, func_val_4, '(-1.0, -1.0)')
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
+# Método de Newton con learning rate
+
+# Cálculo del gradiente descendente para cada caso
+w_1, it_1, w_array_1, func_val_1_n = newtons_method(initial_w_1, eta=0.01)
+w_2, it_2, w_array_2, func_val_2_n = newtons_method(initial_w_2, eta=0.01)
+w_3, it_3, w_array_3, func_val_3_n = newtons_method(initial_w_3, eta=0.01)
+w_4, it_4, w_array_4, func_val_4_n = newtons_method(initial_w_4, eta=0.01)
+
+# Mostrar por pantalla los resultados obtenidos usando pandas
+# Crear una lista con los nombres de las columnas
+column_header = ['x_0', 'y_0', 'x_f', 'y_f', 'Valor punto final']
+row_header = ['Punto 1', 'Punto 2', 'Punto 3', 'Punto 4']
+
+# Crear un array con los valores de cada fila
+rows = np.array([[initial_w_1[0], initial_w_1[1], w_array_1[-1, 0], w_array_1[-1, 1], func_val_1_n[-1]],
+                [initial_w_2[0], initial_w_2[1], w_array_2[-1, 0], w_array_2[-1, 1], func_val_2_n[-1]],
+                [initial_w_3[0], initial_w_3[1], w_array_3[-1, 0], w_array_3[-1, 1], func_val_3_n[-1]],
+                [initial_w_4[0], initial_w_4[1], w_array_4[-1, 0], w_array_4[-1, 1], func_val_4_n[-1]]])
+
+# Crear un nuevo DataFrame
+df = pandas.DataFrame(rows, index=row_header, columns=column_header)
+
+# Mostrarlo por pantalla
+print(df)
+
+# Crear un eje X para la visualización
+x_axis = np.linspace(0, 50, 51)
+
+# VISUALIZACIÓN DEL MÉTODO DE NEWTON PARA TODOS LOS PUNTOS
+
+plt.clf()
+
+# Dibujar rectas
+plt.plot(x_axis, func_val_1_n, 'r-', label='Point 1')
+plt.plot(x_axis, func_val_2_n, 'g-', label='Point 2')
+plt.plot(x_axis, func_val_3_n, 'b-', label='Point 3')
+plt.plot(x_axis, func_val_4_n, 'y-', label='Point 4')
+
+plt.xlabel('Iterations')
+plt.ylabel('Function value')
+
+plt.title("Newton's Method to compute Gradient Descent")
+plt.legend()
+
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# VISUALIZACIÓN DE COMPARACIÓN ENTRE EL MÉTODO DE NEWTON Y EL GRADIENTE DESCENDENTE
+# Llamada a la función para comparar
+plot_comparison(x_axis, func_val_1_n, func_val_1, '(0.1, 0.1)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_2_n, func_val_2, '(1.0, 1.0)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_3_n, func_val_3, '(-0.5, -0.5)')
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+plot_comparison(x_axis, func_val_4_n, func_val_4, '(-1.0, -1.0)')
+
+input("\n--- Pulsar tecla para continuar ---\n")

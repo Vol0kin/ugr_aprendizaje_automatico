@@ -262,6 +262,8 @@ donde se muestran los 4 puntos con sus coordenadas iniciales, finales y valor de
 Encontrar el máximo global de una función arbitraria puede llegar a ser difícil y depende de una serie factores:
 
 \begin{itemize}[label=\textbullet]
+	\item \textbf{Derivabilidad de la función}: Para poder encontrar un mínimo global, la función tiene que ser lo primero
+	de todo derivable, y no todas las funciones lo son.
 	\item \textbf{Forma de la función}: Si la función es convexa, como solo tiene un mínimo, es fácil encontrarlo con
 	algoritmos como por ejemplo el Gradiente Descendente. Si la función tiene muchos óptimos locales o muchas curvaturas
 	puede llegar a ser difícil dar con el óptimo global, y los algoritmos iterativos pueden llegar a quedarse en óptimos
@@ -555,7 +557,117 @@ H =
 \end{array}
 }
 \right]
-\end{equation}
+\end{equation}\\
+
+La implementación del algoritmo es la siguiente:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/nm_implementation.png}
+\end{figure}
+
+Una vez dicho esto, vamos a mostrar los resultados obtenidos:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/nm_points.png}
+\caption{Puntos obtenidos al aplicar el Método de Newton.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_cmp.png}
+\caption{Evolución de los valores de $f(x, y)$ con el Método de Newton.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_cmp1.png}
+\caption{Minimización del punto $(0.1, 0.1)$ del GD comparada con el Método de Newton.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_cmp2.png}
+\caption{Minimización del punto $(1, 1)$ del GD comparada con el Método de Newton.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_cmp3.png}
+\caption{Minimización del punto $(-0.5, -0.5)$ del GD comparada con el Método de Newton.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_cmp4.png}
+\caption{Minimización del punto $(-1, -1)$ del GD comparada con el Método de Newton.}
+\end{figure}
+
+Como se puede ver, las minimizacions no son muy buenas. En el primer caso es pésima ya que el valor de la función crece hasta
+valores muy elevados, posiblemente debido a que el valor de la segunda derivada es muy elevado justo en el punto donde empieza,
+con lo cuál sale disparada y empieza a crecer. En los otros casos, los valores de la función van decreciendo, pero a un ritmo
+muy lento, con lo cuál tampoco se llega a un óptimo local, como en el primer caso.\\
+
+Para intentar solucionar esto, vamos a meter un \textit{learning rate} $\eta = 0.01$ para evitar que en el primer caso el
+Método de Newton haga que la función se salga disparada. Con esto obtenemos los siguientes resultados:\\
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/nm_lr_points.png}
+\caption{Puntos obtenidos al aplicar el Método de Newton con $\eta = 0.01$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_lr_cmp.png}
+\caption{Evolución de los valores de $f(x, y)$ con el Método de Newton con $\eta  = 0.01$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_lr_cmp1.png}
+\caption{Minimización del punto $(0.1, 0.1)$ del GD comparada con el Método de Newton con $\eta = 0.01$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_lr_cmp2.png}
+\caption{Minimización del punto $(1, 1)$ del GD comparada con el Método de Newton con $\eta = 0.01$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_lr_cmp3.png}
+\caption{Minimización del punto $(-0.5, -0.5)$ del GD comparada con el Método de Newton con $\eta = 0.01$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{img/nm_lr_cmp4.png}
+\caption{Minimización del punto $(-1, -1)$ del GD comparada con el Método de Newton con $\eta = 0.01$.}
+\end{figure}
+
+Como se puede ver, al utilizar un $\eta = 0.01$, los valores son algo más normales. Para el primer punto se puede ver que
+esta vez, en vez de salir disparado para arriba, los valores de la función se intentan acercar al óptimo local. En el resto
+de casos, sin embargo, el ratio de descenso es aún peor que antes, con lo cuál los valores de la función descienden de una
+forma mucho más lenta que antes. Además, como en la situación anterior, no se llega a converger en ningún momento. Ninguno
+de los puntos llega a un óptimo local.\\
+
+Las conclusiones que se pueden extraer del Método de Newton, en este caso, son las siguientes:
+ 
+\begin{itemize}[label=\textbullet]
+	\item La función no es la más adecuada, ya que no es completamente convexa. Tiene demasiados óptimos locales, y el punto
+	de inicio condiciona mucho hacia dónde se dirige.
+	\item Los puntos de inicio pueden no ser los más adecuados. En este caso, por ejemplo, el punto $(0.1, 0.1)$ tiene un valor
+	de la segunda derivada muy próximo a 0. Por eso, al multiplicar el gradiente por la inversa de la Hessiana, se obtiene un
+	valor muy elevado, lo cuál permite salir de la zona de mínimos y hace que los valores de la función obtenidos sean muy
+	elevados y que solo vaya creciendo.
+	\item El criterio de la segunda derivada no asegura que se consiga converger siempre a un óptimo local. En este caso,
+	ninguno de los puntos consiguió llegar a un óptimo local, a pesar de que el Gradiente Descendente si que consiguió llegar,
+	y que la segunda derivada ofrece una mayor velocidad de convergencia. Lo ideal sería combinar un \textit{learning rate}
+	fijo con la segunda derivada cuando más se acerque al óptimo, para así acelerar la convergencia.
+\end{itemize}
 
 \end{document}
 
