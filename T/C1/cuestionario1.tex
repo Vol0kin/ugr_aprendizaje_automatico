@@ -85,7 +85,14 @@ usar en cada caso. Si una tarea se ajusta a más de un tipo, explicar como y des
 
 \answer
 
-El problema en este caso consiste en clasificar cartas por distrito postal.
+El problema ante el que nos encontramos en este caso consiste clasificar cartas según su distrito postal. Posiblemente
+sea un problema de clasificación donde hayan $k$ clases, una por cada código postal, así que el aprendizaje supervisado puede
+ser la opción más efectiva para determinar a qué clase pertenece una carta.
+
+El conjunto de datos de entrada $\mathcal{X}$ puede ser por ejemplo los datos del destinatario (su dirección, por ejemplo). El
+conjunto de etiquetas $\mathcal{Y}$ que podríamos usar son $k$ etiquetas de números enteros, como por ejemplo $\lbrace 0, 1,
+\dots , k \rbrace$, cada una de las cuáles se asocia con un distrito postal. La función $f$ sería alguna función tal que $f:
+\; \mathcal{X} \mapsto \mathcal{Y}$.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Decidir si un determinado índice del mercado de valores subirá o bajará dentro de un período de tiempo fijado.
@@ -99,7 +106,7 @@ el índice de mercado). Por tanto este problema se puede ver como una clasificac
 En el caso de los datos de entrada $\mathcal{X}$ podríamos utilizar valores del mercado y el tiempo. En el caso de los datos
 de salida o etiquetas $\mathcal{Y}$ podríamos tener las etiquetas $(-1, 1)$, siendo $-1$ el caso de bajar el índice y $1$ el
 de subir. Y por último, $f$ sería una función que relacione a $\mathcal{X}$ y a $\mathcal{Y}$ tal que $f: \; \mathcal{X}
-\mapsto \mathcal{Y}$, como por ejemplo el la función signo, usada en el algoritmo PLA.
+\mapsto \mathcal{Y}$.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Hacer que un dron sea capaz de rodear un obstáculo.
@@ -143,23 +150,130 @@ para una aproximación por diseño? Justificar la decisión.
 	\item Determinar si un vertebrado es mamífero, reptil, ave, anfibio o pez.
 \end{enumerate}
 
+\answer
+
+Este problema parece ser más adecuado para el diseño, ya que si se conocen qué características diferencian a los distintos
+animales, no hace falta aprender nada, solo aplicarlas. Además, por lo general, el problema suele ser bien conocido, con lo
+cuál la mayoría de características son conocidas, y solo haría falta ajustar unos pocos parámetros para distinguir ciertos
+casos.
+
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Determinar si se debe aplicar una campaña de vacunación contra una enfermedad.
 \end{enumerate}
+
+\answer
+
+Este problema parece que puede ser aproximado mejor por diseño que por aprendizaje, ya que es un problema conocido, que 
+es la aplicación de una campaña de vacunas, y solo queremos ajustar algún parámetro, como por ejemplo sería el umbral de
+personas enfermas desde el que se aplicaría. No haría falta aprender todo el modelo, solo ajustar ese dato.
+cumplirse una condición que se aplique.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Determinar perfiles de consumidor en una cadena de supermercados.
 \end{enumerate}
 
+\answer
+
+Para este porblema lo mejor es el aprendizaje, el aprendizaje no supervisado en concreto. No conocemos a priori cuántos
+perfiles hay y como distinguirlos, pero podemos aplicar alguna técnica de aprendizaje no supervisado con el objetivo de
+encontrar patrones que permitan distinguir unos perfiles de otros y ver a cuál pertenece un individuo. 
+
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Determinar el estado anímico de una persona a partir de una foto de su cara.
 \end{enumerate}
+
+\answer
+
+La mejor aproximación que se puede seguir en este caso es el aprendizaje, ya que como tal no conocemos exactamente
+qué detalles de una expresión facial determinan el estado anímico. Si las supiésemos, podríamos simplemente codificar el
+diseño de éstas, pero como no las sabemos, optaremos por aprender de los datos. Se puede seguir alguna técnica de aprendizaje
+supervisado o no supervisado para determinar dichos detalles.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Determinar el ciclo óptimo para las luces de los semáforos en un cruce con mucho tráfico.
 \end{enumerate}
 
+\answer
 
+En este caso, la mejor aproximación que podemos seguir es el aprendizaje, y más concretamente, el aprendizaje por refuerzo.
+Esto se debe a que se puede construir un simulador donde entrenar un semáforo mediante aprendizaje por refuerzo para que
+aprenda cuál sería el ciclo óptimo de luces para un determinado cruce con mucho tráfico. Después, se podría trasladar
+todo lo aprendido al semáforo.
+
+
+\section*{Ejercicio 3}
+\addcontentsline{toc}{section}{Ejercicio 3}
+
+\noindent Construir un problema de \textit{aprendizaje desde datos} para un problema de clasificación de fruta en una
+explotación agraria que produce mangos, papayas y guayabas. Identificar los siguientes elementos formales $\mathcal{X},
+\mathcal{Y}, \mathcal{D}, f$ del problema. Dar una descripción de los mismos que pueda ser usada por un computador.
+¿Considera que en este problema estamos ante un caso de etiquetas con ruido o sin ruido? Justificar las respuestas.
+
+\answer
+
+Vamos a suponer que nos encontramos ante un problema de clasificación, y por tanto, de aprendizaje supervisado. Para construir
+nuestro modelo podemos considerar los siguientes elementos:
+
+\begin{itemize}
+	\item $\mathcal{X}$ sería el vector de características de las frutas. Podríamos considerar características tales como
+	el \textbf{color}, la \textbf{forma}, el \textbf{tamaño} y la \textbf{textura}. 
+	\begin{itemize}
+		\item El \textbf{color} se podría codificar como una categoría, de tal forma que solo pudiese tomar un valor, como 
+		por ejemplo 0 para el verde, 1 para el amarillo y 2 para el verde.
+		\item La \textbf{forma}, al igual que el color, podría tomar un valor categórico, siendo 0 redonda y 1 ovalada.
+		\item El \textbf{tamaño} puede ser también una variable categórica, tomando los valores 0 para pequeño y 1 para
+		grande.
+		\item La \textbf{textura} también puede verse como una variable categórica, pudiendo tomar los valores 0 para
+		lisa y 1 para granulada.		
+	\end{itemize}
+	\item $\mathcal{Y}$ serían los valores de las etiquetas. Podríamos tener 0 para el \textbf{mango}, 1 para la
+	\textbf{papaya} y 2 para la \textbf{guayaba}.
+	\item $\mathcal{D}$ podría ser en este caso un conjunto de vectores de características con sus correspondientes etiquetas,
+	es decir una muestra, con la cuál pordríamos entrenar nuestro modelo. Es muy importante que sea una muestra independiente
+	(un elemento no condiciona a los otros) e idénticamente distribuida (cada elemento de la muestra tenga la misma
+	probabilidad).
+	\item $f$ sería nuestra función objetivo, una función desconocida que permitiese asignar las etiquetas a nuestras
+	entradas, es decir, que $f: \; \mathcal{X} \mapsto \mathcal{Y}$.
+\end{itemize}
+
+En este caso podríamos encontrarnos ante un caso de etiquetas con ruido. Por ejemplo, puede que debido a factores que no
+hayamos considerado a la hora de establecer las características usadas en $\mathcal{X}$ nos encontremos con que hayan dos
+frutas con las mismas características, pero que sin embargo luego se hayan clasificado en distintas clases (como puede ser
+que en algún caso haya habido algúna anomalía durante el crecimiento de una de las frutas y haga que tenga características
+similares a las de una fruta de la otra clase).
+
+\section*{Ejercicio 4}
+\addcontentsline{toc}{section}{Ejercicio 4}
+
+\noindent Suponga una matriz cuadrada A que admita la descomposición A = X\textsuperscript{T}X para alguna matriz X de
+números reales. Establezca una relación entre los valores singulares de las matriz A y los valores singulares de X.
+
+\section*{Ejercicio 5}
+\addcontentsline{toc}{section}{Ejercicio 5}
+
+\noindent
+
+\section*{Ejercicio 6}
+\addcontentsline{toc}{section}{Ejercicio 6}
+
+\section*{Ejercicio 7}
+\addcontentsline{toc}{section}{Ejercicio 7}
+
+\noindent La regla de adaptación de los pesos del Perceptron (\textbf{w}$_{new}$ = \textbf{w}$_{old}$ + $y$\textbf{x}) tiene
+la interesante propiedad de que mueve el vector de pesos en la dirección adecuada para clasificar \textbf{x} de forma
+correcta. Suponga el vector de pesos \textbf{w} de un modelo y un dato \textbf{x}$(t)$ mal clasificado respecto de dicho
+modelo. Probar matematicamente que el movimiento de la regla de adaptación de pesos siempre produce un movimiento de
+\textbf{w} en la dirección correcta para clasificar bien \textbf{x}$(t)$.
+
+
+\section*{Ejercicio 8}
+\addcontentsline{toc}{section}{Ejercicio 8}
+
+\section*{Ejercicio 9}
+\addcontentsline{toc}{section}{Ejercicio 9}
+
+\section*{Ejercicio 10}
+\addcontentsline{toc}{section}{Ejercicio 10}
 
 \newpage
 
