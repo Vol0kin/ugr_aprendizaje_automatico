@@ -8,6 +8,7 @@
 \usepackage[textwidth=390pt]{geometry}		% Anchura de la pagina
 \usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
 \usepackage{enumitem}
+\usepackage{amsmath}
 
 % Configuracion de encabezados y pies de pagina
 \pagestyle{fancy}
@@ -21,6 +22,7 @@
 
 
 \newcommand{\answer}{\noindent\textbf{Solución}}
+\newcommand{\cov}{\text{cov}}
 
 
 \begin{document}
@@ -248,10 +250,77 @@ similares a las de una fruta de la otra clase).
 \noindent Suponga una matriz cuadrada A que admita la descomposición A = X\textsuperscript{T}X para alguna matriz X de
 números reales. Establezca una relación entre los valores singulares de las matriz A y los valores singulares de X.
 
+\answer
+
+Vamos a partir de que la matriz $X$ puede descomponerse en valores singulares de la forma:
+
+\begin{equation}
+\label{eq:SVD}
+	X = UDV^T
+\end{equation}
+
+\noindent donde encontramos que:
+
+\begin{itemize}[label=\textbullet]
+	\item $U$ es una matriz ortogonal, y por tanto, $U^{-1} = U^T$.
+	\item $D$ es una matriz diagonal que contiene los valores singulares de $X$ en su diagonal principal ordenados de mayor
+	a menor.
+	\item $V$ es una matriz ortogonal, de forma que $V^{-1} = V^T$
+\end{itemize}
+
+Al sustituir los valores de $X$ en la descomposición original por la descomposición mostrada en (\ref{eq:SVD}), obtenemos que:
+
+\begin{equation}
+\label{eq:A_SVD}
+	A = X^TX = (UDV^T)^T(UDV^T) = VDU^TUDV^T = VDDV^T = VD^2V^T
+\end{equation}
+
+Por tanto, al haber supuesto que la matriz $A$ se podía descomponer en $X^TX$, podemos suponer que el resultado obtenido en
+(\ref{eq:A_SVD}) se corresponde con la descomposición en valores singulares de $A$. Como hemos partido sustituyendo $X$ por su
+descomposición en valores singulares, y sabiendo que los valores propios de la matriz $X$ están contenidos en $D$, entonces
+podemos decir que los valores propios de $A$ son los de $X$ al cuadrado.
+
 \section*{Ejercicio 5}
 \addcontentsline{toc}{section}{Ejercicio 5}
 
-\noindent
+\noindent Sean \textbf{x} e \textbf{y} dos vectores de características de dimensión $M \times 1$. La expresión
+
+\[ \cov(\mathbf{x}, \mathbf{y}) = \frac{1}{M} \sum_{i = 1}^M(x_i - \overline{x})(y_i - \overline{y})\]
+
+\noindent define la covarianza entre dichos vectores, donde $\overline{\mathcal{z}}$ representa el valor medio de los
+elementos de \textbf{z}. Considere ahora una matriz X cuyas columnas representan vectores de características.
+La matriz de covarianzas asociada a la matriz $\text{X} = (\text{\textbf{x}}_1, \text{\textbf{x}}_2, \dots ,
+\text{\textbf{x}}_N)$ es el conjunto de covarianzas definidas por cada dos de sus vectores columnas. Es decir,
+
+\begin{equation}
+\cov(\mathbf{X})
+=
+\left(
+{
+\begin{array}{cccc}
+	\cov(\mathbf{x}_1,\mathbf{x}_1) & \cov(\mathbf{x}_1,\mathbf{x}_2) & \cdots & \cov(\mathbf{x}_1,\mathbf{x}_N) \\
+	\cov(\mathbf{x}_2,\mathbf{x}_1) & \cov(\mathbf{x}_2,\mathbf{x}_2) & \cdots & \cov(\mathbf{x}_2,\mathbf{x}_N) \\
+	\cdots & \cdots & \cdots & \cdots \\	
+	\cov(\mathbf{x}_N,\mathbf{x}_1) & \cov(\mathbf{x}_N,\mathbf{x}_2) & \cdots & \cov(\mathbf{x}_N,\mathbf{x}_N)
+\end{array}
+}
+\right)
+\end{equation}
+
+
+Sea $\mathbf{1}^T = (1, 1, \dots , 1)$ un vector $M \times 1$ de unos. Mostrar que representan las siguientes expresiones:
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item $E1 = \mathbf{1}\mathbf{1}^T$X
+\end{enumerate}
+
+\answer
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item $E2 = (\text{X} - \frac{1}{M}E1)^T(\text{X} - \frac{1}{M}E1)$
+\end{enumerate}
+
+\answer
 
 \section*{Ejercicio 6}
 \addcontentsline{toc}{section}{Ejercicio 6}
