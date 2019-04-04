@@ -23,6 +23,7 @@
 
 \newcommand{\answer}{\noindent\textbf{Solución}}
 \newcommand{\cov}{\text{cov}}
+\newcommand{\maximum}{\text{max}}
 
 
 \begin{document}
@@ -285,7 +286,10 @@ podemos decir que los valores propios de $A$ son los de $X$ al cuadrado.
 
 \noindent Sean \textbf{x} e \textbf{y} dos vectores de características de dimensión $M \times 1$. La expresión
 
-\[ \cov(\mathbf{x}, \mathbf{y}) = \frac{1}{M} \sum_{i = 1}^M(x_i - \overline{x})(y_i - \overline{y})\]
+\begin{equation}
+	\label{eq:covxy}
+	\cov(\mathbf{x}, \mathbf{y}) = \frac{1}{M} \sum_{i = 1}^M(x_i - \overline{x})(y_i - \overline{y})
+\end{equation}
 
 \noindent define la covarianza entre dichos vectores, donde $\overline{z}$ representa el valor medio de los
 elementos de \textbf{z}. Considere ahora una matriz X cuyas columnas representan vectores de características.
@@ -401,12 +405,26 @@ X_{dev}^T =
 \end{equation}
 
 Al realizar la multiplicación ($X_{dev}^TX_{dev}$), lo que obtenemos en realidad no es nada más ni nada menos que una
-expresión parecida a la covarianza que se puede ver en (\ref{eq:cov}). Es decir, al multiplicar cada fila de  X$_{dev}$ por
-cada columna de X, lo que se obtiene es una sumatoria de $(x_{ij} - x_j)(x_{ji} - x_j)$, para $i \in [1, 2, \dots, M]$ y $j
-\in [1, 2, \dots, N]$ (sabiendo que la matriz X es $M \times N$). Lo único que pasa es que cada elemento está multiplicado por
-$M$, ya que no se ha realizado en ningún momento la división. Por tanto, como $M$ multiplica a cada elemento, se puede sacar
-fuera de esta expresión y dejarlo como un producto de matriz por escalar, pudiendo ahora sí expresar el resultado en función
-de la covarianza. Por tanto, obtenemos que el valor de $E2$ es el siguiente:
+expresión parecida a la covarianza que se puede ver en (\ref{eq:cov}). Es decir, al multiplicar la fila $i$-ésima de 
+X$_{dev}^\text{T}$ por la columna $j$-ésima X$_{dev}$, se tiene que para el elemento $E2_{ij}$ (el resultado de la
+multiplicación anterior):
+
+\begin{equation}
+	E2_{ij} = \sum_{k=1}^M (x_{ik} - \overline{x}_i)(x_{kj} - \overline{x}_j)
+\end{equation}
+
+\noindent para $i, \; j \in [1, 2, \dots, N]$ (en X$_{dev}^\text{T}$ hay $N$ filas porque es una matriz $N \times M$, y en
+X$_{dev}$ hay $N$ columnas porque es una matriz $M \times N$). Lo que pasa es que cada elemento $E2_{ij}$ es una sumatoria,
+pero en ningún momento ha sido dividida entre $M$ para obtener la covarianza. Por eso, para poder expresar el resultado
+anterior en función de la covarianza, podemos suponer que cada $E2_{ij}$ se ha visto multiplicado por $M$, anulando por tanto
+el $\frac{1}{M}$ que se ve en (\ref{eq:covxy}). Así podemos expresar que para cada $E2_{ij}$:
+
+\begin{equation}
+	E2_{ij} = M \cov(\mathbf{x}_i,\mathbf{x}_j)
+\end{equation}
+
+Así que, sabiendo que cada $E_{ij}$ se ve multiplicado por $M$, podemos sacar ese $M$ fuera de la matriz y dejar el resultado
+como producto de una matriz por un escalar, siendo el resultado el siguiente:
 
 \begin{equation}
 	E2 = M \cov(\text{X})
@@ -441,6 +459,10 @@ correcta. Suponga el vector de pesos \textbf{w} de un modelo y un dato \textbf{x
 modelo. Probar matematicamente que el movimiento de la regla de adaptación de pesos siempre produce un movimiento de
 \textbf{w} en la dirección correcta para clasificar bien \textbf{x}$(t)$.
 
+\answer
+
+
+
 
 \section*{Ejercicio 8}
 \addcontentsline{toc}{section}{Ejercicio 8}
@@ -450,6 +472,15 @@ modelo. Probar matematicamente que el movimiento de la regla de adaptación de p
 
 \section*{Ejercicio 10}
 \addcontentsline{toc}{section}{Ejercicio 10}
+
+\noindent Definamos el error en un punto $(\mathbf{x}_n, y_n)$ por
+
+\[\mathbf{e}_n(\mathbf{w}) = \maximum(0, \; -y_n\mathbf{w}^T\mathbf{x}_n)\] 
+
+\noindent Argumentar si con esta función de error el algoritmo PLA pude interpretarse como SGD sobre $\mathbf{e}_n$ con tasa
+de aprendizaje $\nu = 1$.
+
+\answer
 
 \newpage
 
