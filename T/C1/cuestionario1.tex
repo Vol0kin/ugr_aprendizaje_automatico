@@ -287,12 +287,13 @@ podemos decir que los valores propios de $A$ son los de $X$ al cuadrado.
 
 \[ \cov(\mathbf{x}, \mathbf{y}) = \frac{1}{M} \sum_{i = 1}^M(x_i - \overline{x})(y_i - \overline{y})\]
 
-\noindent define la covarianza entre dichos vectores, donde $\overline{\mathcal{z}}$ representa el valor medio de los
+\noindent define la covarianza entre dichos vectores, donde $\overline{z}$ representa el valor medio de los
 elementos de \textbf{z}. Considere ahora una matriz X cuyas columnas representan vectores de características.
 La matriz de covarianzas asociada a la matriz $\text{X} = (\text{\textbf{x}}_1, \text{\textbf{x}}_2, \dots ,
 \text{\textbf{x}}_N)$ es el conjunto de covarianzas definidas por cada dos de sus vectores columnas. Es decir,
 
 \begin{equation}
+\label{eq:cov}
 \cov(\mathbf{X})
 =
 \left(
@@ -316,14 +317,120 @@ Sea $\mathbf{1}^T = (1, 1, \dots , 1)$ un vector $M \times 1$ de unos. Mostrar q
 
 \answer
 
+Sabiendo que $\mathbf{1}$ es un vector $M \times 1$, $\mathbf{1}^T$ es un vector $1 \times M$ y que X es una matriz $M \times
+N$, podemos aplicar la propiedad asociativa para multiplicar $\mathbf{1}\mathbf{1}^T$, con lo cuál obtendríamos una matriz
+$M \times M$ de unos. Por tanto, al multiplicar ahora la matriz de unos por X, como éstas tienen dimensiones $M \times M$ y
+$M \times N$ respectivamente, obtenemos una matriz $M \times N$ en la que todos los elementos de una columna son la suma de
+los elementos de esa columna. Es decir, para la columna $j$-ésima de la matriz resultado (de forma que $j \in [1, 2, \dots ,
+N]$), el elemento $i$-ésimo de esa columna (de manera que $i \in [1, 2, \dots, M]$), sería la suma de todos los elementos de
+la columna $j$-ésima de la matriz X original.  
+
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item $E2 = (\text{X} - \frac{1}{M}E1)^T(\text{X} - \frac{1}{M}E1)$
 \end{enumerate}
 
 \answer
 
+Si comenzamos a operar dentro de los paréntesis, podemos ver que la primera operación que podemos realizar es el producto
+de $E1$ por un escalar.
+
+Como sabemos de antes, $E1$ es una matriz en la que todos los elementos de una columna son la suma de todos los elementos de
+la columna correspondiente en X. Al realizar el producto por un escalar, en este caso $\frac{1}{M}$, realmente estamos
+calculando, para cada elemento de la matriz, la media, ya que como se ha dicho antes, cada elemento de una columna es el
+sumatorio de los $M$ elementos de la misma columna de X. Con lo cuál, ahora cada elemento de una columna contendrá la media
+de la suma de los elementos de la misma columna de X. Llamémos a esta matriz $\overline{X}$.
+
+La siguiente operación que podemos realizar, aun dentro de los paréntesis, es X$- \overline{X}$ (lo que se corresponde con
+X$- \frac{1}{M}E1$). Con esto, lo que obtenemos es la diferencia de cada elemento de X con respecto a la media, es decir
+su desviación con respecto a la media. Esto se puede ver de la siguiente forma:
+
+\begin{equation}
+\begin{split}
+X - \overline{X} &=
+\left(
+{
+\begin{array}{cccc}
+	x_{11} & x_{12} & \cdots & x_{1N} \\
+	x_{21} & x_{22} & \cdots & x_{2N} \\
+	\cdots & \cdots & \cdots & \cdots \\
+	x_{M1} & x_{M2} & \cdots & x_{MN}
+\end{array}
+}
+\right)
+-
+\left(
+{
+\begin{array}{cccc}
+	\overline{x}_{1} & \overline{x}_{2} & \cdots & \overline{x}_{N} \\
+	\overline{x}_{1} & \overline{x}_{2} & \cdots & \overline{x}_{N} \\
+	\cdots & \cdots & \cdots & \cdots \\
+	\overline{x}_{1} & \overline{x}_{2} & \cdots & \overline{x}_{N}
+\end{array}
+}
+\right) \\
+&=
+\left(
+{
+\begin{array}{cccc}
+	x_{11} - \overline{x}_{1} & x_{12} - \overline{x}_{2} & \cdots & x_{1N} - \overline{x}_{N} \\
+	x_{21} - \overline{x}_{1} & x_{22} - \overline{x}_{2} & \cdots & x_{2N} - \overline{x}_{N} \\
+	\cdots & \cdots & \cdots & \cdots \\
+	x_{M1} - \overline{x}_{1} & x_{M2} - \overline{x}_{2} & \cdots & x_{MN} - \overline{x}_{N}
+\end{array}
+}
+\right)
+\end{split}
+\end{equation}
+
+Habiendo calculado esto, ahora solo nos queda calcular el producto. La traspuesta de la matriz que se ha obtenido
+anteriormente es la siguiente (llamemos X$_{dev}$ a esta matriz, para darle un nombre):
+
+\begin{equation}
+\label{eq:x1t}
+X_{dev}^T = 
+\left(
+{
+\begin{array}{cccc}
+	x_{11} - \overline{x}_{1} & x_{21} - \overline{x}_{1} & \cdots & x_{M1} - \overline{x}_{1} \\
+	x_{12} - \overline{x}_{2} & x_{22} - \overline{x}_{2} & \cdots & x_{M2} - \overline{x}_{2} \\
+	\cdots & \cdots & \cdots & \cdots \\
+	x_{1N} - \overline{x}_{N} & x_{2N} - \overline{x}_{N} & \cdots & x_{MN} - \overline{x}_{N}
+\end{array}
+}
+\right)
+\end{equation}
+
+Al realizar la multiplicación ($X_{dev}^TX_{dev}$), lo que obtenemos en realidad no es nada más ni nada menos que una
+expresión parecida a la covarianza que se puede ver en (\ref{eq:cov}). Es decir, al multiplicar cada fila de  X$_{dev}$ por
+cada columna de X, lo que se obtiene es una sumatoria de $(x_{ij} - x_j)(x_{ji} - x_j)$, para $i \in [1, 2, \dots, M]$ y $j
+\in [1, 2, \dots, N]$ (sabiendo que la matriz X es $M \times N$). Lo único que pasa es que cada elemento está multiplicado por
+$M$, ya que no se ha realizado en ningún momento la división. Por tanto, como $M$ multiplica a cada elemento, se puede sacar
+fuera de esta expresión y dejarlo como un producto de matriz por escalar, pudiendo ahora sí expresar el resultado en función
+de la covarianza. Por tanto, obtenemos que el valor de $E2$ es el siguiente:
+
+\begin{equation}
+	E2 = M \cov(\text{X})
+\end{equation}
+
 \section*{Ejercicio 6}
 \addcontentsline{toc}{section}{Ejercicio 6}
+
+\noindent Considerar la matriz \textbf{hat} definida en regresión, Ĥ = X(X$^\text{T}$X)$^{-1}$X$^\text{T}$, donde X es la
+matriz de observaciones de dimensión $N \times (d + 1)$, y X$^\text{T}$X es invertible. Justificar las respuestas.
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item ¿Que representa la matriz Ĥ en un modelo de regresión?
+\end{enumerate}
+
+\answer
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Identifique la propiedad más relevante de dicha matriz en relación con regresión lineal.
+\end{enumerate}
+
+\answer
+
+La propiedad más importante de esta matriz es la idempotencia. Es decir, se da que Ĥ$^2 = $ Ĥ.
 
 \section*{Ejercicio 7}
 \addcontentsline{toc}{section}{Ejercicio 7}
