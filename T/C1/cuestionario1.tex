@@ -512,12 +512,48 @@ lo cuál se puede ver en la siguiente expresión, suponiendo que $y = -1$:
 \noindent Derivar el error $E_{in}$ para mostrar que en regresión logística se verifica:
 
 \[\nabla E_{in}(\mathbf{w}) = -\frac{1}{N} \displaystyle \sum_{n=1}^N \frac{y_n\mathbf{x}_n}{1 +
-e^{y_n\mathbf{w}^T\mathbf{x}}} = \frac{1}{N} \displaystyle \sum_{n=1}^N -y_n \mathbf{x}_n \sigma (y_n\mathbf{w}^T\mathbf{x})\]
+e^{y_n\mathbf{w}^T\mathbf{x}_n}} =
+\frac{1}{N} \displaystyle \sum_{n=1}^N -y_n \mathbf{x}_n \sigma (-y_n\mathbf{w}^T\mathbf{x}_n)
+\]
 
 \noindent Argumentar sobre si un ejemplo mal clasificado contribuye al gradiente más que un ejemplo bien clasificado.
 
 \answer
 
+Partimos de que:
+
+\begin{equation}
+	E_{in}(\textbf{w}) = \frac{1}{N} \displaystyle \sum_{n=0}^N \ln\Big(1 + e^{-y_n\mathbf{w}^T\mathbf{x}_n}\Big)
+\end{equation}
+
+Vamos a calcular la derivada:
+
+
+\begin{align}
+	\nabla E_{in}(\mathbf{w}) &= \frac{\partial}{\partial \mathbf{w}} \bigg( \frac{1}{N}	\displaystyle \sum_{n=0}^N 
+	\ln\Big(1 + e^{-y_n\mathbf{w}^T\mathbf{x}_n}\Big) \bigg) \\
+	&= \frac{1}{N} \displaystyle \sum_{n=0}^N
+	-y_n\mathbf{x}_n \frac{e^{-y_n\mathbf{w}^T\mathbf{x}_n}}{1 + e^{-y_n\mathbf{w}^T\mathbf{x}_n}} \label{eq:log_der}\\ 
+	&= \frac{1}{N} \displaystyle \sum_{n=0}^N 
+	-y_n\mathbf{x}_n \sigma (-y_n\mathbf{w}^T\mathbf{x}_n) \label{eq:sigma}
+\end{align}
+
+Para explicar un poco el proceso, en \eqref{eq:log_der} se ha aplicado la derivada del logaritmo neperiano $\ln(f(x))$,
+que es $\frac{1}{f(x)}f'(x)$. En \eqref{eq:sigma} se ha aplicado la función sigmoide sobre
+$\frac{e^{-y_n\mathbf{w}^T\mathbf{x}_n}}{1 + e^{-y_n\mathbf{w}^T\mathbf{x}_n}}$, sabiendo que
+$\sigma(x) = \frac{e^x}{1 + e^x}$.
+
+Una vez dicho esto, vamos a razonar sobre si un ejemplo mal clasificado contribuye más al gradiente que un ejemplo bien
+clasificado.
+
+Si un ejemplo está bien clasificado, el signo dentro del sigmoide será negativo, con lo cuál el valor de la función sigmoide
+será pequeño, pudiendo ser incluso bastante próximo a 0. Este valor, aún multiplicado por lo que hay fuera de la función
+sigmoide, se seguirá manteniendo pequeño, y por tanto, su contribución al gradiente será muy pequeña o casi despreciable.
+En cambio, si un ejemplo no está bien clasificado, el signo dentro del sigmoide es positivo (se cancela el signo
+negativo con uno de los valores negativos, que pueden ser o bien el valor real o bien el valor predicho), y por tanto, el
+valor que devolverá el sigmoide será grande, incluso puede ser que sea próximo a 1. Este valor, multiplicado por lo que hay
+fuera de la función sigmoide se seguirá manteniendo grande, y por tanto, contriubuirá mucho al gradiente, mucho más de lo
+que lo haría un ejemplo bien clasificado.
 
 \section*{Ejercicio 10}
 \addcontentsline{toc}{section}{Ejercicio 10}
@@ -559,11 +595,11 @@ tiene la función $\maximum$ en función de $y_n$ y en función de $\mathbf{w}^T
 
 De la tabla anterior podemos deducir que, en los casos en los que $y_n$ coincide con $\mathbf{w}^T\mathbf{x}_n$ (cuando la
 etiqueta real se corresponde con la predicha), el máximo será 0, y en caso contrario será 1. Como nuestro objetivo es
-minimizar este error (según el criterio \textit{ERM}), es decir, hacer que sea siempre o casi siempre 0 (depende de si los datos son
-linealmente separables), lo que tenemos que hacer es modificar los valores de $\mathbf{w}$ cada vez que obtengamos un valor
-superior a 0 con nuestra función de error, y en caso contrario, dejar los valores como están. Y de esto es lo que se encargará
-precisamente nuestro SGD. Pero antes de entrar a ver como sería, destripemos nuestra función de error para verla como una
-función por trozos:
+minimizar este error (según el criterio \textit{ERM}), es decir, hacer que sea siempre o casi siempre 0 (depende de si los
+datos son linealmente separables), lo que tenemos que hacer es modificar los valores de $\mathbf{w}$ cada vez que obtengamos
+un valor superior a 0 con nuestra función de error, y en caso contrario, dejar los valores como están. Y de esto es lo que se
+encargará precisamente nuestro SGD. Pero antes de entrar a ver como sería, destripemos nuestra función de error para verla
+como una función por trozos:
 
 \begin{equation}
 \mathbf{e}_n(\mathbf{w}) = 
