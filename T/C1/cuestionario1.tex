@@ -9,11 +9,12 @@
 \usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
 \usepackage{enumitem}
 \usepackage{amsmath}
+\usepackage{stmaryrd}
 
 % Configuracion de encabezados y pies de pagina
 \pagestyle{fancy}
 \lhead{Vladislav Nikolov Vasilev}
-\rhead{Asignatura}
+\rhead{Aprendizaje Automático}
 \lfoot{Grado en Ingeniería Informática}
 \cfoot{}
 \rfoot{\thepage}
@@ -506,14 +507,122 @@ lo cuál se puede ver en la siguiente expresión, suponiendo que $y = -1$:
 \section*{Ejercicio 8}
 \addcontentsline{toc}{section}{Ejercicio 8}
 
+\noindent Sea un problema probabilístico de clasificación binaria con etiquetas $\lbrace 0, 1\rbrace$, es decir,
+$\text{P} (\text{Y} = 1) = h(\mathbf{x})$ y $\text{P} (\text{Y} = 0) = 1 - h(\mathbf{x})$, para una funión $h()$ dependiente
+de la muestra.
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Considere una muestra i.i.d. de tamaño $\text{N}\;(\mathbf{x}_1, \dots, \mathbf{x}_N)$. Mostrar que la función
+	$h$ que maximiza la verosimilitud de la muestra es la misma que minimiza:
+	
+	\[E_{in}(\mathbf{w}) = \sum_{n=1}^N  \llbracket y_n = 1 \rrbracket \ln \frac{1}{h(\mathbf{x}_n)} +
+	\llbracket y_n = 0 \rrbracket \ln \frac{1}{1 - h(\mathbf{x}_n)} \]
+	
+	donde $\llbracket \cdot \rrbracket$ vale 1 o 0 según sea verdad o falso respectivamente la expresión en su interior.
+\end{enumerate}
+
+\answer
+
+Vamos a partir de la expresión del \textit{Maximum Likehood} que viene definida para dos elementos:
+
+\begin{equation}
+	L(\mathbf{w}) = \prod_{n=1}^N \text{P}(y_i \;| \;\mathbf{x}_n) = \prod_{i=1}^N
+	h(\mathbf{x}_n)^{\llbracket y_n = 1 \rrbracket} (1 - h(\mathbf{x}_n))^{\llbracket y_n = 0 \rrbracket}
+\end{equation}
+
+Para intentar llegar a una expresión parecida a la que se pide obtener (la cuál sigue el criterio \textit{ERM},
+\textit{Empirical Risk Minimization}), podemos aplicar el logaritmo neperiano sobre la expresión del \textit{ML},
+aprovechando la propiedades de que el logaritmo de un producto es la suma de logaritmos y que $\ln(a^b) = b \ln(a)$:
+
+\begin{equation}
+\begin{split}
+	\ln \Big( L(\mathbf{w}) \Big) &= \ln \Bigg( \prod_{n=1}^N
+	h(\mathbf{x}_n)^{\llbracket y_n = 1 \rrbracket} (1 - h(\mathbf{x}_n))^{\llbracket y_n = 0 \rrbracket} \Bigg) \\
+	&= \sum_{n=1}^N \ln \Big(
+	h(\mathbf{x}_n)^{\llbracket y_n = 1 \rrbracket} (1 - h(\mathbf{x}_n))^{\llbracket y_n = 0 \rrbracket} \Big) \\
+	&= \sum_{n=1}^N
+	\ln (h(\mathbf{x}_n)^{\llbracket y_n = 1 \rrbracket}) + \ln \Big( (1 - h(\mathbf{x}_n))^{\llbracket y_n = 0 \rrbracket}
+	\Big) \\
+	&= \sum_{n=1}^N
+	\ln \llbracket y_n = 1 \rrbracket (h(\mathbf{x}_n) + \llbracket y_n = 0 \rrbracket \ln \Big( 1 - h(\mathbf{x}_n) \Big)
+\end{split}
+\end{equation}
+
+La expresión que hemos obtenido de desarrollar es muy parecida a la que se había especificado en el enunciado, solo que
+en este caso $h()$ no está invertido. Intuitivamente, podemos afirmar que la expresión del \textit{ERM} (la expresión del
+$E_{in}$) es la inversa de la del \textit{ML}. Esto se puede ver de forma intuitiva de la siguiente forma: como en el
+\textit{ML}, si se maximiza la expresión significa que $h()$ tiene que tener un valor muy grande para que al aplicarle el
+logaritmo después se siga manteniendo grande; y como $h()$ tiene un valor muy grande en esta expresión, si miramos lo que
+sucede en la expresión del \textit{ERM} nos encontramos que en este caso, como $h()$ está invertido, el valor del logaritmo
+será muy pequeño. Con lo cuál, maximizar la expresión del \textit{ML} es equivalente a minimizar la expresión del
+\textit{ERM}.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Para el caso $h(x) = \sigma (\mathbf{w}^T\mathbf{x})$ mostrar que minimizar el error de la muestra en el apartado
+	anterior es equivalente a minimizar el error muestral
+	
+	\[E_{in}(\mathbf{w}) = \frac{1}{N} \sum_{n=1}^N \ln \bigg( 1 + e^{-y_n\mathbf{w}^T\mathbf{x}_n} \bigg)\]
+\end{enumerate}
+
+\answer
+
+Para facilitar el trabajo, tenemos que transformar las etiquetas a $\lbrace -1, 1 \rbrace$, de forma que
+$\text{P} (\text{Y} = 1) = h(\mathbf{x})$ y $\text{P} (\text{Y} = -1) = 1 - h(\mathbf{x})$. Entonces, partiendo de la
+expresión de $E_{in}$ proporcionada en el anterior apartado, tenemos que:
+
+\begin{equation}
+\begin{split}
+	E_{in}(\mathbf{w}) &= \sum_{n=1}^N  \llbracket y_n = 1 \rrbracket \ln \frac{1}{h(\mathbf{x}_n)} +
+	\llbracket y_n = 0 \rrbracket \ln \frac{1}{1 - h(\mathbf{x}_n)} \\
+	&= \sum_{n=1}^N  \llbracket y_n = 1 \rrbracket \ln \frac{1}{h(\mathbf{x}_n)} +
+	\llbracket y_n = -1 \rrbracket \ln \frac{1}{1 - h(\mathbf{x}_n)}
+\end{split}
+\end{equation}
+
+Ahora, sustituyendo $h(\mathbf{x}_n)$ por $\sigma (\mathbf{w}^T\mathbf{x})$, obtenemos que:
+
+\begin{align}
+	E_{in}(\mathbf{w}) &= \sum_{n=1}^N  \llbracket y_n = 1 \rrbracket \ln \frac{1}{\sigma (\mathbf{w}^T\mathbf{x}_n)} +
+	\llbracket y_n = -1 \rrbracket \ln \frac{1}{1 - \sigma (\mathbf{w}^T\mathbf{x}_n)} \\
+	&= \sum_{n=1}^N  \llbracket y_n = 1 \rrbracket \ln \frac{1}{\sigma (\mathbf{w}^T\mathbf{x}_n)} +
+	\llbracket y_n = -1 \rrbracket \ln \frac{1}{\sigma (-\mathbf{w}^T\mathbf{x}_n)} \label{sigma_prop} \\
+	&= \sum_{n=1}^N  \ln \frac{1}{\sigma (y_n \mathbf{w}^T\mathbf{x}_n)} \label{sigma_y}
+\end{align}
+
+En \eqref{sigma_prop} se ha aplicado una propiedad de la función sigmoide con tal de simplificar el denominador de uno de
+los sumandos, que es: $\sigma (-x) = 1 - \sigma (x)$. Y, en \eqref{sigma_y} se han juntado los dos sumandos en uno solo, ya
+que lo único diferente es el signo de la función sigmoide, la cuál depende de $y_n$, así que se han juntado añadiendo $y_n$
+a la expresión, que es lo que nos dará el signo.
+
+Finalmente, ya solo nos queda sustituir la función sigmoide por su expresión original, es decir,
+$\sigma (y_n \mathbf{w}^T\mathbf{x}_n) = \frac{e^{y_n \mathbf{w}^T\mathbf{x}_n}}{1 + e^{y_n \mathbf{w}^T\mathbf{x}_n}}$, lo
+cuál nos proporcionaría el siguiente resultado:
+
+\begin{equation}
+\begin{split}
+	E_{in}(\mathbf{w}) &= \sum_{n=1}^N \ln \frac{1}{\sigma (y_n \mathbf{w}^T\mathbf{x}_n)} \\
+	&= \sum_{n=1}^N \ln \frac{1}{\frac{e^{y_n \mathbf{w}^T\mathbf{x}_n}}{1 + e^{y_n \mathbf{w}^T\mathbf{x}_n}}} \\
+	&= \sum_{n=1}^N \ln \bigg( \frac{1 + e^{y_n \mathbf{w}^T\mathbf{x}_n}}{e^{y_n \mathbf{w}^T\mathbf{x}_n}} \bigg) \\
+	&= \sum_{n=1}^N \ln \bigg(1 + \frac{1}{e^{y_n \mathbf{w}^T\mathbf{x}_n}} \bigg) \\
+	&= \sum_{n=1}^N \ln \Big(1 + e^{-y_n \mathbf{w}^T\mathbf{x}_n} \Big) \\
+\end{split}
+\end{equation}
+
+Esta expresión obtenida es muy parecida a la que se ha presentado en el enunciado, con la única diferencia de que el sumatorio
+no está multiplicado por $\frac{1}{N}$. Este hecho, sin embargo, no influye mucho en la minimización del error muestral,
+ya que el objetivo es minimizar ese sumatorio, y mutliplicarlo o dividirlo por algo no va a cambiar el hecho de que
+se haya llegado al valor mínimo en ese sumatorio. Por tanto, al desarrollar la expresión del error en la muestra, hemos
+obtenido la expresión del error muestral, y por tanto, podemos afirmar que minimizar el primero será igual que minimizar el
+segundo.
+
 \section*{Ejercicio 9}
 \addcontentsline{toc}{section}{Ejercicio 9}
 
 \noindent Derivar el error $E_{in}$ para mostrar que en regresión logística se verifica:
 
-\[\nabla E_{in}(\mathbf{w}) = -\frac{1}{N} \displaystyle \sum_{n=1}^N \frac{y_n\mathbf{x}_n}{1 +
+\[\nabla E_{in}(\mathbf{w}) = -\frac{1}{N} \sum_{n=1}^N \frac{y_n\mathbf{x}_n}{1 +
 e^{y_n\mathbf{w}^T\mathbf{x}_n}} =
-\frac{1}{N} \displaystyle \sum_{n=1}^N -y_n \mathbf{x}_n \sigma (-y_n\mathbf{w}^T\mathbf{x}_n)
+\frac{1}{N} \sum_{n=1}^N -y_n \mathbf{x}_n \sigma (-y_n\mathbf{w}^T\mathbf{x}_n)
 \]
 
 \noindent Argumentar sobre si un ejemplo mal clasificado contribuye al gradiente más que un ejemplo bien clasificado.
@@ -562,7 +671,7 @@ que lo haría un ejemplo bien clasificado.
 
 \[\mathbf{e}_n(\mathbf{w}) = \maximum(0, \; -y_n\mathbf{w}^T\mathbf{x}_n)\] 
 
-\noindent Argumentar si con esta función de error el algoritmo PLA pude interpretarse como SGD sobre $\mathbf{e}_n$ con tasa
+\noindent Argumentar si con esta función de error el algoritmo PLA puede interpretarse como SGD sobre $\mathbf{e}_n$ con tasa
 de aprendizaje $\nu = 1$.
 
 \answer
