@@ -89,14 +89,14 @@ usar en cada caso. Si una tarea se ajusta a más de un tipo, explicar como y des
 
 \answer
 
-El problema ante el que nos encontramos en este caso consiste clasificar cartas según su distrito postal. Posiblemente
-sea un problema de clasificación donde hayan $k$ clases, una por cada código postal, así que el aprendizaje supervisado puede
-ser la opción más efectiva para determinar a qué clase pertenece una carta.
+El problema ante el que nos encontramos en este caso consiste en agrupar las cartas por una característica determinada,
+en este caso por código postal. Como tal, no se quiere aprender nada, si no que simplemente se quieren agrupar los datos
+por un criterio. Así que, para resolver este problema, podemos utilizar aprendizaje no supervisado.
 
-El conjunto de datos de entrada $\mathcal{X}$ puede ser por ejemplo los datos del destinatario (su dirección, por ejemplo). El
-conjunto de etiquetas $\mathcal{Y}$ que podríamos usar son $k$ etiquetas de números enteros, como por ejemplo $\lbrace 0, 1,
-\dots , k \rbrace$, cada una de las cuáles se asocia con un distrito postal. La función $f$ sería alguna función tal que $f:
-\; \mathcal{X} \mapsto \mathcal{Y}$.
+El conjunto de datos de entrada $\mathcal{X}$ puede ser por ejemplo los datos del destinatario (su dirección o código postal,
+por ejemplo). El conjunto de etiquetas $\mathcal{Y}$ no existe como tal en el aprendizaje no supervisado, es desconocido.
+La función $f$ sería alguna de función distribución de probabilidad condicional que queremos aproximar, que nos
+permita agrupar los datos.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Decidir si un determinado índice del mercado de valores subirá o bajará dentro de un período de tiempo fijado.
@@ -137,12 +137,12 @@ recompensa por transicionar de estado, etc.
 \answer
 
 En este caso el problema consiste en encontrar patrones o características que permitan agrupar los datos (agrupar los perros
-según su raza, para saber cuántas hay). Por tanto, al no saber a priori cómo se clasifican los datos, el aprendizaje no
-supervisado sería la mejor opción para descubrir como se agrupan éstos.
+según su raza, para saber cuántas hay); es decir, encontrar características que permitan dividir los perros según su raza. Por
+tanto, como queremos aprender esas características, deberíamos utilizar el aprendizaje supervisado, y al acabar de clasificar
+nuestros datos, ver cuántas categorías están presentes (cuántas razas de perros hemos obtenido de los datos).
 
-En este caso, $\mathcal{X}$ son los datos de los que dispondríamos (las fotos de los perros), $\mathcal{Y}$ sería desconocido
-ya que no sabemos qué clases hay (no sabemos las razas de perros) y $f$ sería una función de distribución condicional que se
-quiere aprender con tal de intentar agrupar los datos.
+En este caso, $\mathcal{X}$ son los datos de los que dispondríamos (las fotos de los perros), $\mathcal{Y}$ serían
+razas de perros, y $f$ sería una función tal que $f: \; \mathcal{X} \mapsto \mathcal{Y}$.
 
 \section*{Ejercicio 2}
 \addcontentsline{toc}{section}{Ejercicio 2}
@@ -200,9 +200,10 @@ supervisado o no supervisado para determinar dichos detalles.
 \answer
 
 En este caso, la mejor aproximación que podemos seguir es el aprendizaje, y más concretamente, el aprendizaje por refuerzo.
-Esto se debe a que se puede construir un simulador donde entrenar un semáforo mediante aprendizaje por refuerzo para que
-aprenda cuál sería el ciclo óptimo de luces para un determinado cruce con mucho tráfico. Después, se podría trasladar
-todo lo aprendido al semáforo.
+Esto se debe a que el entorno de un semáforo es caótico, e intentar hacerlo por diseño sería demasiado difícil, ya
+que habría que considerar todos los posibles casos que se pueden dar. Para hacer este aprendizaje, se puede construir un
+simulador donde entrenar un semáforo mediante aprendizaje por refuerzo para que aprenda cuál sería el ciclo óptimo de luces
+para un determinado cruce con mucho tráfico. Después, se podría trasladar todo lo aprendido al semáforo. 
 
 
 \section*{Ejercicio 3}
@@ -443,13 +444,44 @@ matriz de observaciones de dimensión $N \times (d + 1)$, y X$^\text{T}$X es inv
 
 \answer
 
+La matriz Ĥ es una matriz de proyección que transforma el vector de valores reales $y$ al vector de valores predichos
+\textbf{ŷ}. Dicho de otra forma, es una matriz que pondera cada uno de los valores reales que se tienen para ver cómo
+influyen en obtener un nuevo valor predicho.
+
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Identifique la propiedad más relevante de dicha matriz en relación con regresión lineal.
 \end{enumerate}
 
 \answer
 
-La propiedad más importante de esta matriz es la idempotencia. Es decir, se da que Ĥ$^2 = $ Ĥ.
+La propiedad más importante de esta matriz es la idempotencia. Es decir, se da que Ĥ$^2 = $ Ĥ. Esto se puede ver de la
+siguiente forma:
+
+\begin{equation}
+\begin{split}
+	\text{Ĥ}^2 &= X(X^TX)^{-1}X^TX(X^TX)^{-1}X^T \\
+	&= X(X^TX)^{-1}(X^TX)(X^TX)^{-1}X^T \\
+	&= X(X^TX)^{-1}X^T = \text{Ĥ}
+\end{split}
+\end{equation}
+
+Esta propiedad se puede ver de la siguiente forma. Si se intenta calcular \textbf{ŷ}, es decir, las etiquetas
+predichas, a partir los $y$ reales, es decir, las etiquetas reales, tenemos que:
+
+\begin{equation}
+	\textbf{\text{ŷ}} = \text{Ĥ} y
+\end{equation}
+
+Al volver a intentar predecir \textbf{ŷ} con los valores que acabamos de predecir, obtenemos, aplicando la propiedad de
+la idempotencia:
+
+\begin{equation}
+	\textbf{\text{ŷ}} = \text{Ĥ} \textbf{\text{ŷ}} = \text{Ĥ} \text{Ĥ} y = \text{Ĥ}^2 y = \text{Ĥ} y
+\end{equation}
+
+Con lo cuál, de aquí podemos deducir que si predecimos unos valores con los valores reales y luego intentamos volver a
+predecir con esos valores predichos, el resultado será exactamente el mismo, independientemente de la cantidad de datos
+que tengamos y del número de veces que hagamos esta predicción.
 
 \section*{Ejercicio 7}
 \addcontentsline{toc}{section}{Ejercicio 7}
@@ -729,12 +761,10 @@ Y por tanto, una vez visto esto, calculemos el gradiente de la función de error
 \begin{equation}
 \nabla \mathbf{e}_n(\mathbf{w}) = 
 \begin{cases}
-	0 & -y_n\mathbf{w}^T\mathbf{x}_n < 0 \\
+	0 & -y_n\mathbf{w}^T\mathbf{x}_n \leq 0 \\
 	-y_n\mathbf{x}_n & -y_n\mathbf{w}^T\mathbf{x}_n > 0
 \end{cases}
 \end{equation}
-
-Hay que darse cuenta que la derivada no está definida en 0, ya que los extremos del intervalo no coinciden.
 
 Una vez dicho todo esto, veamos como quedaría la expresión del SGD, sabiendo que $\nu = 1$:
 
@@ -756,11 +786,39 @@ $\mathbf{e}_n(\mathbf{w}) = \maximum(0, \; -y_n\mathbf{w}^T\mathbf{x}_n)$.
 
 \newpage
 
-\begin{thebibliography}{5}
+\begin{thebibliography}{10}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\bibitem{ulearning}
+Wikipedia. \textit{Aprendizaje no supervisado}
+\\\url{https://en.wikipedia.org/wiki/Unsupervised_learning}
+
+\bibitem{rlearning}
+Wikipedia. \textit{Aprendizaje por refuerzo}
+\\\url{https://en.wikipedia.org/wiki/Reinforcement_learning}
+
+\bibitem{markov}
+Wikipedia. \textit{Proceso de decisión de Markov}
+\\\url{https://en.wikipedia.org/wiki/Markov_decision_process}
+
+\bibitem{svd}
+Descomposición en valores singulares, \textit{Wikipedia}
+\\\url{https://en.wikipedia.org/wiki/Singular_value_decomposition}
+
+\bibitem{perceptron}
+Perceptron Learning Algorithm: A Graphical Explanation Of Why It Works. \textit{Akshay Chandra Lagandula}.
+\url{https://towardsdatascience.com/perceptron-learning-algorithm-d5db0deab975}
+
+\bibitem{neural}
+Neural Networks: A Systematic Introduction. \textit{Raúl Rojas}. Capítulo 4, 85-57.
+\\\url{https://page.mi.fu-berlin.de/rojas/neural/neuron.pdf}
+
+\bibitem{projection}
+Wikipedia. \textit{Matriz de proyección}
+\\\url{https://en.wikipedia.org/wiki/Projection_matrix}
+
+\bibitem{regression}
+Juan Vilar. \textit{Teoría de Regresión Lineal}. Sección 8.3.
+\\\url{http://dm.udc.es/asignaturas/estadistica2/sec8_3.html}
 
 \end{thebibliography}
 
