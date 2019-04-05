@@ -269,7 +269,7 @@ Vamos a partir de que la matriz $X$ puede descomponerse en valores singulares de
 	\item $V$ es una matriz ortogonal, de forma que $V^{-1} = V^T$
 \end{itemize}
 
-Al sustituir los valores de $X$ en la descomposición original por la descomposición mostrada en (\ref{eq:SVD}), obtenemos que:
+Al sustituir los valores de $X$ en la descomposición original por la descomposición mostrada en \eqref{eq:SVD}, obtenemos que:
 
 \begin{equation}
 \label{eq:A_SVD}
@@ -277,7 +277,7 @@ Al sustituir los valores de $X$ en la descomposición original por la descomposi
 \end{equation}
 
 Por tanto, al haber supuesto que la matriz $A$ se podía descomponer en $X^TX$, podemos suponer que el resultado obtenido en
-(\ref{eq:A_SVD}) se corresponde con la descomposición en valores singulares de $A$. Como hemos partido sustituyendo $X$ por su
+\eqref{eq:A_SVD} se corresponde con la descomposición en valores singulares de $A$. Como hemos partido sustituyendo $X$ por su
 descomposición en valores singulares, y sabiendo que los valores propios de la matriz $X$ están contenidos en $D$, entonces
 podemos decir que los valores propios de $A$ son los de $X$ al cuadrado.
 
@@ -405,7 +405,7 @@ X_{dev}^T =
 \end{equation}
 
 Al realizar la multiplicación ($X_{dev}^TX_{dev}$), lo que obtenemos en realidad no es nada más ni nada menos que una
-expresión parecida a la covarianza que se puede ver en (\ref{eq:cov}). Es decir, al multiplicar la fila $i$-ésima de 
+expresión parecida a la covarianza que se puede ver en \eqref{eq:cov}. Es decir, al multiplicar la fila $i$-ésima de 
 X$_{dev}^\text{T}$ por la columna $j$-ésima X$_{dev}$, se tiene que para el elemento $E2_{ij}$ (el resultado de la
 multiplicación anterior):
 
@@ -417,7 +417,7 @@ multiplicación anterior):
 X$_{dev}$ hay $N$ columnas porque es una matriz $M \times N$). Lo que pasa es que cada elemento $E2_{ij}$ es una sumatoria,
 pero en ningún momento ha sido dividida entre $M$ para obtener la covarianza. Por eso, para poder expresar el resultado
 anterior en función de la covarianza, podemos suponer que cada $E2_{ij}$ se ha visto multiplicado por $M$, anulando por tanto
-el $\frac{1}{M}$ que se ve en (\ref{eq:covxy}). Así podemos expresar que para cada $E2_{ij}$:
+el $\frac{1}{M}$ que se ve en \eqref{eq:covxy}. Así podemos expresar que para cada $E2_{ij}$:
 
 \begin{equation}
 	E2_{ij} = M \cov(\mathbf{x}_i,\mathbf{x}_j)
@@ -453,7 +453,7 @@ La propiedad más importante de esta matriz es la idempotencia. Es decir, se da 
 \section*{Ejercicio 7}
 \addcontentsline{toc}{section}{Ejercicio 7}
 
-\noindent La regla de adaptación de los pesos del Perceptron (\textbf{w}$_{new}$ = \textbf{w}$_{old}$ + $y$\textbf{x}) tiene
+\noindent La regla de adaptación de los pesos del Perceptron ($\mathbf{w}_{new} = \mathbf{w}_{old} + y\mathbf{x}$) tiene
 la interesante propiedad de que mueve el vector de pesos en la dirección adecuada para clasificar \textbf{x} de forma
 correcta. Suponga el vector de pesos \textbf{w} de un modelo y un dato \textbf{x}$(t)$ mal clasificado respecto de dicho
 modelo. Probar matematicamente que el movimiento de la regla de adaptación de pesos siempre produce un movimiento de
@@ -461,14 +461,63 @@ modelo. Probar matematicamente que el movimiento de la regla de adaptación de p
 
 \answer
 
+Vamos a empezar diciendo que el vector \textbf{w} es normal al hiperplano que separa los puntos de una clase con los de
+otra.
 
+La actualización de \textbf{w} depende del producto escalar $\mathbf{w^\textbf{T}\mathbf{x}}$, que es el que nos da la
+el $y$ predicho. Este producto se puede expresar de la siguiente forma:
 
+\begin{equation}
+\label{eq:dot_product}
+	\mathbf{w^\textbf{T}\mathbf{x}} = |\mathbf{w}| |\mathbf{x}| \cos(\alpha)
+\end{equation}
+
+\noindent siendo $\alpha$ el ángulo entre los dos vectores. Este ángulo es importante, porque nos indica las direcciones en las que apuntan $\mathbf{w}$ y $\mathbf{x}$, además de cómo tendría que variar el vector $\mathbf{w}$ en caso de que no se
+clasificase bien un elemento. Vamos a proceder a ver dos ejemplos para entender mejor esto, explicando además la importancia
+de $\alpha$ en cada caso.
+
+Por ejemplo, si se da que $\mathbf{w^\textbf{T}\mathbf{x}} < 0$ y $\mathbf{x}(t) = 1$, nos encontramos ante un caso en el que
+no se ha clasificado correctamente el dato. De esto podemos deducir que en la expresión mostrada en \eqref{eq:dot_product} se
+da que $\alpha > 90º$ (los módulos de los vectores son siempre positivos y lo único que puede ser
+negativo es el coseno, y éste es negativo cuando tiene valores entre $90º$ y  $270º$). Por tanto, con esto, podemos determinar
+que la dirección en la que apunta $\mathbf{w}$ es contraria a la que apunta $\mathbf{x}$, así que lo que hay que hacer
+es modificar la dirección de $\mathbf{w}$ sumándole el vector $\mathbf{x}$ con el objetivo de acercar $\mathbf{w}$ a
+$\mathbf{x}$. Con esto, lo que conseguimos es que $\alpha$ se haga menor a $90º$ para así poder hacer que los dos vectores
+apunten en la misma dirección, y que por tanto, su producto escalar sea positivo. 
+
+La siguiente expresión muestra la actualización que se debería hacer en este caso, suponiendo que $y = 1$:
+
+\begin{equation}
+	\mathbf{w}_{new} = \mathbf{w}_{old} + y\mathbf{x} = \mathbf{w}_{old} + \mathbf{x}
+\end{equation}
+
+Miremos ahora el ejemplo contrario, en el que nos encontramos que $\mathbf{w^\textbf{T}\mathbf{x}} > 0$ y
+$\mathbf{x}(t) = -1$. Como en el anterior caso, nos encontramos que no hemos predicho bien la etiqueta. En este caso, lo que
+sucede es que el producto escalar es positivo, y debería haber sido negativo. Por tanto, podemos determinar que
+$\alpha < 90º$, así que nuestro objetivo es hacer que $\alpha > 90º$ con el objetivo de que la siguiente vez el producto
+escalar sea negativo. Por tanto, lo que hay que hacer es alejar $\mathbf{w}$ de $\mathbf{x}$; dicho de otra forma, hacer que 
+$\mathbf{w}$ y $\mathbf{x}$ apunten en direcciones contrarias. Esto se puede conseguir restándole $\mathbf{x}$ y $\mathbf{w}$,
+lo cuál se puede ver en la siguiente expresión, suponiendo que $y = -1$:
+
+\begin{equation}
+	\mathbf{w}_{new} = \mathbf{w}_{old} + y\mathbf{x} = \mathbf{w}_{old} - \mathbf{x}
+\end{equation}
 
 \section*{Ejercicio 8}
 \addcontentsline{toc}{section}{Ejercicio 8}
 
 \section*{Ejercicio 9}
 \addcontentsline{toc}{section}{Ejercicio 9}
+
+\noindent Derivar el error $E_{in}$ para mostrar que en regresión logística se verifica:
+
+\[\nabla E_{in}(\mathbf{w}) = -\frac{1}{N} \displaystyle \sum_{n=1}^N \frac{y_n\mathbf{x}_n}{1 +
+e^{y_n\mathbf{w}^T\mathbf{x}}} = \frac{1}{N} \displaystyle \sum_{n=1}^N -y_n \mathbf{x}_n \sigma (y_n\mathbf{w}^T\mathbf{x})\]
+
+\noindent Argumentar sobre si un ejemplo mal clasificado contribuye al gradiente más que un ejemplo bien clasificado.
+
+\answer
+
 
 \section*{Ejercicio 10}
 \addcontentsline{toc}{section}{Ejercicio 10}
@@ -481,6 +530,84 @@ modelo. Probar matematicamente que el movimiento de la regla de adaptación de p
 de aprendizaje $\nu = 1$.
 
 \answer
+
+Vamos a partir de la expresión del algoritmo PLA para actualizar $\mathbf{w}$, la cual es la siguiente:
+
+\begin{itemize}
+	\item $\mathbf{w}_{t+1} = \mathbf{w}_{t}$, si la predicción realizada es correcta. Es decir, los pesos no se ven
+	modificados.
+	\item $\mathbf{w}_{t+1} = \mathbf{w}_{t} + y\mathbf{x}$, si la predicción realizada es errónea, es decir, si el signo
+	predicho no se corresponde con el signo real. El proceso se ha descrito en ejercicios anteriores.
+	especificados anteriormente.
+\end{itemize}
+
+El objetivo es demostrar que el algoritmo PLA es equivalente al SGD con $\nu = 1$. Para eso, vamos a comenzar estudiando
+nuestra función de error, para ver como funciona. En la tabla que se muestar a continuación se puede ver qué valores
+tiene la función $\maximum$ en función de $y_n$ y en función de $\mathbf{w}^T\mathbf{x}_n$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c}
+	$y_n$ & $\mathbf{w}^T\mathbf{x}_n$ & $\maximum(0, \; -y_n\mathbf{w}^T\mathbf{x}_n)$ \\ \hline
+	$1$  & $1$		   & $\maximum(0, -1) = 0$ \\
+	$-1$ & $-1$        & $\maximum(0, -1) = 0$  \\
+	$-1$ & $1$         & $\maximum(0, 1) = 1$   \\
+	$1$  & $-1$        & $\maximum(0, 1) = 1$                  
+\end{tabular}
+\caption{Valor de la función max en función de las entradas.}
+\end{table}
+
+De la tabla anterior podemos deducir que, en los casos en los que $y_n$ coincide con $\mathbf{w}^T\mathbf{x}_n$ (cuando la
+etiqueta real se corresponde con la predicha), el máximo será 0, y en caso contrario será 1. Como nuestro objetivo es
+minimizar este error (según el criterio \textit{ERM}), es decir, hacer que sea siempre o casi siempre 0 (depende de si los datos son
+linealmente separables), lo que tenemos que hacer es modificar los valores de $\mathbf{w}$ cada vez que obtengamos un valor
+superior a 0 con nuestra función de error, y en caso contrario, dejar los valores como están. Y de esto es lo que se encargará
+precisamente nuestro SGD. Pero antes de entrar a ver como sería, destripemos nuestra función de error para verla como una
+función por trozos:
+
+\begin{equation}
+\mathbf{e}_n(\mathbf{w}) = 
+\begin{cases}
+	0 & -y_n\mathbf{w}^T\mathbf{x}_n \leq 0 \\
+	-y_n\mathbf{w}^T\mathbf{x}_n & -y_n\mathbf{w}^T\mathbf{x}_n > 0
+\end{cases}
+\end{equation}
+
+Ahora, veamos como sería la expresión del SGD con esta función:
+
+\begin{equation}
+	\mathbf{w}_{t+1} = \mathbf{w}_{t} - \nu \nabla \mathbf{e}_n(\mathbf{w})
+\end{equation}
+
+Y por tanto, una vez visto esto, calculemos el gradiente de la función de error, para cada trozo de la función original:
+
+\begin{equation}
+\nabla \mathbf{e}_n(\mathbf{w}) = 
+\begin{cases}
+	0 & -y_n\mathbf{w}^T\mathbf{x}_n < 0 \\
+	-y_n\mathbf{x}_n & -y_n\mathbf{w}^T\mathbf{x}_n > 0
+\end{cases}
+\end{equation}
+
+Hay que darse cuenta que la derivada no está definida en 0, ya que los extremos del intervalo no coinciden.
+
+Una vez dicho todo esto, veamos como quedaría la expresión del SGD, sabiendo que $\nu = 1$:
+
+\begin{itemize}
+	\item En el caso de que las etiquetas coincidan, tendremos que:
+	\begin{equation}
+		\mathbf{w}_{t+1} = \mathbf{w}_{t}
+	\end{equation}
+	\item En el caso de que las etiquetas no coincidan, tendremos que la expresión del SGD es:
+	\begin{equation}
+		\mathbf{w}_{t+1} = \mathbf{w}_{t} + y\mathbf{x}
+	\end{equation}
+\end{itemize}
+
+Estas expresiones obtenidas son, ni más ni menos, que las reglas que teníamos para actualizar el PLA. Con lo cuál, podemos ver
+que, con esta función de error, y con un $\nu = 1$, el SGD funciona exactamente igual que el algoritmo PLA. Es más, el
+algoritmo PLA es un caso particular del SGD, en el que $\nu = 1$ y la función de error es
+$\mathbf{e}_n(\mathbf{w}) = \maximum(0, \; -y_n\mathbf{w}^T\mathbf{x}_n)$.
 
 \newpage
 
