@@ -89,7 +89,6 @@ def insert_noise(y, ratio=0.1):
     
     # Obtener número de elementos sobre los que aplicar ruido
     # (redondear)
-    N = y.shape[0]
     noisy_pos = round(np.where(y == 1)[0].shape[0] * ratio)
     noisy_neg = round(np.where(y == -1)[0].shape[0] * ratio)
     
@@ -98,6 +97,25 @@ def insert_noise(y, ratio=0.1):
     
     y[pos_index] = -1
     y[neg_index] = 1
+
+###############################################################################
+# Ejercicio 1.3
+
+# Función del primer apartado
+def f1(x, y):
+    return (x - 10) ** 2 + (y - 20) ** 2 - 400
+
+# Función del segundo apartado
+def f2(x, y):
+    return 0.5 * (x + 10) ** 2 + (y - 20) ** 2 - 400
+
+# Función del tercer apartado
+def f3(x, y):
+    return 0.5 * (x - 10) ** 2 - (y + 20) ** 2 - 400
+
+# Función del cuarto apartado
+def f4(x, y):
+    return y - 20 * x ** 2  - 5 * x  + 3
 
 ###############################################################################
 ###############################################################################
