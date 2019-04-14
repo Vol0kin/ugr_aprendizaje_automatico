@@ -102,20 +102,83 @@ def insert_noise(y, ratio=0.1):
 # Ejercicio 1.3
 
 # Función del primer apartado
-def f1(x, y):
-    return (x - 10) ** 2 + (y - 20) ** 2 - 400
+def f1(X):
+    return (X[:, 0] - 10) ** 2 + (X[:, 1] - 20) ** 2 - 400
 
 # Función del segundo apartado
-def f2(x, y):
-    return 0.5 * (x + 10) ** 2 + (y - 20) ** 2 - 400
+def f2(X):
+    return 0.5 * (X[:, 0] + 10) ** 2 + (X[:, 1] - 20) ** 2 - 400
 
 # Función del tercer apartado
-def f3(x, y):
-    return 0.5 * (x - 10) ** 2 - (y + 20) ** 2 - 400
+def f3(X):
+    return 0.5 * (X[:, 0] - 10) ** 2 - (X[:, 1] + 20) ** 2 - 400
 
 # Función del cuarto apartado
-def f4(x, y):
-    return y - 20 * x ** 2  - 5 * x  + 3
+def f4(X):
+    return X[:, 1] - 20 * X[:, 0] ** 2  - 5 * X[:, 0]  + 3
+
+# Funcion proporcionada para mostrar las graficas
+def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y axis'):
+    #Preparar datos
+    min_xy = X.min(axis=0)
+    max_xy = X.max(axis=0)
+    border_xy = (max_xy-min_xy)*0.01
+    
+    #Generar grid de predicciones
+    xx, yy = np.mgrid[min_xy[0]-border_xy[0]:max_xy[0]+border_xy[0]+0.001:border_xy[0], 
+                      min_xy[1]-border_xy[1]:max_xy[1]+border_xy[1]+0.001:border_xy[1]]
+    grid = np.c_[xx.ravel(), yy.ravel(), np.ones_like(xx).ravel()]
+    pred_y = fz(grid)
+    # pred_y[(pred_y>-1) & (pred_y<1)]
+    pred_y = np.clip(pred_y, -1, 1).reshape(xx.shape)
+    
+    #Plot
+    f, ax = plt.subplots(figsize=(8, 6))
+    contour = ax.contourf(xx, yy, pred_y, 50, cmap='RdBu',vmin=-1, vmax=1)
+    ax_c = f.colorbar(contour)
+    ax_c.set_label('$f(x, y)$')
+    ax_c.set_ticks([-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1])
+    ax.scatter(X[:, 0], X[:, 1], c=y, s=50, linewidth=2, 
+                cmap="RdYlBu", edgecolor='white')
+    
+    XX, YY = np.meshgrid(np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]),np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]))
+    positions = np.vstack([XX.ravel(), YY.ravel()])
+    ax.contour(XX,YY,fz(positions.T).reshape(X.shape[0],X.shape[0]),[0], colors='black')
+    
+    ax.set(
+       xlim=(min_xy[0]-border_xy[0], max_xy[0]+border_xy[0]), 
+       ylim=(min_xy[1]-border_xy[1], max_xy[1]+border_xy[1]),
+       xlabel=xaxis, ylabel=yaxis)
+    plt.title(title)
+    plt.show()
+
+def error_rate_func(x, y, func):
+    """
+    Función para calcular los ratios de acierto y error al predecir un conjunto
+    de puntos x mediante una función func, con respecto de los valores reales y
+    
+    :param x: Puntos que se usarán para predecir
+    :param y: Etiquetas reales de los puntos
+    :param func: Función con la que se predecirán los puntos
+    
+    :return Devuelve el ratio de puntos predichos correctamente y el ratio de
+            puntos predichos erróneamente
+    """
+    
+    # Predecir los puntos
+    predicted_y = func(x)
+    
+    # Hacer que los valores predichos estén en el rango (-1, 1)
+    predicted_y = np.clip(predicted_y, -1, 1)
+    
+    return np.mean(predicted_y == y), np.mean(predicted_y != y) 
+
+###############################################################################
+# Ejercicio 2.1
+
+# Función para ajustar un clasificador basado en el algoritmo PLA
+def adjust_PLA(X, y, max_iter, initial_values):
+    return None
 
 ###############################################################################
 ###############################################################################
@@ -200,7 +263,8 @@ print('Ratio de error: {}'.format(error))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
-# 1.2.b. Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, junto con la recta usada para ello
+# 1.2.b. Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, 
+#        junto con la recta usada para ello
 # Array con 10% de indices aleatorios para introducir ruido
 
 insert_noise(y)
@@ -219,7 +283,7 @@ plt.plot([-50, 50], [-50 * a + b, 50 * a + b], 'k-')
 plt.legend()
 plt.xlabel('$x$ axis')
 plt.ylabel('$y$ axis')
-plt.title(r'Uniform values in $[-50, 50] \times [-50, 50]$ square and classification line')
+plt.title(r'Uniform values in $[-50, 50] \times [-50, 50]$ square with noise')
 plt.show()
 
 # Obtener ratios de acierto y error
@@ -236,46 +300,41 @@ input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 ###############################################################################
 
-# EJERCICIO 1.3: Supongamos ahora que las siguientes funciones definen la frontera de clasificación de los puntos de la muestra en lugar de una recta
+# EJERCICIO 1.3: Supongamos ahora que las siguientes funciones definen la frontera
+# de clasificación de los puntos de la muestra en lugar de una recta
 
-def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y axis'):
-    #Preparar datos
-    min_xy = X.min(axis=0)
-    max_xy = X.max(axis=0)
-    border_xy = (max_xy-min_xy)*0.01
-    
-    #Generar grid de predicciones
-    xx, yy = np.mgrid[min_xy[0]-border_xy[0]:max_xy[0]+border_xy[0]+0.001:border_xy[0], 
-                      min_xy[1]-border_xy[1]:max_xy[1]+border_xy[1]+0.001:border_xy[1]]
-    grid = np.c_[xx.ravel(), yy.ravel(), np.ones_like(xx).ravel()]
-    pred_y = fz(grid)
-    # pred_y[(pred_y>-1) & (pred_y<1)]
-    pred_y = np.clip(pred_y, -1, 1).reshape(xx.shape)
-    
-    #Plot
-    f, ax = plt.subplots(figsize=(8, 6))
-    contour = ax.contourf(xx, yy, pred_y, 50, cmap='RdBu',vmin=-1, vmax=1)
-    ax_c = f.colorbar(contour)
-    ax_c.set_label('$f(x, y)$')
-    ax_c.set_ticks([-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1])
-    ax.scatter(X[:, 0], X[:, 1], c=y, s=50, linewidth=2, 
-                cmap="RdYlBu", edgecolor='white')
-    
-    XX, YY = np.meshgrid(np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]),np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]))
-    positions = np.vstack([XX.ravel(), YY.ravel()])
-    ax.contour(XX,YY,fz(positions.T).reshape(X.shape[0],X.shape[0]),[0], colors='black')
-    
-    ax.set(
-       xlim=(min_xy[0]-border_xy[0], max_xy[0]+border_xy[0]), 
-       ylim=(min_xy[1]-border_xy[1], max_xy[1]+border_xy[1]),
-       xlabel=xaxis, ylabel=yaxis)
-    plt.title(title)
-    plt.show()
-    
-    
-#CODIGO DEL ESTUDIANTE
-
+# Mostrar para f1 el ratio de puntos bien/mal clasificados junto con la
+# representación gráfica de la función y los puntos
+accuracy, error = error_rate_func(x, y, f1)
+plot_datos_cuad(x, y, f1)
+print('Ratio de aciertos: {}'.format(accuracy))
+print('Ratio de error: {}'.format(error))
 input("\n--- Pulsar tecla para continuar ---\n")
+
+# Mostrar para f2 el ratio de puntos bien/mal clasificados junto con la
+# representación gráfica de la función y los puntos
+accuracy, error = error_rate_func(x, y, f2)
+plot_datos_cuad(x, y, f2)
+print('Ratio de aciertos: {}'.format(accuracy))
+print('Ratio de error: {}'.format(error))
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# Mostrar para f3 el ratio de puntos bien/mal clasificados junto con la
+# representación gráfica de la función y los puntos
+accuracy, error = error_rate_func(x, y, f3)
+plot_datos_cuad(x, y, f3)
+print('Ratio de aciertos: {}'.format(accuracy))
+print('Ratio de error: {}'.format(error))
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# Mostrar para f4 el ratio de puntos bien/mal clasificados junto con la
+# representación gráfica de la función y los puntos
+accuracy, error = error_rate_func(x, y, f4)
+plot_datos_cuad(x, y, f4)
+print('Ratio de aciertos: {}'.format(accuracy))
+print('Ratio de error: {}'.format(error))
+input("\n--- Pulsar tecla para continuar ---\n")
+
 
 ###############################################################################
 ###############################################################################
