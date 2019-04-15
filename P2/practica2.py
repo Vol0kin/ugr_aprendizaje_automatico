@@ -141,7 +141,8 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     ax.scatter(X[:, 0], X[:, 1], c=y, s=50, linewidth=2, 
                 cmap="RdYlBu", edgecolor='white')
     
-    XX, YY = np.meshgrid(np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]),np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]))
+    XX, YY = np.meshgrid(np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]),
+                         np.linspace(round(min(min_xy)), round(max(max_xy)),X.shape[0]))
     positions = np.vstack([XX.ravel(), YY.ravel()])
     ax.contour(XX,YY,fz(positions.T).reshape(X.shape[0],X.shape[0]),[0], colors='black')
     
@@ -177,8 +178,27 @@ def error_rate_func(x, y, func):
 # Ejercicio 2.1
 
 # Función para ajustar un clasificador basado en el algoritmo PLA
-def adjust_PLA(X, y, max_iter, initial_values):
-    return None
+def adjust_PLA(data, label, max_iter, initial_values):
+    w = np.copy(initial_values)
+    convergence = False
+    epoch = 0
+    
+    while not convergence:
+        convergence = True
+        epoch += 1
+        
+        for x, y in zip(data, label):
+            predicted_y = signo(w.dot(x.reshape(-1, 1)))
+            
+            if predicted_y != y:
+                w += y * x
+                convergence = False  
+        
+        if epoch == max_iter:
+            break
+            
+    
+    return w, epoch
 
 ###############################################################################
 ###############################################################################
@@ -188,6 +208,7 @@ def adjust_PLA(X, y, max_iter, initial_values):
 
 
 # EJERCICIO 1.1: Dibujar una gráfica con la nube de puntos de salida correspondiente
+print('Ejercicio 1.1\n')
 
 x = simula_unif(50, 2, [-50,50])
 
@@ -218,6 +239,7 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 
 # EJERCICIO 1.2: Dibujar una gráfica con la nube de puntos de salida correspondiente
+print('Ejercicio 1.2a\n')
 
 # Simular 50 puntos uniformemente distribuidos en el cuadrado [-50, 50] x [-50, 50]
 x = simula_unif(50, 2, [-50, 50])
@@ -265,15 +287,19 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 # 1.2.b. Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, 
 #        junto con la recta usada para ello
-# Array con 10% de indices aleatorios para introducir ruido
 
-insert_noise(y)
+print('Ejercicio 1.2b\n')
+
+# Array con 10% de indices aleatorios para introducir ruido
+y_noisy = np.copy(y)
+
+insert_noise(y_noisy)
 
 # Pintar puntos
 plt.clf()
 
 for l in labels:
-    index = np.where(y == l)
+    index = np.where(y_noisy == l)
     plt.scatter(x[index, 0], x[index, 1], c=color_dict[l], label='Group {}'.format(l))
 
 # Pintar recta
@@ -287,7 +313,7 @@ plt.title(r'Uniform values in $[-50, 50] \times [-50, 50]$ square with noise')
 plt.show()
 
 # Obtener ratios de acierto y error
-accuracy, error = error_rate(x, y, a, b)
+accuracy, error = error_rate(x, y_noisy, a, b)
 
 print('Ratio de aciertos: {}'.format(accuracy))
 print('Ratio de error: {}'.format(error))
@@ -303,34 +329,37 @@ input("\n--- Pulsar tecla para continuar ---\n")
 # EJERCICIO 1.3: Supongamos ahora que las siguientes funciones definen la frontera
 # de clasificación de los puntos de la muestra en lugar de una recta
 
+print('Ejercicio 1.3\n')
+
+
 # Mostrar para f1 el ratio de puntos bien/mal clasificados junto con la
 # representación gráfica de la función y los puntos
-accuracy, error = error_rate_func(x, y, f1)
-plot_datos_cuad(x, y, f1)
+accuracy, error = error_rate_func(x, y_noisy, f1)
+plot_datos_cuad(x, y_noisy, f1)
 print('Ratio de aciertos: {}'.format(accuracy))
 print('Ratio de error: {}'.format(error))
 input("\n--- Pulsar tecla para continuar ---\n")
 
 # Mostrar para f2 el ratio de puntos bien/mal clasificados junto con la
 # representación gráfica de la función y los puntos
-accuracy, error = error_rate_func(x, y, f2)
-plot_datos_cuad(x, y, f2)
+accuracy, error = error_rate_func(x, y_noisy, f2)
+plot_datos_cuad(x, y_noisy, f2)
 print('Ratio de aciertos: {}'.format(accuracy))
 print('Ratio de error: {}'.format(error))
 input("\n--- Pulsar tecla para continuar ---\n")
 
 # Mostrar para f3 el ratio de puntos bien/mal clasificados junto con la
 # representación gráfica de la función y los puntos
-accuracy, error = error_rate_func(x, y, f3)
-plot_datos_cuad(x, y, f3)
+accuracy, error = error_rate_func(x, y_noisy, f3)
+plot_datos_cuad(x, y_noisy, f3)
 print('Ratio de aciertos: {}'.format(accuracy))
 print('Ratio de error: {}'.format(error))
 input("\n--- Pulsar tecla para continuar ---\n")
 
 # Mostrar para f4 el ratio de puntos bien/mal clasificados junto con la
 # representación gráfica de la función y los puntos
-accuracy, error = error_rate_func(x, y, f4)
-plot_datos_cuad(x, y, f4)
+accuracy, error = error_rate_func(x, y_noisy, f4)
+plot_datos_cuad(x, y_noisy, f4)
 print('Ratio de aciertos: {}'.format(accuracy))
 print('Ratio de error: {}'.format(error))
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -341,28 +370,88 @@ input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 
 # EJERCICIO 2.1: ALGORITMO PERCEPTRON
+print('Ejercicio 2.1a\n')
 
-def ajusta_PLA(datos, label, max_iter, vini):
-    #CODIGO DEL ESTUDIANTE
-    
-    return None  
+# Crear el conjunto de datos añadiendo una columna con unos a los x
+data = np.c_[np.ones((x.shape[0], 1), dtype=np.float64), x]
 
-#CODIGO DEL ESTUDIANTE
+# Crear array de zeros
+zeros = np.array([0.0, 0.0, 0.0])
 
-# Random initializations
+# Inicializar la lista que contendrá las iteraciones
 iterations = []
-for i in range(0,10):
-    #CODIGO DEL ESTUDIANTE
-    print()    
 
-print('Valor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
+print('Algoritmo PLA con w_0 = [0.0, 0.0, 0.0]\n')
+
+# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar las iteraciones
+for i in range(0,10):
+    w, iter = adjust_PLA(data, y, 10000, zeros)
+    iterations.append(iter)
+    print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))    
+
+# Mostrar media de iteraiones
+print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
+# Inicializar la lista que contendrá las iteraciones
+iterations = []
+
+print('Algoritmo PLA con w_0 aleatorio\n')
+
+# Lanzar el algoritmo PLA con w aleatorio y guardar las iteraciones
+for i in range(0,10):
+    # Generar w_0
+    initial_w = simula_unif(3, 1, [0.0, 1.0]).reshape(-1,)
+    
+    w, iter = adjust_PLA(data, y, 10000, initial_w)
+    iterations.append(iter)
+    print('w_0 = {}'.format(initial_w))
+    print('Valor w: {} \tNum. iteraciones: {}\n'.format(w, iter))    
+
+# Mostrar media de iteraiones
+print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+###############################################################################
+print('Ejercicio 2.1b\n')
+
+# Inicializar la lista que contendrá las iteraciones
+iterations = []
+
+print('Algoritmo PLA con w_0 = [0.0, 0.0, 0.0] y datos con ruido\n')
+
+# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar las iteraciones
 # Ahora con los datos del ejercicio 1.2.b
+for i in range(0,10):
+    w, iter = adjust_PLA(data, y_noisy, 10000, zeros)
+    iterations.append(iter)
+    print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))    
 
-#CODIGO DEL ESTUDIANTE
+# Mostrar media de iteraiones
+print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
 
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# Inicializar la lista que contendrá las iteraciones
+iterations = []
+
+print('Algoritmo PLA con w_0 aleatorio y datos con ruido\n')
+
+# Lanzar el algoritmo PLA con w aleatorio y guardar las iteraciones
+# Ahora con los datos del ejercicio 1.2.b
+for i in range(0,10):
+    # Generar w_0
+    initial_w = simula_unif(3, 1, [0.0, 1.0]).reshape(-1,)
+    
+    w, iter = adjust_PLA(data, y_noisy, 10000, initial_w)
+    iterations.append(iter)
+    print('w_0 = {}'.format(initial_w))
+    print('Valor w: {} \tNum. iteraciones: {}\n'.format(w, iter))    
+
+# Mostrar media de iteraiones
+print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
