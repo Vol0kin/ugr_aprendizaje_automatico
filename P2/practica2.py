@@ -86,7 +86,13 @@ def error_rate(x, y, a, b):
     return np.mean(y == predicted_y), np.mean(y != predicted_y)
 
 def insert_noise(y, ratio=0.1):
+    """
+    Función para insertar ruido en una muestra de forma proporcional en cada
+    clase.
     
+    :param y: Etiquetas sobre las que insertar ruido
+    :param ratio: Ratio de elementos de cada clase que modificar
+    """
     # Obtener número de elementos sobre los que aplicar ruido
     # (redondear)
     noisy_pos = round(np.where(y == 1)[0].shape[0] * ratio)
@@ -179,6 +185,19 @@ def error_rate_func(x, y, func):
 
 # Función para ajustar un clasificador basado en el algoritmo PLA
 def adjust_PLA(data, label, max_iter, initial_values):
+    """
+    Implementación del PLA para ajustar una serie de pesos
+    para un perceptrón
+    
+    :param data: Conjunto de datos con los que entrenar el perceptrón
+    :param label: Conjunto de etiquetas, una por cada grupo de características
+    :param max_iter: Número máximo de iteraciones (épocas) que hace el PLA
+                     (limitar el número de iteraciones en caso de que no converja)
+    :param initial_values: Valores iniciales de w
+    
+    :return Devuelve los pesos obtenidos (w) junto con el número de épocas
+            que ha tardado en converger (epoch)
+    """
     w = np.copy(initial_values)
     convergence = False
     epoch = 0
@@ -199,6 +218,62 @@ def adjust_PLA(data, label, max_iter, initial_values):
             
     
     return w, epoch
+
+###############################################################################
+# Ejercicio 2.2
+
+# Función gradiente del sigmoide
+def gradient_sigmoid(x, y, w):
+    return -(y * x)/(1 + np.exp(y * w.dot(x.reshape(-1,))))
+
+# Función para ajustar un clasificador basado en regresión lineal mediante
+# el algoritmo SGD
+def sgdRL(data, labels, initial_w, threshold=0.01, lr=0.01):
+    """
+    Función que calcula unos pesos para la Regresión Logística mediante
+    el Gradiente Descendente Estocástico
+    
+    :param data: Conjunto de datos
+    :param labels: Conjunto de etiquetas
+    :param initial_w: Valores iniciales de w
+    :param threshold: Límite de las diferencias entre los w de dos épocas con
+                      el que parar
+    :param lr: Ratio de aprendizaje
+    
+    :return Devuelve un vector de pesos (w)
+    """
+    # Copiar el w inicial, los datos y las etiquetas
+    w = np.copy(initial_w)
+    x_data = np.copy(data)
+    y_data = np.copy(labels)
+    
+    # Obtener número de elementos
+    N = x_data.shape[0]
+    
+    # Establecer una diferencia inicial entre w_(t-1) y w_t
+    delta = np.inf
+    
+    # Mientras la diferencia sea superior al umbral, iterar
+    # sobre las distintas épocas
+    while delta > threshold:
+        # Crear una nueva permutación y aplicarla a los datos
+        # para generar una nueva época
+        indexes = np.random.permutation(N)
+        x_data = x_data[indexes, :]
+        y_data = y_data[indexes]
+        
+        # Guardar w_(t-1)
+        prev_w = np.copy(w)
+        
+        # Actualizar w con la nueva época
+        for x, y in zip(x_data, y_data):
+            w = w - lr * gradient_sigmoid(x, y, w)
+        
+        # Comprobar el nuevo delta
+        delta = np.linalg.norm(prev_w - w)
+    
+    return w.reshape(-1,)
+
 
 ###############################################################################
 ###############################################################################
@@ -460,15 +535,84 @@ input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 
 # EJERCICIO 3: REGRESIÓN LOGÍSTICA CON STOCHASTIC GRADIENT DESCENT
+print('Ejercicio 2.2\n')
 
-def sgdRL():
-    #CODIGO DEL ESTUDIANTE
+# Fijamos la semilla
+np.random.seed(2)
 
-    return w
+# Simular 100 puntos 2D de forma uniforme en el rango [0, 2]
+x_train = simula_unif(100, 2, [0.0, 2.0])
 
+# Simular una recta en el rango [0, 2] y calcular sus coeficientes
+a, b = simula_recta([0.0, 2.0])
 
+# Inicializar las etiquetas a una nueva lista
+y_train = []
 
-#CODIGO DEL ESTUDIANTE
+# Recorrer los valores de x_train y generar los valores de las etiquetas
+# utilizando la recta de clasificación
+for value in x_train:
+    y_train.append(f(value[0], value[1], a, b))
+
+# Convertir la lista de etiquetas a array
+y_train = np.array(y_train)
+
+# Obtener los valores únicos de las etiquetas
+labels = np.unique(y_train)
+
+# Visualización de los datos generados para el problema
+
+# Limpiar la ventana
+plt.clf()
+
+# Pintar los puntos según su clase
+for l in labels:
+    index = np.where(y_train == l)
+    plt.scatter(x_train[index, 0], x_train[index, 1], c=color_dict[l], label='Group {}'.format(l))
+
+# Pintar recta
+plt.plot([0.0, 2.0], [b, 2.0 * a + b], 'k-')
+
+# Añadir leyendas, títuloy nombres a los ejes
+plt.title(r'Points generetaed by uniform distribution in $[0, 2] \times [0, 2]$ square with classification line')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.legend()
+
+# Mostrar la gráfica
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+# Crear los datos añadiendo una columna de unos al principio
+x_train = np.c_[np.ones((x_train.shape[0], 1), dtype=np.float64), x_train]
+
+# Calcular el w con error = 0.01 y eta = 0.01
+w = sgdRL(x_train, y_train, zeros)
+
+# Visualización de los resultados obtenidos
+
+# Limpiar la ventana
+plt.clf()
+
+# Pintar los puntos según su clase
+for l in labels:
+    index = np.where(y_train == l)
+    plt.scatter(x_train[index, 1], x_train[index, 2], c=color_dict[l], label='Group {}'.format(l))
+
+# Pintar recta
+plt.plot([0.0, 2.0], [-w[0] / w[2], (-w[0] - 2.0 * w[1]) / w[2]], 'k-')
+
+# Añadir leyendas, títuloy nombres a los ejes
+plt.title(r'Points generetaed by uniform distribution in $[0, 2] \times [0, 2]$ square with logistic regression line')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.legend()
+
+# Mostrar la gráfica
+plt.show()
+
+# Añadir información sobre error
 
 input("\n--- Pulsar tecla para continuar ---\n")
     
