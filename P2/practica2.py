@@ -615,7 +615,40 @@ plt.show()
 # Añadir información sobre error
 
 input("\n--- Pulsar tecla para continuar ---\n")
-    
+
+# Generar 2500 puntos en una distribucion normal en el rango [0, 2]
+x_test = simula_unif(2500, 2, [0.0, 2.0])
+
+# Inicializar las etiquetas de test a una nueva lista
+y_test = []
+
+# Recorrer los valores de x_train y generar los valores de las etiquetas
+# utilizando la recta de clasificación
+for value in x_test:
+    y_test.append(f(value[0], value[1], a, b))
+
+
+# Visualización de los resultados obtenidos
+
+# Limpiar la ventana
+plt.clf()
+
+# Pintar los puntos según su clase
+for l in labels:
+    index = np.where(y_test == l)
+    plt.scatter(x_test[index, 0], x_test[index, 1], c=color_dict[l], label='Group {}'.format(l))
+
+# Pintar recta
+plt.plot([0.0, 2.0], [-w[0] / w[2], (-w[0] - 2.0 * w[1]) / w[2]], 'k-')
+
+# Añadir leyendas, títuloy nombres a los ejes
+plt.title(r'Points generetaed by uniform distribution in $[0, 2] \times [0, 2]$ square with logistic regression line')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.legend()
+
+# Mostrar la gráfica
+plt.show()
 
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
