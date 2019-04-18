@@ -222,6 +222,28 @@ def adjust_PLA(data, label, max_iter, initial_values):
 ###############################################################################
 # Ejercicio 2.2
 
+def error_func(data, labels, w):
+    
+    predicted_labels = []
+    
+    for x, y in zip(data, labels):
+        predicted_prob = sigmoid(x, y, w) 
+        
+        if predicted_prob >= 0.5:
+            predicted_labels.append(1.0)
+        else:
+            predicted_labels.append(-1.0)
+        
+    
+    return np.mean(labels == np.asarray(predicted_labels))
+        
+        
+    
+
+# Función sigmoide
+def sigmoid(x, y, w):
+    return 1 / (1 + np.exp(-y * w.dot(x.reshape(-1, 1))))
+
 # Función gradiente del sigmoide
 def gradient_sigmoid(x, y, w):
     return -(y * x)/(1 + np.exp(y * w.dot(x.reshape(-1,))))
@@ -613,11 +635,14 @@ plt.legend()
 plt.show()
 
 # Añadir información sobre error
+e_in = error_func(x_train, y_train, w)
+print('E_in = {}'.format(e_in))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
 # Generar 2500 puntos en una distribucion normal en el rango [0, 2]
 x_test = simula_unif(2500, 2, [0.0, 2.0])
+x_test = np.c_[np.ones((x_test.shape[0], 1), dtype=np.float64), x_test]
 
 # Inicializar las etiquetas de test a una nueva lista
 y_test = []
@@ -625,7 +650,7 @@ y_test = []
 # Recorrer los valores de x_train y generar los valores de las etiquetas
 # utilizando la recta de clasificación
 for value in x_test:
-    y_test.append(f(value[0], value[1], a, b))
+    y_test.append(f(value[1], value[2], a, b))
 
 
 # Visualización de los resultados obtenidos
@@ -636,7 +661,7 @@ plt.clf()
 # Pintar los puntos según su clase
 for l in labels:
     index = np.where(y_test == l)
-    plt.scatter(x_test[index, 0], x_test[index, 1], c=color_dict[l], label='Group {}'.format(l))
+    plt.scatter(x_test[index, 1], x_test[index, 2], c=color_dict[l], label='Group {}'.format(l))
 
 # Pintar recta
 plt.plot([0.0, 2.0], [-w[0] / w[2], (-w[0] - 2.0 * w[1]) / w[2]], 'k-')
@@ -650,6 +675,8 @@ plt.legend()
 # Mostrar la gráfica
 plt.show()
 
+e_in = error_func(x_test, y_test, w)
+print('E_in = {}'.format(e_in))
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
 # usando para ello un número suficientemente grande de nuevas muestras (>999).
