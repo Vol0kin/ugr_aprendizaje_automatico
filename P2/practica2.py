@@ -223,26 +223,22 @@ def adjust_PLA(data, label, max_iter, initial_values):
 # Ejercicio 2.2
 
 def error_func(data, labels, w):
+    """
+    Función para calcular el error en un conjunto de datos.
     
-    predicted_labels = []
+    :param data: Conjunto de datos
+    :param labels: Conjunto de etiquetas
+    :param w: Vector de pesos
+    
+    :return Devuelve el error
+    """
+    N = data.shape[0]
+    error = 0.0
     
     for x, y in zip(data, labels):
-        predicted_prob = sigmoid(x, y, w) 
+        error += np.log(1 + np.exp(-y * w.dot(x.reshape(-1, 1))))
         
-        if predicted_prob >= 0.5:
-            predicted_labels.append(1.0)
-        else:
-            predicted_labels.append(-1.0)
-        
-    
-    return np.mean(labels == np.asarray(predicted_labels))
-        
-        
-    
-
-# Función sigmoide
-def sigmoid(x, y, w):
-    return 1 / (1 + np.exp(-y * w.dot(x.reshape(-1, 1))))
+    return error[0] / N
 
 # Función gradiente del sigmoide
 def gradient_sigmoid(x, y, w):
@@ -634,7 +630,7 @@ plt.legend()
 # Mostrar la gráfica
 plt.show()
 
-# Añadir información sobre error
+# Mostrar información sobre E_in
 e_in = error_func(x_train, y_train, w)
 print('E_in = {}'.format(e_in))
 
@@ -675,8 +671,9 @@ plt.legend()
 # Mostrar la gráfica
 plt.show()
 
-e_in = error_func(x_test, y_test, w)
-print('E_in = {}'.format(e_in))
+# Mostrar información sobre E_out
+e_out = error_func(x_test, y_test, w)
+print('E_out = {}'.format(e_out))
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
 # usando para ello un número suficientemente grande de nuevas muestras (>999).
