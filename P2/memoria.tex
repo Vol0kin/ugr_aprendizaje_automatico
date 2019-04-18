@@ -1,0 +1,113 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[spanish]{babel}					% Utilizar español
+\usepackage[utf8]{inputenc}					% Caracteres UTF-8
+\usepackage{graphicx}						% Imagenes
+\usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
+\usepackage{fancyhdr}						% Modificar encabezados y pies de pagina
+\usepackage{float}							% Insertar figuras
+\usepackage[textwidth=390pt]{geometry}		% Anchura de la pagina
+\usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+
+% Configuracion de encabezados y pies de pagina
+\pagestyle{fancy}
+\lhead{Vladislav Nikolov Vasilev}
+\rhead{Asignatura}
+\lfoot{Grado en Ingeniería Informática}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}		% Linea cabeza de pagina
+\renewcommand{\footrulewidth}{0.4pt}		% Linea pie de pagina
+
+\begin{document}
+\pagenumbering{gobble}
+
+% Pagina de titulo
+\begin{titlepage}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\includegraphics[scale=0.5]{img/ugr.png}\\
+
+\textsc{\Large Aprendizaje Automático\\[0.2cm]}
+\textsc{GRADO EN INGENIERÍA INFORMÁTICA}\\[1cm]
+
+\noindent\rule[-1ex]{\textwidth}{1pt}\\[1.5ex]
+\textsc{{\Huge PRÁCTICA 2\\[0.5ex]}}
+\textsc{{\Large Programación\\}}
+\noindent\rule[-1ex]{\textwidth}{2pt}\\[3.5ex]
+
+\end{minipage}
+
+\vspace{0.5cm}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\textbf{Autor}\\ {Vladislav Nikolov Vasilev}\\[2.5ex]
+\textbf{Rama}\\ {Computación y Sistemas Inteligentes}\\[2.5ex]
+\vspace{0.3cm}
+
+\includegraphics[scale=0.3]{img/etsiit.jpeg}
+
+\vspace{0.7cm}
+\textsc{Escuela Técnica Superior de Ingenierías Informática y de Telecomunicación}\\
+\vspace{1cm}
+\textsc{Curso 2018-2019}
+\end{minipage}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\tableofcontents
+\thispagestyle{empty}				% No usar estilo en la pagina de indice
+
+\newpage
+
+\setlength{\parskip}{1em}
+
+\section{\textsc{Ejercicio sobre la complejidad de H y el ruido}}
+En este ejercicio debemos aprender la dificultad que introduce la aparición de ruido en las
+etiquetas a la hora de elegir la clase de funciones más adecuada. Haremos uso de tres funciones
+ya programadas:
+
+\begin{itemize}
+	\item $simula\_unif(N, dim, rango)$, que calcula una lista de N vectores de dimensión $dim$.
+	Cada vector contiene $dim$ números aleatorios uniformes en el intervalo $rango$.
+	\item $simula\_gaus(N, dim, sigma)$, que calcula una lista de longitud N de vectores de
+	dimensión $dim$, donde cada posición del vector contiene un número aleatorio extraido de una
+	distribucción Gaussiana de media 0 y varianza dada, para cada dimension, por la posición
+	del vector $sigma$.
+	\item $simula\_recta(intervalo)$, que simula de forma aleatoria los parámetros, $v = (a, b)$
+	de una recta, $y = ax + b$, que corta al cuadrado $[-50, 50] \times [-50, 50]$.
+\end{itemize}
+
+\subsection*{Apartado 1}
+\addcontentsline{toc}{subsection}{Apartado 1}
+
+Dibujar una gráfica con la nube de puntos de salida correspondiente.
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Considere $N = 50$, $dim = 2$, $rango = [-50, +50]$ con $simula_unif(N, dim, rango)$.
+\end{enumerate}
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Considere $N = 50$, $dim = 2$ y $sigma = [5, 7]$ con $simula_gaus(N, dim, sigma)$.
+\end{enumerate}
+
+
+\newpage
+
+\begin{thebibliography}{5}
+
+\bibitem{nombre-referencia}
+Texto referencia
+\\\url{https://url.referencia.com}
+
+\end{thebibliography}
+
+\end{document}
+
