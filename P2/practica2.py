@@ -630,56 +630,42 @@ plt.legend()
 # Mostrar la gráfica
 plt.show()
 
-# Mostrar información sobre E_in
+# Mostrar información sobre Ein
 e_in = error_func(x_train, y_train, w)
-print('E_in = {}'.format(e_in))
+print('Ein = {}'.format(e_in))
 
 input("\n--- Pulsar tecla para continuar ---\n")
-
-# Generar 2500 puntos en una distribucion normal en el rango [0, 2]
-x_test = simula_unif(2500, 2, [0.0, 2.0])
-x_test = np.c_[np.ones((x_test.shape[0], 1), dtype=np.float64), x_test]
-
-# Inicializar las etiquetas de test a una nueva lista
-y_test = []
-
-# Recorrer los valores de x_train y generar los valores de las etiquetas
-# utilizando la recta de clasificación
-for value in x_test:
-    y_test.append(f(value[1], value[2], a, b))
-
-
-# Visualización de los resultados obtenidos
-
-# Limpiar la ventana
-plt.clf()
-
-# Pintar los puntos según su clase
-for l in labels:
-    index = np.where(y_test == l)
-    plt.scatter(x_test[index, 1], x_test[index, 2], c=color_dict[l], label='Group {}'.format(l))
-
-# Pintar recta
-plt.plot([0.0, 2.0], [-w[0] / w[2], (-w[0] - 2.0 * w[1]) / w[2]], 'k-')
-
-# Añadir leyendas, títuloy nombres a los ejes
-plt.title(r'Points generetaed by uniform distribution in $[0, 2] \times [0, 2]$ square with logistic regression line')
-plt.xlabel('$x_1$')
-plt.ylabel('$x_2$')
-plt.legend()
-
-# Mostrar la gráfica
-plt.show()
-
-# Mostrar información sobre E_out
-e_out = error_func(x_test, y_test, w)
-print('E_out = {}'.format(e_out))
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
 # usando para ello un número suficientemente grande de nuevas muestras (>999).
 
+# Establecer el número de muestras a generar
+n_samples = 2000
 
-#CODIGO DEL ESTUDIANTE
+# Crear una nueva lista de errores
+sample_errors = []
+
+# Generar n_samples y calcular para cada una de ellas el error
+for _ in range(n_samples):
+    # Generar conjunto de datos de test
+    x_test = simula_unif(2500, 2, [0.0, 2.0])
+    x_test = np.c_[np.ones((x_test.shape[0], 1), dtype=np.float64), x_test]
+
+    # Inicializar las etiquetas de test a una nueva lista
+    y_test = []
+
+    # Recorrer los valores de x_train y generar los valores de las etiquetas
+    # utilizando la recta de clasificación
+    for value in x_test:
+        y_test.append(f(value[1], value[2], a, b))
+    
+    sample_errors.append(error_func(x_test, y_test, w))
+
+# Calcular valor medio de Eout
+eout = np.mean(np.asarray(sample_errors))
+
+# Mostrar información sobre Eout
+print('Valor medio de Eout en {} muestras aleatorias: {}'.format(n_samples, eout))
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
