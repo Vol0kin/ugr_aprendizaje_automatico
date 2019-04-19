@@ -490,19 +490,11 @@ data = np.c_[np.ones((x.shape[0], 1), dtype=np.float64), x]
 # Crear array de zeros
 zeros = np.array([0.0, 0.0, 0.0])
 
-# Inicializar la lista que contendrá las iteraciones
-iterations = []
-
 print('Algoritmo PLA con w_0 = [0.0, 0.0, 0.0]\n')
 
-# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar las iteraciones
-for i in range(0,10):
-    w, iter = adjust_PLA(data, y, 10000, zeros)
-    iterations.append(iter)
-    print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))    
-
-# Mostrar media de iteraiones
-print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
+# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar la información
+w, iter = adjust_PLA(data, y, 10000, zeros)
+print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))    
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
@@ -529,20 +521,12 @@ input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 print('Ejercicio 2.1b\n')
 
-# Inicializar la lista que contendrá las iteraciones
-iterations = []
-
 print('Algoritmo PLA con w_0 = [0.0, 0.0, 0.0] y datos con ruido\n')
 
-# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar las iteraciones
+# Lanzar el algoritmo PLA con w = [0, 0, 0] y guardar la información
 # Ahora con los datos del ejercicio 1.2.b
-for i in range(0,10):
-    w, iter = adjust_PLA(data, y_noisy, 10000, zeros)
-    iterations.append(iter)
-    print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))    
-
-# Mostrar media de iteraiones
-print('\nValor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
+w, iter = adjust_PLA(data, y_noisy, 10000, zeros)
+print('Valor w: {} \tNum. iteraciones: {}'.format(w, iter))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 

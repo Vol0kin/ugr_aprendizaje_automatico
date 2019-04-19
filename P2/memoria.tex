@@ -280,7 +280,14 @@ las funciones lineales tendrían problemas, debido a que no son linealmente sepa
 una recta. Por ejemplo, si una clase estuviese dentro de otra, se podría usar perfectamente una
 función como \ref{itm:f1} o \ref{itm:f2}.
 
-Sin embargo, en este caso no parecen ser demasiado buenas, ya que en todos los casos los ratios
+Comparándolas con la recta, las regiones positivas y negativas cambian. En el caso de la recta, todo
+lo que había debajo de ella se supone que es negativo (aunque luego no sea así debido a la presencia
+de ruido). En estos nuevos casos, encontramos por ejemplo que las regiones negativas están dentro
+de las positivas (funciones \ref{itm:f1} y  \ref{itm:f2}), las regiones positivas están en los
+extremos laterales (función \ref{itm:f3}) o son tan pequeñas que casi no existen o parecen una
+parabola (caso de la función \ref{itm:f4}).
+
+A pesar de esto, las funciones no parecen ser demasiado buenas, ya que en todos los casos los ratios
 de aciertos son menores que los de la función lineal (recordemos que su ratio de aciertos era
 $0.88$). Esto se debe a que, aunque los datos presenten un cierto ruido, se pueden llegar a separar
 mejor utilizando una recta en vez de algo mucho más complejo como una elipse o dividiendo el espacio
@@ -299,7 +306,97 @@ nuestros problemas. Pueden darse casos, como por ejemplo este, que la función l
 las no lineales, debido a que sea más fácil dividir los datos mediante una recta. Hay que ser muy
 consciente de qué tipo de función elegir en cada momento. Por ejemplo, un comportamiento no lineal en
 algunas carcterísticas nos podría indicar que sería mejor intentar recurrir a alguna función no lineal
-que a una lineal para resolver el problema.
+que a una lineal para resolver el problema. Sin embargo, antes de recurrir a los modelos no lineales,
+podemos asegurarnos comprobando alguna información como por ejemplo el sesgo y la varianza que nuestro
+modelo lineal se queda corto para explicar los datos, teniendo en cuenta siempre que no se debe hacer
+\textit{overfitting} con los datos disponibles.
+
+\section{\textsc{Modelos Lineales}}
+
+\subsection*{Apartado 1}
+\addcontentsline{toc}{subsection}{Apartado 1}
+
+\noindent \textbf{Algoritmo Perceptrón:} Implementar la función
+$ajusta\_PLA(datos, label, max\_iter, vini)$ que calcula el hiperplano solución a un problema de
+clasificación binaria usando el algoritmo PLA. La entrada $datos$ es una matriz donde cada item con
+su etiqueta está representado por una fila de la matriz, $label$ el vector de etiquetas (cada etiqueta
+es un valor $+1$ o $-1$), $max\_iter$ es el número máximo de iteraciones permitidas y $vini$ el valor
+inicial del vector. La función devuelve los coeficientes del hiperplano.
+
+Primeramente, vamos a ver la implementación de la función:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/adjust_pla.png}
+\caption{Implementación de la función $ajusta\_PLA()$.}
+\end{figure}
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Ejecutar el algoritmo PLA con los datos simulados en los apartados 2\textit{a} de la
+	sección.1. Inicializar el algoritmo con: a) el vector cero y, b) con vectores de números
+	aleatorios en $[0, 1]$ (10 veces). Anotar el número medio de iteraciones necesarias en ambos para
+	converger. Valorar el resultado relacionando el punto de inicio con el número de iteraciones.
+\end{enumerate}
+
+Los resultados de ejecutar el algoritmo con los distintos datos son los siguientes:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/pla_0_normal.png}
+\caption{Resultado del algoritmo PLA con un $w_0 = [0, 0, 0]$.}
+\end{figure}
+
+Como se puede comprobar, la haber partido de $w_0 = [0, 0, 0]$, el algoritmo PLA tarda 44 iteraciones
+(es decir, 44 épocas, o lo que es lo mismo, 44 vueltas completas a los datos) en converger.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/pla_rand_normal.png}
+\caption{Resultado del algoritmo PLA con un $w_0$ aleatorio.}
+\end{figure}
+
+En este caso, aunque no se especificaba, también se ha mostrado individualmente cuánto tarda el
+algoritmo PLA en converger para cada punto aleatorio. En algunos casos tarda más que en otros, pero
+de media tarda $45.8$ épocas en converger, valor que se queda muy cerca de las 44 épocas anteriores.
+Se puede ver además que, dependiendo del punto inicial, se encuentra un plano u otro que divida a los
+puntos, aunque en algunos casos estos planos son bastante parecidos. Esto no es de extrañar, ya que
+existen muchísimos planos que pueden separar a los datos si estos son linealmente separables.
+
+Con esto podemos decir que la posición inicial de $w$ influye en el número de épocas hasta que
+que el algoritmo converja, pero que si los datos son linealmente separables, como es este caso,
+se llega a converger siempre, aunque sea de forma un poco lenta ya que se requieren muchas iteraciones
+hasta poder converger.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Hacer lo mismo que antes usando ahora los datos del apartado 2\textbf{b} de la sección.1.
+	¿Observa algún comportamiento diferente? En caso afirmativo diga cual y las razones para que ello
+	ocurra.
+\end{enumerate}
+
+Vamos a ver cuáles son los resultados obtenidos en cada caso.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/pla_0_noise.png}
+\caption{Resultado del algoritmo PLA con un $w_0 = [0, 0, 0]$ y con ruido en la muestra.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{img/pla_rand_noise.png}
+\caption{Resultado del algoritmo PLA con un $w_0$ aleatorio y con ruido en la muestra.}
+\end{figure}
+
+Como se puede comprobar a simple vista, todos los algoritmos terminan en el mismo número de
+iteraciones. No es casualidad, ya que al algoritmo se le ha especificado que $max\_iter$ sea
+10000 iteraciones o épocas. Entonces, ¿por qué sucede esto?
+
+La respuesta es muy simple, y es que los datos no son linealmente separables. En los datos con ruido
+hay puntos de una clase que están mezclados con los de la otra, y no existe ninguna forma de
+separar esos datos con una recta/plano (habría que intentar utilizar algo más complejo como una
+circunferencia o una elipse, aunque tampoco se garantiza que se consiga algo con estos, aparte de
+que el PLA solo trabaja con planos/rectas). Por tanto, el algoritmo PLA nunca va a poder converger en
+estos casos, que es precisamente lo que sucede en este ejemplo.
 
 \end{document}
 
