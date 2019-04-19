@@ -9,16 +9,20 @@
 \usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
 \usepackage{enumitem}
 \usepackage[T1]{fontenc}
+\usepackage{amsmath}
 
 % Configuracion de encabezados y pies de pagina
 \pagestyle{fancy}
 \lhead{Vladislav Nikolov Vasilev}
-\rhead{Asignatura}
+\rhead{Aprendizaje Automático}
 \lfoot{Grado en Ingeniería Informática}
 \cfoot{}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}		% Linea cabeza de pagina
 \renewcommand{\footrulewidth}{0.4pt}		% Linea pie de pagina
+
+\newcommand{\eout}{$E_{\text{out}}$}
+\newcommand{\ein}{$E_{\text{in}}$}
 
 \begin{document}
 \pagenumbering{gobble}
@@ -316,7 +320,7 @@ modelo lineal se queda corto para explicar los datos, teniendo en cuenta siempre
 \subsection*{Apartado 1}
 \addcontentsline{toc}{subsection}{Apartado 1}
 
-\noindent \textbf{Algoritmo Perceptrón:} Implementar la función
+\noindent \textbf{Algoritmo Perceptrón}: Implementar la función
 $ajusta\_PLA(datos, label, max\_iter, vini)$ que calcula el hiperplano solución a un problema de
 clasificación binaria usando el algoritmo PLA. La entrada $datos$ es una matriz donde cada item con
 su etiqueta está representado por una fila de la matriz, $label$ el vector de etiquetas (cada etiqueta
@@ -351,16 +355,21 @@ Como se puede comprobar, la haber partido de $w_0 = [0, 0, 0]$, el algoritmo PLA
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.6]{img/pla_rand_normal.png}
+\includegraphics[scale=0.52]{img/pla_rand_normal.png}
 \caption{Resultado del algoritmo PLA con un $w_0$ aleatorio.}
 \end{figure}
 
 En este caso, aunque no se especificaba, también se ha mostrado individualmente cuánto tarda el
-algoritmo PLA en converger para cada punto aleatorio. En algunos casos tarda más que en otros, pero
-de media tarda $45.8$ épocas en converger, valor que se queda muy cerca de las 44 épocas anteriores.
-Se puede ver además que, dependiendo del punto inicial, se encuentra un plano u otro que divida a los
-puntos, aunque en algunos casos estos planos son bastante parecidos. Esto no es de extrañar, ya que
-existen muchísimos planos que pueden separar a los datos si estos son linealmente separables.
+algoritmo PLA en converger para cada punto aleatorio. En algunos casos tarda más que en otros, debido
+a que estos puntos pueden estar más cerca del correspondiente plano obtenido, pero de media se tarda
+$45.8$ épocas en converger. Este valor medio se queda muy cerca de las 44 épocas anteriores, con
+lo cuál, a grandes rasgos, podemos decir que de media todos los valores aletorios se comportan casi
+igual que un vector de pesos inicializado a 0. Se puede ver además que, dependiendo del punto inicial,
+se encuentra un plano u otro que divida a los puntos, posiblemente debido a la proximidad de estos
+puntos a dicho plano, aunque en algunos casos los planos obtenidos son bastante parecidos (los que
+tienen mismo número de iteracones son casi iguales). Esto no es
+de extrañar, ya que existen muchísimos planos que pueden separar a los datos si estos son linealmente
+separables.
 
 Con esto podemos decir que la posición inicial de $w$ influye en el número de épocas hasta que
 que el algoritmo converja, pero que si los datos son linealmente separables, como es este caso,
@@ -383,7 +392,7 @@ Vamos a ver cuáles son los resultados obtenidos en cada caso.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.55]{img/pla_rand_noise.png}
+\includegraphics[scale=0.52]{img/pla_rand_noise.png}
 \caption{Resultado del algoritmo PLA con un $w_0$ aleatorio y con ruido en la muestra.}
 \end{figure}
 
@@ -397,6 +406,155 @@ separar esos datos con una recta/plano (habría que intentar utilizar algo más 
 circunferencia o una elipse, aunque tampoco se garantiza que se consiga algo con estos, aparte de
 que el PLA solo trabaja con planos/rectas). Por tanto, el algoritmo PLA nunca va a poder converger en
 estos casos, que es precisamente lo que sucede en este ejemplo.
+
+\subsection*{Apartado 2}
+\addcontentsline{toc}{subsection}{Apartado 2}
+
+\noindent \textbf{Regresión Logística}: En este ejercicio crearemos nuestra propia función
+objetivo $f$ (una probabilidad en este caso) y nuestro conjunto de datos $\mathcal{D}$ para ver cómo
+funciona regresión logística. Supondremos por simplicidad que $f$ es una probabilidad con
+valores $0/1$ y por tanto que la etiqueta $y$ es una función determinista de $\mathbf{x}$.
+
+\noindent Consideremos $d = 2$ para que los datos sean visualizables, y sea
+$\mathcal{X} = [0, 2] \times [0, 2]$ con probabilidad uniforme de elegir cada
+$\mathbf{x} \in \mathcal{X}$ . Elegir una línea en el plano que pase por $\mathcal{X}$
+como la frontera entre $f(\mathbf{x}) = 1$ (donde $y$ toma valores $+1$) y $f(\mathbf{x}) = 0$
+(donde $y$ toma valores $-1$), para ello seleccionar dos puntos aleatorios del plano y calcular la
+línea que pasa por ambos. Seleccionar $N = 100$ puntos aleatorios $\lbrace \mathbf{x}_n \rbrace$
+de $\mathcal{X}$ y evaluar las respuestas $\lbrace y_n \rbrace$ de todos ellos respecto de la frontera
+elegida.
+
+Para generar los datos, vamos a utilizar la función $simula\_unif()$ y la función $simula\_recta()$,
+las cuales han aparecido anteriormente. Aparte de esto, hemos cambiado la semilla aleatoria que se
+proporcionaba al principio, ya que los datos que se generaban inicialmente, junto con la recta, no
+eran muy buenos. Esta creación se puede comprobar en el siguiente código:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/init_data.png}
+\caption{Código para generar los datos iniciales.}
+\end{figure}
+
+Una vez generados, al representar la muestra con las etiquetas correspondientes y con la recta
+$f$ que divide en dos clases, obtenemos la siguiente gráfica:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/regression_1.png}
+\caption{Gráfica de los datos generados para el problema de Regresión Lineal.}
+\end{figure}
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Implementar Regresión Logística (RL) con Gradiente Descendente Estocástico (SGD)
+	bajo las siguientes condiciones:
+	
+	\begin{itemize}
+		\item Inicializar el vector de pesos con valores 0.
+		\item Parar el algoritmo cuando
+		$||\mathbf{w}^{(\text{t}-1)} - w^{(\text{t})} || < 0.01$, donde $w^{(\text{t})}$ denota el
+		vector de pesos al final de la época $t$. Una época es un pase completo a través de los $N$
+		datos.
+		\item Aplicar una permutación aleatoria, $1, 2, \dots , N$, en el orden de los datos antes de
+		usarlos en cada época del algoritmo.
+		\item Usar una tasa de aprendizaje de $\eta = 0.01$.
+	\end{itemize}
+\end{enumerate}
+
+A continuación se procede a mostrar la implementación de Regresión Lineal con Gradiente Descendente
+Estocástico:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/sgdRL.png}
+\caption{Implementación de Regresión Lineal mediante SGD.}
+\end{figure}
+
+Esta implementación genera, para cada época, una nueva permutación de los datos, y actualiza $w$ con
+un batch de tamaño 1, recorriendo todos los datos. Se ha llamado $delta$ a la diferencia
+$||\mathbf{w}^{(\text{t}-1)} - w^{(\text{t})} ||$, es decir, a la distnacia Euclídea entre los
+dos vectores de pesos, y para calcularla se ha usado una función de \textit{numpy} que se encarga
+de eso.
+
+También se ha utlizado una función que calcula el gradiente del sigmoide, el cuál viene dado por la
+siguiente expresión:
+
+\begin{equation}
+	\nabla E_{\text{in}} = - \frac{1}{N}
+	\sum_{n = 1}^N \frac{y_n\mathbf{x}_n}{1 + e^{y_n\mathbf{w}^{\text{T}}\mathbf{x}_n}}
+\end{equation}
+
+Como el \textit{batch} es de tamaño 1, la expresión anterior queda de la siguiente forma:
+
+\begin{equation}
+	\nabla E_{\text{in}} = - \frac{y_n\mathbf{x}_n}{1 + e^{y_n\mathbf{w}^{\text{T}}\mathbf{x}_n}}
+\end{equation}
+
+Este resultado se puede ver en el siguiente código:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/gradient_sigmoid.png}
+\caption{Implementación del gradiente de la función sigmoide.}
+\end{figure}
+
+Con los datos generados anteriormente, y pasándole un vector de pesos inicializado a 0 cada
+componente, se obtiene la siguiente gráfica:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/regression_2.png}
+\caption{Recta de Regresión Lineal ajustada mediante SGD junto con \ein.}
+\end{figure}
+
+Como se puede ver, se ha obtenido una recta casi idéntica a la anterior, solo que un poquito más
+inclinada (esto se puede notar en uno de los puntos rojos que corta, como lo deja casi por encima de
+la recta). Como se puede observar, el valor de \ein{} es bastante pequeño, con lo cuál el ajuste
+realizado es muy bueno.  Para calcular este error, se ha utilizado la siguiente fórmula, la cuál
+sigue el criterio ERM:
+
+\begin{equation}
+	\label{eq:ein_erm}
+	E_{\text{in}} = \frac{1}{N}
+	\sum_{i = 0}^N \ln \Big( 1 + e^{-y_i\mathbf{w}^\text{T}\mathbf{x}_i}  \Big)
+\end{equation}
+
+El motivo por el que el \ein{} no es exactamente 0 si no un valor muy pequeño se debe al exponente.
+Cuando los datos son clasificados correctamente, el valor del exponente es negativo (por el signo
+negativo delante de $y_i$), con lo cuál esa exponenciación tendrá un valor pequeño, aunque no tan
+pequeño como para que el logaritmo neperiano de la suma sea 0, si no un poco mayor. Si los datos
+no son clasificados correctamente, el valor de la exponenciación es positivo, y por tanto esa
+suma dentro del logaritmo se hace mucho mayor, incrementando en mayor medida el error.
+
+Una vez comentado ese aspecto, se procede a mostrar la implementación de la función para calcular
+el error en una muestra:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/error_func.png}
+\caption{Implementación de la función de error con el criterio ERM \eqref{eq:ein_erm}.}
+\end{figure}
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Usar la muestra de datos etiquetada para encontrar nuestra solución $g$ y estimar 
+	\eout{} usando para ello un número suficientemente grande de nuevas muestras (>999).
+\end{enumerate}
+
+Para este experimento, se ha generado una muestra aleatoria con la función $simula\_unif()$ con
+$N = 2500$, la cuál se puede ver a continuación:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/regression_3.png}
+\caption{Muestra de 2500 elementos con la recta de Regresión Logística y el valor de \eout{}.}
+\end{figure}
+
+Como se puede ver, la recta divide casi perfectamente a la nueva muestra, a excepción de algunos
+puntos rojos que parece que están más pegados a los azules, quedando al otro lado de la zona de
+la recta que clasifica a los puntos rojos con la etiqueta $+1$.
+Sin embargo, al observar el valor de \eout{}, podemos ver que el ajuste es muy bueno, ya que este
+error es solo una centésima superior al valor de \ein{}, con lo cuál ambos valores están muy próximos.
+De aquí podemos sacar que la muestra que teníamos de entrenamiento representa muy bien a la población
+y tenía el tamaño suficiente como para poder entrenar correctamente a nuestro modelo.
 
 \end{document}
 
