@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[spanish]{babel}					% Utilizar español
+\usepackage[spanish,es-nodecimaldot]{babel}	% Utilizar español
 \usepackage[utf8]{inputenc}					% Caracteres UTF-8
 \usepackage{graphicx}						% Imagenes
 \usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
@@ -70,7 +70,7 @@
 \setlength{\parskip}{1em}
 
 \section{\textsc{Ejercicio sobre la complejidad de H y el ruido}}
-En este ejercicio debemos aprender la dificultad que introduce la aparición de ruido en las
+\noindent En este ejercicio debemos aprender la dificultad que introduce la aparición de ruido en las
 etiquetas a la hora de elegir la clase de funciones más adecuada. Haremos uso de tres funciones
 ya programadas:
 
@@ -88,26 +88,218 @@ ya programadas:
 \subsection*{Apartado 1}
 \addcontentsline{toc}{subsection}{Apartado 1}
 
-Dibujar una gráfica con la nube de puntos de salida correspondiente.
+\noindent Dibujar una gráfica con la nube de puntos de salida correspondiente.
 
 \begin{enumerate}[label=\textit{\alph*})]
-	\item Considere $N = 50$, $dim = 2$, $rango = [-50, +50]$ con $simula_unif(N, dim, rango)$.
+	\item Considere $N = 50$, $dim = 2$, $rango = [-50, +50]$ con $simula\_unif(N, dim, rango)$.
 \end{enumerate}
+
+Como el código de la función $simula\_unif$ se ha proporcionado, no se va a mostrar su funcionamiento
+porque se supone que ya es conocido. Habiendo dicho esto, se procede a mostrar los datos generados:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.53]{img/simula_unif.png}
+\caption{Datos generados por la función $simula\_unif(N, dim, rango)$ con $N = 50$, $dim = 2$,
+$rango = [-50, +50]$}
+\end{figure}
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
-	\item Considere $N = 50$, $dim = 2$ y $sigma = [5, 7]$ con $simula_gaus(N, dim, sigma)$.
+	\item Considere $N = 50$, $dim = 2$ y $sigma = [5, 7]$ con $simula\_gaus(N, dim, sigma)$.
 \end{enumerate}
 
+De nuevo, como en el caso anterior, como ya se ha proporcionado la función $simula\_gaus$, no se va
+a mostrar su funcionamiento porque se supone que ya es conocido. Así que, con esto en mente, podemos
+mostrar los siguientes puntos generados:
 
-\newpage
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/simula_gaus.png}
+\caption{Datos generados por la función $simula\_gaus(N, dim, sigma)$ con $N = 50$, $dim = 2$ y
+$sigma = [5, 7]$}
+\end{figure}
 
-\begin{thebibliography}{5}
+\subsection*{Apartado 2}
+\addcontentsline{toc}{subsection}{Apartado 2}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\noindent Con ayuda de la función $simula\_unif()$ generar una muestra de puntos 2D a los
+que vamos añadir una etiqueta usando el signo de la función $f(x, y) = y - ax - b$, es decir
+el signo de la distancia de cada punto a la recta simulada con $simula\_recta()$.
 
-\end{thebibliography}
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, junto
+	con la recta usada para ello. (Observe que todos los puntos están bien clasificados
+	respecto de la recta).
+\end{enumerate}
+
+Para realizar esto, se nos ha proporcionado la función $simula\_recta()$ desde el principio, con lo
+cuál no la vamos a comentar, ya que se supone conocida. Para clasificar los puntos, vamos a utilizar
+una función llamada $f(x, y, a, b)$, donde $x$ es la coordenada $X$ del punto, $y$ la coordenada $Y$,
+$a$ la pendiente de la recta simulada anteriormente y $b$ el termino independiente. Esta función
+también se ha proporcionado, con lo cuál no se mostrará su implementación porque, de nuevo, se supone
+conocida.
+
+Los puntos generados, junto con la recta, son los siguientes:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/data_line_no_noise.png}
+\caption{Gráfica de puntos generados uniformemente con la recta que separa las dos clases.}
+\end{figure}
+
+Adicionalmente, para ver que la clasificación es la correcta, se ha calculado el ratio de puntos
+clasificados correcta e incorrectamente mediante una función, la cuál se puede ver a continuación:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/error_rate.png}
+\caption{Función para el cálculo del ratio de aciertos y errores.}
+\end{figure}
+
+Los resultados obtenidos, como se espera en este caso ya que no hay ruido en la muestra, son los
+siguientes:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/error_no_noise.png}
+\caption{Ratios de acierto y error obtenidos de la muestra sin ruido.}
+\end{figure}
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Modifique de forma aleatoria un 10\% etiquetas positivas y otro 10\% de negativas
+	y guarde los puntos con sus nuevas etiquetas. Dibuje de nuevo la gráfica anterior.
+	(Ahora hay puntos mal clasificados respecto de la recta)
+\end{enumerate}
+
+Para insertar ruido en la muestra, de forma proporcional a la cantidad de etiquetas de las distintas
+clases que tenemos, nos hemos ayudado de la siguiente función:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/insert_noise.png}
+\caption{Función para insertar ruido en una muestra de datos.}
+\end{figure}
+
+Al aplicar esta función sobre nuestras etiquetas, obtenemos los siguientes datos:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/data_line_noise.png}
+\caption{Gráfica de puntos generados uniformemente con ruido junto con la recta que los separa.}
+\end{figure}
+
+Como se puede ver, como había un mayor número de datos con etiqueta $-1$, se han modificado más
+elementos de esta clase, siendo este número de elementos modificados proporcional respecto al número
+de elementos totales de la clase.
+
+Como era de esperarse, al haber modificado las etiquetas, los ratios de aciertos y error se han
+visto modificados, dejándolos de la siguiente forma:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{img/rates_noise.png}
+\caption{Ratios de acierto y error obtenidos de la muestra con ruido.}
+\end{figure}
+
+\subsection*{Apartado 3}
+\addcontentsline{toc}{subsection}{Apartado 3}
+\noindent Supongamos ahora que las siguientes funciones definen la frontera de clasificación
+de los puntos de la muestra en lugar de una recta:
+
+\begin{enumerate}
+	\item \label{itm:f1} $f(x, y) = (x - 10)^2 + (y - 20)^2 - 400$
+	\item \label{itm:f2} $f(x, y) = 0.5(x + 10)^2 + (y - 20)^2 - 400$
+	\item \label{itm:f3} $f(x, y) = 0.5(x - 10)^2 + (y + 20)^2 - 400$
+	\item \label{itm:f4} $y - 20x^2 - 5x + 3$
+\end{enumerate}
+
+\noindent Visualizar el etiquetado generado en 2\textit{b} junto con cada una de las gráficas de cada
+una de las funciones. Comparar las formas de las regiones positivas y negativas de estas nuevas
+funciones con las obtenidas en el caso de la recta ¿Son estas funciones más complejas
+mejores clasificadores que la función lineal? ¿En qué ganan a la función lineal? Explicar el
+razonamiento.
+
+Para ayudarnos con la visualización de los datos, hemos utilizado una función ya proporcionada,
+con lo cuál no vamos a discutir como funciona. En vez de eso, veamos cómo son las funciones 
+anteriores una vez que se han implementado:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/functions.png}
+\caption{Funciones implementadas en Python.}
+\end{figure}
+
+Estas funciones están pensadas para que se modifiquen todos los datos a la vez y se devuelva la
+función aplicada a éstos.
+
+Para calcular estos ratios, nos hemos ayudado de la siguiente función, la cuál ha sido parametrizada
+para que pueda recibir cualquiera de las funciones anteriores, predecir las etiquetas y devolver
+los correspondientes ratios:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/error_rate_func.png}
+\caption{Función para calcular las tasas de aciertos y error para las nuevas funciones.}
+\end{figure}
+
+A continuación, se presentan las gráficas de las funciones junto con los valors de los ratios
+de aciertos y error:
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[scale=0.35]{img/f1.png}
+	\caption{Gráfica y ratios de \ref{itm:f1}.}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[scale=0.35]{img/f2.png}
+	\caption{Gráfica y ratios de \ref{itm:f2}.}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[scale=0.35]{img/f3.png}
+	\caption{Gráfica y ratios de \ref{itm:f3}.}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[scale=0.35]{img/f4.png}
+	\caption{Gráfica y ratios de \ref{itm:f4}.}
+\end{minipage}
+\end{figure}
+
+Como se puede ver, son funciones más complejas que las lineales. Algunas de ellas son figuras
+geométricas, como circunferencias o elipses (correspondientes a las funciones \ref{itm:f1} y
+\ref{itm:f2}). Estas funciones serían capaces de explicar datos muy complejos, datos con los que
+las funciones lineales tendrían problemas, debido a que no son linealmente separables mediante
+una recta. Por ejemplo, si una clase estuviese dentro de otra, se podría usar perfectamente una
+función como \ref{itm:f1} o \ref{itm:f2}.
+
+Sin embargo, en este caso no parecen ser demasiado buenas, ya que en todos los casos los ratios
+de aciertos son menores que los de la función lineal (recordemos que su ratio de aciertos era
+$0.88$). Esto se debe a que, aunque los datos presenten un cierto ruido, se pueden llegar a separar
+mejor utilizando una recta en vez de algo mucho más complejo como una elipse o dividiendo el espacio
+en regiones como en el caso de \ref{itm:f3}.
+
+También hay que considerar que en este caso estamos cogiendo directamente funciones, sin entrenar
+ningún tipo de modelo para intentar ajustarlas a los datos. A lo mejor haciendo esto se podrían
+obtener algunos resultados un poco mejores en algunas de las funciones, pero como existe ruido en la
+muestra, es muy difícil dar con la función adecuada y que tenga el mínimo error. Además, en caso de
+encontrarla, por haber recurrido a una clase de funciones muy compleja por ejemplo, nos podríamos
+encontrar con el caso de \textit{overfitting}, lo cuál es un problema gravísimo y nada deseable.
+
+En resumen, las funciones no lineales tienen sus puntos fuertes debido a que pueden explicar ciertos
+tipos de muestras mejor de lo que lo haría una función lineal, pero no siempre son la solución a
+nuestros problemas. Pueden darse casos, como por ejemplo este, que la función lineal le gane a todas
+las no lineales, debido a que sea más fácil dividir los datos mediante una recta. Hay que ser muy
+consciente de qué tipo de función elegir en cada momento. Por ejemplo, un comportamiento no lineal en
+algunas carcterísticas nos podría indicar que sería mejor intentar recurrir a alguna función no lineal
+que a una lineal para resolver el problema.
 
 \end{document}
 

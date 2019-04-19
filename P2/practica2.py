@@ -98,9 +98,11 @@ def insert_noise(y, ratio=0.1):
     noisy_pos = round(np.where(y == 1)[0].shape[0] * ratio)
     noisy_neg = round(np.where(y == -1)[0].shape[0] * ratio)
     
+    # Obtener las posiciones de forma aleatoria
     pos_index = np.random.choice(np.where(y == 1)[0], noisy_pos, replace=False)
     neg_index = np.random.choice(np.where(y == -1)[0], noisy_neg, replace=False)
     
+    # Cambiar los valores
     y[pos_index] = -1
     y[neg_index] = 1
 
@@ -172,7 +174,7 @@ def error_rate_func(x, y, func):
             puntos predichos erróneamente
     """
     
-    # Predecir los puntos
+    # Predecir las etiquetas
     predicted_y = func(x)
     
     # Hacer que los valores predichos estén en el rango (-1, 1)
@@ -288,8 +290,8 @@ def sgdRL(data, labels, initial_w, threshold=0.01, lr=0.01):
     # Establecer una diferencia inicial entre w_(t-1) y w_t
     delta = np.inf
     
-    # Mientras la diferencia sea superior al umbral, iterar
-    # sobre las distintas épocas
+    # Mientras la diferencia sea superior al umbral,
+    # generar una nueva época e iterar sobre los datos
     while delta > threshold:
         # Crear una nueva permutación y aplicarla a los datos
         # para generar una nueva época
