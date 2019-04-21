@@ -327,7 +327,7 @@ su etiqueta está representado por una fila de la matriz, $label$ el vector de e
 es un valor $+1$ o $-1$), $max\_iter$ es el número máximo de iteraciones permitidas y $vini$ el valor
 inicial del vector. La función devuelve los coeficientes del hiperplano.
 
-Primeramente, vamos a ver la implementación de la función:
+Antes de pasar al resto de apartados veamos la implementación de la función:
 
 \begin{figure}[H]
 \centering
@@ -372,9 +372,9 @@ de extrañar, ya que existen muchísimos planos que pueden separar a los datos s
 separables.
 
 Con esto podemos decir que la posición inicial de $w$ influye en el número de épocas hasta que
-que el algoritmo converja, pero que si los datos son linealmente separables, como es este caso,
-se llega a converger siempre, aunque sea de forma un poco lenta ya que se requieren muchas iteraciones
-hasta poder converger.
+que el algoritmo converja, haciendo que en algunos casos se requieran más o menos iteraciones,
+pero que si los datos son linealmente separablaes, se va a acabar convergiendo, aunque de forma un
+poco lenta, ya que es un algoritmo que necesita bastantes iteraciones para converger.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Hacer lo mismo que antes usando ahora los datos del apartado 2\textbf{b} de la sección.1.
@@ -406,6 +406,11 @@ separar esos datos con una recta/plano (habría que intentar utilizar algo más 
 circunferencia o una elipse, aunque tampoco se garantiza que se consiga algo con estos, aparte de
 que el PLA solo trabaja con planos/rectas). Por tanto, el algoritmo PLA nunca va a poder converger en
 estos casos, que es precisamente lo que sucede en este ejemplo.
+
+Por lo tanto, aunque PLA es un algoritmo muy sencillo de implementar, nos tenemos que asegurar que a
+la hora de aplicarlo los datos sean linealmente separables, lo cuál raramente se va a dar. Como mejora
+al algoritmo PLA se podría implementar el algoritmo PLA-Pocket, el cuál además considera el valor de
+\ein{} a la hora de actualizar los pesos, quedándose con el plano que ofrezca el menor error.
 
 \subsection*{Apartado 2}
 \addcontentsline{toc}{subsection}{Apartado 2}
@@ -470,7 +475,7 @@ Estocástico:
 \end{figure}
 
 Esta implementación genera, para cada época, una nueva permutación de los datos, y actualiza $w$ con
-un batch de tamaño 1, recorriendo todos los datos. Se ha llamado $delta$ a la diferencia
+un \textit{batch} de tamaño 1, recorriendo todos los datos. Se ha llamado $delta$ a la diferencia
 $||\mathbf{w}^{(\text{t}-1)} - w^{(\text{t})} ||$, es decir, a la distnacia Euclídea entre los
 dos vectores de pesos, y para calcularla se ha usado una función de \textit{numpy} que se encarga
 de eso.
@@ -497,6 +502,11 @@ Este resultado se puede ver en el siguiente código:
 \caption{Implementación del gradiente de la función sigmoide.}
 \end{figure}
 
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Usar la muestra de datos etiquetada para encontrar nuestra solución $g$ y estimar 
+	\eout{} usando para ello un número suficientemente grande de nuevas muestras (>999).
+\end{enumerate}
+
 Con los datos generados anteriormente, y pasándole un vector de pesos inicializado a 0 cada
 componente, se obtiene la siguiente gráfica:
 
@@ -518,15 +528,8 @@ sigue el criterio ERM:
 	\sum_{i = 0}^N \ln \Big( 1 + e^{-y_i\mathbf{w}^\text{T}\mathbf{x}_i}  \Big)
 \end{equation}
 
-El motivo por el que el \ein{} no es exactamente 0 si no un valor muy pequeño se debe al exponente.
-Cuando los datos son clasificados correctamente, el valor del exponente es negativo (por el signo
-negativo delante de $y_i$), con lo cuál esa exponenciación tendrá un valor pequeño, aunque no tan
-pequeño como para que el logaritmo neperiano de la suma sea 0, si no un poco mayor. Si los datos
-no son clasificados correctamente, el valor de la exponenciación es positivo, y por tanto esa
-suma dentro del logaritmo se hace mucho mayor, incrementando en mayor medida el error.
-
-Una vez comentado ese aspecto, se procede a mostrar la implementación de la función para calcular
-el error en una muestra:
+Esta expresión se puede traducir a la siguiente función, la cuál se encarga de calcular el error en
+una muestra:
 
 \begin{figure}[H]
 \centering
@@ -534,13 +537,17 @@ el error en una muestra:
 \caption{Implementación de la función de error con el criterio ERM \eqref{eq:ein_erm}.}
 \end{figure}
 
-\begin{enumerate}[resume,label=\textit{\alph*})]
-	\item Usar la muestra de datos etiquetada para encontrar nuestra solución $g$ y estimar 
-	\eout{} usando para ello un número suficientemente grande de nuevas muestras (>999).
-\end{enumerate}
+Volviendo a los resultados obtenidos anteriormente, el motivo por el que el \ein{} no es exactamente 0
+si no un valor muy pequeño se debe al exponente.
+Cuando los datos son clasificados correctamente, el valor del exponente es negativo (por el signo
+negativo delante de $y_i$), con lo cuál esa exponenciación tendrá un valor pequeño, aunque no tan
+pequeño como para que el logaritmo neperiano de la suma sea 0, si no un poco mayor. Si los datos
+no son clasificados correctamente, el valor de la exponenciación es positivo, y por tanto esa
+suma dentro del logaritmo se hace mucho mayor, incrementando en mayor medida el error.
 
-Para este experimento, se ha generado una muestra aleatoria con la función $simula\_unif()$ con
-$N = 2500$, la cuál se puede ver a continuación:
+Para la segunda parte del experimento (estimar \eout{}) se ha generado una muestra aleatoria con la
+función $simula\_unif()$ con $N = 2500$, y se le ha dado a cada punto una etiqueta según la función
+$f$ utilizada anteriormente. Este resultado se puede ver en la siguiente gráfica:
 
 \begin{figure}[H]
 \centering
@@ -551,10 +558,12 @@ $N = 2500$, la cuál se puede ver a continuación:
 Como se puede ver, la recta divide casi perfectamente a la nueva muestra, a excepción de algunos
 puntos rojos que parece que están más pegados a los azules, quedando al otro lado de la zona de
 la recta que clasifica a los puntos rojos con la etiqueta $+1$.
-Sin embargo, al observar el valor de \eout{}, podemos ver que el ajuste es muy bueno, ya que este
-error es solo una centésima superior al valor de \ein{}, con lo cuál ambos valores están muy próximos.
-De aquí podemos sacar que la muestra que teníamos de entrenamiento representa muy bien a la población
-y tenía el tamaño suficiente como para poder entrenar correctamente a nuestro modelo.
+Sin embargo, al observar el valor de \eout{}, podemos ver que el ajuste realizado anteriormente
+es muy bueno, ya que este error es solo una centésima superior al valor de \ein{}, con lo cuál ambos
+valores están muy próximos. De aquí podemos sacar algunas conclusiones sobre nuestra muestra de
+entrenamiento, y es que esta muestra que hemos utilizado para entrenar nuestro modelo representa muy
+bien a la población y que además la muestra tenía el tamaño suficiente como para poder entrenar
+correctamente al modelo.
 
 \end{document}
 
