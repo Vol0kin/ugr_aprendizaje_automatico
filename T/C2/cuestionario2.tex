@@ -88,6 +88,36 @@ por inducción desde una muestra de datos. Justificar la respuesta usando los re
 
 \answer
 
+Para que un problema de predicción pueda ser aproximado por inducción desde una muestra de datos, necesitamos que se den
+las siguientes condiciones:
+
+\begin{itemize}[label=\textbullet]
+	\item Que la muestra de datos sea i.i.d. (independiente e identicamente distribuida). Esto significa que los elementos
+	de la muestra no se influyen entre sí (independiente) y que cada elemento de la muestra es escogido de la misma
+	distribución de probabilidad (idénticamente distribuido).
+	\item Que la distribución de probabilidad de los datos de entrenamiento sea la misma que de los de test.
+\end{itemize}
+
+Si no se dan estas condiciones, no se puede asegurar una correcta aproximación por inducción. 
+
+En el caso de la primera condición, por ejemplo, si escogemos los datos de forma arbitraria (no i.i.d.) no podríamos decir nada
+sobre la población, ya que el análisis probabilístico realizado con la desigualdad de Hoeffding nos dice que, para una muestra
+escogida de forma aleatoria, se tiene que:
+
+\[ \mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h) - \text{E}_{out}(h) \; | \; > \varepsilon) \leq 2e^{-2\varepsilon^2N} \]
+
+\noindent es decir, que escogiendo un tamaño de muestra $N$ lo suficientemente grande y un $\varepsilon$ error razonable,
+podemos decir que muy probablemente $\text{\ein{}}(h)$ y $\text{\eout{}}(h)$ disten como mucho entre sí un valor $\epsilon$,
+y que por tanto $\text{\ein{}}(h) \approx \text{\eout{}}(h)$. Así que, escogiendo datos de forma arbitraria sería como
+trabajar a ciegas, sin ningún tipo de información.
+
+En el caso de la segunda condición, si escogemos datos de entrenamiento de una distribución de probabilidad $\mathsf{P}_1$ 
+y luego escogemos datos de test de otra distribución de probabilidad $\mathsf{P}_2$, por mucho que que con nuestro 
+algoritmo de aprendizaje hayamos conseguido hacer que $\text{\ein{}} \approx 0$, no podríamos afirmar que
+$\text{\ein{}}(h) \approx \text{\eout{}}(h)$, ya que en este caso los datos de entrenamiento y de test provienen de
+distribuiciones de probabilidad diferentes, con lo cuál podrían no ser nada parecidos.
+
+
 \section*{Ejercicio 2}
 \addtoc{Ejercicio 2}
 
@@ -99,6 +129,29 @@ largo de su muy dilatada existencia, decide que para facilitar el mantenimiento 
 estudiados.
 
 \answer
+
+Se puede considerar que la decisión tomada no es la correcta. Al haber escogido una única clase de funciones y un único
+algoritmo se está restringiendo mucho la cantidad de problemas que se pueden resolver. Puede suceder incluso que no resuelva
+bien los problemas futuros, ya que la naturaleza de estos no es conocida a priori.
+
+Para intentar justificar por qué no es buena idea restringirse a un único algoritmo, podemos hacer referencia al teorema de
+\textbf{No-Free-Lunch}, que dice que para cada algoritmo $\mathcal{A}$ existe una distribución de probabilidad $\mathsf{P}$
+en la que dicho algoritmo falla, pero que puede ser aprendida por otro. Por tanto, puede ser que llegue un nuevo problema
+cuya distribución de probabilidad sea una en la que el algoritmo que se haya escogido en la empresa falle, y por tanto, la
+no obtendrá unos resultados que satisfagan a los clientes, lo cuál se podría traducir en una mala situación para la empresa.
+
+Por otro lado, si se limita la clase de funciones a una que por ejemplo sea muy pequeña, si llega un nuevo problema
+puede suceder que la clase de funciones se quede muy corta, y los valores de los errores obtenidos tanto en la muestra de
+entrenamiento proporcionada como en la muestra de test sean muy malos, debido a que la función no
+tenga la capacidad de explicar correctamente los datos o de generalizar bien. Esto también sería un problema para la empresa,
+ya que nadie quiere tener un resultado pésimo que no pueda utilizar luego.
+
+En conclusión, por mucho que en el pasado se hayan usado una serie de algoritmos y clases de funciones, no existe nada
+que nos indique que éstos funcionen correctamente para nuevos problemas. Es muy importante explotar el conocimiento específico
+del problema para obtener los mejores resultados, y al imponer límites de lo que se va a utilizar
+en el problema de aprendizaje se limita la capacidad de decidir qué técnicas utilizar para resolverlo. No existe
+ninguna clase de funciones ni algoritmo que resuelvan todos los problemas, y por tanto, para cada problema, hay que realizar
+un buen análisis para determinar cuáles serían los más adecuados.
 
 \section*{Ejercicio 3}
 \addtoc{Ejercicio 3}
@@ -114,30 +167,31 @@ Veamos qué significa todo esto sobre la desigualdad de Hoeffding aplicada al pr
 
 \begin{equation}
 \label{eq:hoeffding}
-	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in} - \text{E}_{out} | \; > \varepsilon) \leq 2e^{-2\varepsilon^2N}
+	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h) - \text{E}_{out}(h) \; | \; > \varepsilon) \leq 2e^{-2\varepsilon^2N}
 \end{equation}
 
 \begin{itemize}[label=\textbullet]
 	\item  La parte de ``probablemente'' hace referencia a una alta probabilidad. En la expresión mostrada en
 	\eqref{eq:hoeffding}, se puede ver una probabilidad de que algo malo suceda, es decir, que la
-	diferencia 	entre los valores de \ein{} y \eout{} sea mayor que un $\varepsilon$ dado, o lo que es lo mismo, que los
-	errores disten mucho entre sí. Como en la 	expresión de la parte derecha nos encontramos con un exponencial negativo,
-	con los valores adecuados de $\varepsilon$ y $N$ podemos hacer que esa probabilidad de que algo malo pase sea pequeña.
+	diferencia 	entre los valores de \ein{}$(h)$ y \eout{}$(h)$ sea mayor que un $\varepsilon$ dado, o lo que es lo mismo,
+	que los errores disten mucho entre sí. Como en la 	expresión de la parte derecha nos encontramos con un exponencial
+	negativo, con los valores adecuados de $\varepsilon$ y $N$ podemos hacer que esa probabilidad de que algo malo pase sea
+	pequeña.
 	Por tanto, la probabilidad de que la diferencia sea menor que $\varepsilon$ vendría dada por:
 	
-	\[\mathbb{P}(\mathcal{D}: | \; \text{E}_{in} - \text{E}_{out} | \; < \varepsilon) \geq 1 - 2e^{-2\varepsilon^2N}\]
+	\[\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h) - \text{E}_{out}(h) \; | \; < \varepsilon) \geq 1 - 2e^{-2\varepsilon^2N}\]
 	
 	\noindent la cuál sí que tendría un valor muy alto, siendo por tanto más ``probable'' que esa diferencia sea menor que
 	$\varepsilon$.
-	\item La parte de ``aproximada'' indica que \ein{} no es exactamente igual que \eout{}, pero que ambos valores están muy
-	próximos. Esta aproximación viene dada por el valor de $\varepsilon$.
+	\item La parte de ``aproximada'' indica que \ein{}$(h)$ no es exactamente igual que \eout{}$(h)$,
+	pero que ambos valores están muy próximos. Esta aproximación viene dada por el valor de $\varepsilon$.
 \end{itemize}
 
 La \textbf{incertidumbre} viene dada por la probabilidad. Nunca se puede tener la certeza de que el resultado sea 100\%
 correcto, pero se puede afirmar con una alta probabilidad de que así sea (por eso es PAC).
-La \textbf{imprecisión}, por otro lado, viene dada por el valor de $\varepsilon$. Es decir, los valores de \ein{} y \eout{},
-al estar aprendiendo de una muestra la cuál puede tener un tamaño no lo suficientemente grande o no ser muy representativa
-de la población, van a ser diferentes.
+La \textbf{imprecisión}, por otro lado, viene dada por el valor de $\varepsilon$. Es decir, los valores de \ein{}$(h)$ y
+\eout{}$(h)$, al estar aprendiendo de una muestra la cuál puede tener un tamaño no lo suficientemente grande o no ser muy
+representativa de la población, van a ser diferentes.
 Si pudiésemos aprender de toda la población directamente, en ese caso $\varepsilon$ sería 0, ya que los dos errores serían
 iguales, pero habría que pagar muchos costes de tiempo, potencia de cómputo y almacenamiento. Por tanto, al estar siempre
 aprendiendo de una muestra y no de la población entera nos vamos a encontrar con estos dos problemas.
@@ -149,6 +203,59 @@ aprendiendo de una muestra y no de la población entera nos vamos a encontrar co
 forma directa cuando el número de hipótesis de $\mathcal{H}$ es mayor de 1? Justificar la respuesta.
 
 \answer
+
+Como tal, la desigualdad de Hoeffding sigue siendo aplicable a cada función de la clase de forma individual, pero para 
+aplicarla sobre el conjunto de funciones necesitamos algo más. 
+
+Cada hipótesis $h_i \in \mathcal{H}$ se fija \textbf{antes} de generar el conjunto de datos,
+y de entre todas las funciones de la clase, el algoritmo de aprendizaje escoge aquella función $g$ (hipótesis final)
+que sea la mejor \textbf{una vez generados los datos}, no antes, haciendo imposible además modificar $h_i$, ya que si no, 
+no se podría probar la desigualdad de Hoeffding.
+Por tanto, como esa función $g$ es una de las $h_1, h_2, \dots, h_M$ funciones de la clase, queremos que la probabilidad
+dada por:
+
+\[ \mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h) - \text{E}_{out}(h) \; | \; > \varepsilon)\]
+
+\noindent esté acotada por una expresión que tenga en cuenta todos los elementos de la clase $\mathcal{H}$
+y no solo uno, que es lo que pasaba ahora. Con esto en mente, es necesario modificar la desigualdad de Hoeffding para
+considerar la función $g$ escogida y que funcione para los casos en los que $|\mathcal{H}|$ sea mayor que 1 pero finito.
+
+Para empezar, la expresión de la parte izquierda, una vez escogida la hipótesis final $g$, quedaría de la siguiente forma:
+
+\begin{equation}
+\label{eq:hoeffding_g}
+	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon)
+\end{equation}
+
+Ahora lo que queremos hacer es encontrar una cota para la probabilidad de \eqref{eq:hoeffding_g} que tenga en cuenta todas
+las posibles funciones de la clase, y que además no dependa de la $g$ escogida (puede ser cualquiera dentro de la clase).
+Para obtener una cota podemos utilizar la desigualdad de Boole, la cuál nos dice que para un conjunto finito de eventos, la
+probabilidad de que al menos uno suceda (en este caso, que algún
+$\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon)$) es menor o igual que la suma
+de las probabilidades de los eventos (debido a que algunos eventos pueden no ser disjuntos). Dicho de otra forma:
+
+\begin{equation}
+\label{eq:union_bound}
+\begin{split}
+	\mathbb{P} \Bigg( \bigcup_{h_i \in \mathcal{H}}
+	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon) \Bigg) &\leq
+	\sum_{i = 1}^{|\mathcal{H}|} \mathbb{P}(\mathcal{D}: | \;\text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon) \\
+	&\leq 2 \; |\mathcal{H}|  \; e^{-2\varepsilon^2N}
+\end{split}
+\end{equation}
+
+Así que, combinando las expresiones \eqref{eq:hoeffding_g} y \eqref{eq:union_bound}, obtenemos que:
+
+\begin{equation}
+	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon)  \leq
+	2 \; |\mathcal{H}|  \; e^{-2\varepsilon^2N}
+\end{equation}
+
+
+Esta expresión ya sí que puede ser aplicada para clases con una o más hipótesis, siempre y cuando el número de éstas
+sea finito, ya que se tiene en cuenta la cardinalidad de la clase de funciones $\mathcal{H}$.
+
+
 
 
 
