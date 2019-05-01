@@ -1,0 +1,166 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[spanish,es-nodecimaldot]{babel}	% Utilizar español
+\usepackage[utf8]{inputenc}					% Caracteres UTF-8
+\usepackage{graphicx}						% Imagenes
+\usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
+\usepackage{fancyhdr}						% Modificar encabezados y pies de pagina
+\usepackage{float}							% Insertar figuras
+\usepackage[textwidth=390pt]{geometry}		% Anchura de la pagina
+\usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
+\usepackage{enumitem}						% Permitir enumerate con distintos simbolos
+\usepackage[T1]{fontenc}					% Usar textsc en sections
+\usepackage{amsmath}						% Símbolos matemáticos
+\usepackage{bbold}
+
+% Comando para poner el nombre de la asignatura
+\newcommand{\asignatura}{Aprendizaje Automático}
+
+% Comandos utilies
+\newcommand{\answer}{\noindent\textbf{Solución}}
+\newcommand{\ein}{E$_{in}$}
+\newcommand{\eout}{E$_{out}$}
+\newcommand{\addtoc}[1]{\addcontentsline{toc}{section}{#1}}
+
+% Configuracion de encabezados y pies de pagina
+\pagestyle{fancy}
+\lhead{Vladislav Nikolov Vasilev}
+\rhead{\asignatura{}}
+\lfoot{Grado en Ingeniería Informática}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}		% Linea cabeza de pagina
+\renewcommand{\footrulewidth}{0.4pt}		% Linea pie de pagina
+
+\begin{document}
+\pagenumbering{gobble}
+
+% Pagina de titulo
+\begin{titlepage}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\includegraphics[scale=0.5]{img/ugr.png}\\
+
+\textsc{\Large \asignatura{}\\[0.2cm]}
+\textsc{GRADO EN INGENIERÍA INFORMÁTICA}\\[1cm]
+
+\noindent\rule[-1ex]{\textwidth}{1pt}\\[1.5ex]
+\textsc{{\Huge Trabajo 2\\[0.5ex]}}
+\textsc{{\Large Cuestiones de Teoría\\}}
+\noindent\rule[-1ex]{\textwidth}{2pt}\\[3.5ex]
+
+\end{minipage}
+
+\vspace{0.5cm}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\textbf{Autor}\\ {Vladislav Nikolov Vasilev}\\[2.5ex]
+\textbf{Rama}\\ {Computación y Sistemas Inteligentes}\\[2.5ex]
+\vspace{0.3cm}
+
+\includegraphics[scale=0.3]{img/etsiit.jpeg}
+
+\vspace{0.7cm}
+\textsc{Escuela Técnica Superior de Ingenierías Informática y de Telecomunicación}\\
+\vspace{1cm}
+\textsc{Curso 2018-2019}
+\end{minipage}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\tableofcontents
+\thispagestyle{empty}				% No usar estilo en la pagina de indice
+
+\newpage
+
+\setlength{\parskip}{1em}
+
+\section*{Ejercicio 1}
+\addtoc{Ejercicio 1}
+
+\noindent Identificar de forma precisa dos condiciones imprescindibles para que un problema de predicción puede ser aproximado
+por inducción desde una muestra de datos. Justificar la respuesta usando los resultados teóricos estudiados.
+
+\answer
+
+\section*{Ejercicio 2}
+\addtoc{Ejercicio 2}
+
+\noindent El jefe de investigación de una empresa con mucha experiencia en problemas de predicción de datos tras analizar los
+resultados de los muchos algoritmos de aprendizaje usados sobre todos los problemas en los que la empresa ha trabajado a lo
+largo de su muy dilatada existencia, decide que para facilitar el mantenimiento del código de la empresa van a seleccionar un
+único algoritmo y una única clase de funciones con la que aproximar todas las soluciones a sus problemas presentes y futuros.
+¿Considera que dicha decisión es correcta y beneficiará a la empresa? Argumentar la respuesta usando los resultados teóricos
+estudiados.
+
+\answer
+
+\section*{Ejercicio 3}
+\addtoc{Ejercicio 3}
+
+\noindent ¿Que se entiende por una solución PAC a un problema de aprendizaje? Identificar el porqué de la incertidumbre e
+imprecisión.
+
+\answer
+
+En el ámbito del aprendizaje, una solución PAC significa que es \textit{Probably Approximately Correct}, 
+lo cuál traducido al español vendría a ser algo así como ``correcta probablemente aproximada''.
+Veamos qué significa todo esto sobre la desigualdad de Hoeffding aplicada al problema de aprendizaje:
+
+\begin{equation}
+\label{eq:hoeffding}
+	\mathbb{P}(\mathcal{D}: | \; \text{E}_{in} - \text{E}_{out} | \; > \varepsilon) \leq 2e^{-2\varepsilon^2N}
+\end{equation}
+
+\begin{itemize}[label=\textbullet]
+	\item  La parte de ``probablemente'' hace referencia a una alta probabilidad. En la expresión mostrada en
+	\eqref{eq:hoeffding}, se puede ver una probabilidad de que algo malo suceda, es decir, que la
+	diferencia 	entre los valores de \ein{} y \eout{} sea mayor que un $\varepsilon$ dado, o lo que es lo mismo, que los
+	errores disten mucho entre sí. Como en la 	expresión de la parte derecha nos encontramos con un exponencial negativo,
+	con los valores adecuados de $\varepsilon$ y $N$ podemos hacer que esa probabilidad de que algo malo pase sea pequeña.
+	Por tanto, la probabilidad de que la diferencia sea menor que $\varepsilon$ vendría dada por:
+	
+	\[\mathbb{P}(\mathcal{D}: | \; \text{E}_{in} - \text{E}_{out} | \; < \varepsilon) \geq 1 - 2e^{-2\varepsilon^2N}\]
+	
+	\noindent la cuál sí que tendría un valor muy alto, siendo por tanto más ``probable'' que esa diferencia sea menor que
+	$\varepsilon$.
+	\item La parte de ``aproximada'' indica que \ein{} no es exactamente igual que \eout{}, pero que ambos valores están muy
+	próximos. Esta aproximación viene dada por el valor de $\varepsilon$.
+\end{itemize}
+
+La \textbf{incertidumbre} viene dada por la probabilidad. Nunca se puede tener la certeza de que el resultado sea 100\%
+correcto, pero se puede afirmar con una alta probabilidad de que así sea (por eso es PAC).
+La \textbf{imprecisión}, por otro lado, viene dada por el valor de $\varepsilon$. Es decir, los valores de \ein{} y \eout{},
+al estar aprendiendo de una muestra la cuál puede tener un tamaño no lo suficientemente grande o no ser muy representativa
+de la población, van a ser diferentes.
+Si pudiésemos aprender de toda la población directamente, en ese caso $\varepsilon$ sería 0, ya que los dos errores serían
+iguales, pero habría que pagar muchos costes de tiempo, potencia de cómputo y almacenamiento. Por tanto, al estar siempre
+aprendiendo de una muestra y no de la población entera nos vamos a encontrar con estos dos problemas.
+
+\section*{Ejercicio 7}
+\addtoc{Ejercicio 7}
+
+\noindent ¿Por qué la desigualdad de Hoeffding definida para clases $\mathcal{H}$ de una única función no es aplicable de
+forma directa cuando el número de hipótesis de $\mathcal{H}$ es mayor de 1? Justificar la respuesta.
+
+\answer
+
+
+
+\newpage
+
+\begin{thebibliography}{5}
+
+\bibitem{nombre-referencia}
+Texto referencia
+\\\url{https://url.referencia.com}
+
+\end{thebibliography}
+
+\end{document}
+
