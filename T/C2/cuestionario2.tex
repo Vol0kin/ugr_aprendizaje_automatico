@@ -10,6 +10,7 @@
 \usepackage{enumitem}						% Permitir enumerate con distintos simbolos
 \usepackage[T1]{fontenc}					% Usar textsc en sections
 \usepackage{amsmath}						% Símbolos matemáticos
+\usepackage{amssymb}
 \usepackage{bbold}
 
 % Comando para poner el nombre de la asignatura
@@ -337,7 +338,7 @@ Ahora lo que queremos hacer es encontrar una cota para la probabilidad de \eqref
 las posibles funciones de la clase, y que además no dependa de la $g$ escogida (puede ser cualquiera dentro de la clase).
 
 Sabemos mediante la teoría de probabilidad que si ha sucedido que
-$| \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon$ (evento $A$) es porque se ha dado que, para alguna otra
+$| \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon$ (evento $A$) es porque se ha dado que para alguna otra
 función $h_i \in \mathcal{H}$, ha sucedido que $| \; \text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon$
 (evento $B$). Esto en probabilidad y en lógica se conoce como implicación, lo cuál se puede expresar como $A \Rightarrow B$.
 Se sabe que si $A \Rightarrow B$ es que $\mathbb{P}(A) \leq \mathbb{P}(B)$.
@@ -391,8 +392,8 @@ separar, y aquí se está planteando la situación contraria.
 \answer
 
 De nuevo, esto tampoco nos sirve, ya que el punto de ruptura es para demostrar que hay un conjunto de puntos de tamaño
-$k$* que $\mathcal{H}$ no puede separar. Si se intenta demostrar que se puede separar cualquier conjunto de puntos, entonces
-se está haciendo justo lo contrario.
+$k$* que $\mathcal{H}$ no puede separar. Si se intenta demostrar que se puede separar cualquier conjunto de $k$* puntos,
+entonces se está haciendo justo lo contrario.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Mostrar un conjunto de $k$* puntos  $x_1, \dots, x_{k\text{*}}$ que $\mathcal{H}$ no puede separar.
@@ -400,9 +401,9 @@ se está haciendo justo lo contrario.
 
 \answer
 
-Sí que nos serviría, ya que mostrar que $\mathcal{H}$ no puede separar un conjunto de $k$* puntos nos indicaría que exite una
-dicotomía de esos puntos que no se puede separar, con lo cuál, $m_\mathcal{H}(k\text{*}) < 2^{k\text{*}}$.
-Es decir, que para ese conjunto de puntos, no se podrían obtener todas las posibles dicotomías.
+De nuevo, tampoco nos serviría, ya que a lo mejor un conjunto de $k$* puntos no puede ser separado, pero existe otra
+disposición de $k$* puntos (configurados de otra forma en el espacio) en el que se puedan conseguir todas las posibles
+dicotomías, y por tanto, ese conjunto sería separable.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Mostrar que $\mathcal{H}$ no puede separar ningún conjunto de $k$* puntos.
@@ -410,11 +411,9 @@ Es decir, que para ese conjunto de puntos, no se podrían obtener todas las posi
 
 \answer
 
-No nos serviría. Primero porque un conjunto de puntos siempre se puede separar al menos en dos clases (todos los puntos
-pertenecientes a una clase o a la otra). Segundo porque potencialmente existen infinitas configuraciones de $k$* puntos, 
-aunque el número máximo de dicotomías para cada configuración viene dado por $2^{k\text{*}}$. Encontes, puede que exista 
-alguna configuración no separable por $\mathcal{H}$, pero definitivamente habrá otra que sí que podrá ser
-separada.
+Esto sí que nos serviría, ya que si se demuestra que ningún conjunto de $k$* puntos se puede separar (``shatter'') es
+que en ninguna disposición de puntos se pueden separar las $2^{k\text{*}}$ posibles dicotomías, con lo cuál se obtiene
+que para cualquier conjunto de $k$* puntos, $m_\mathcal{H}(k\text{*}) < 2^{k\text{*}}$.
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Mostrar que $m_\mathcal{H}(k) = 2^{k\text{*}}$.
@@ -431,11 +430,53 @@ pero nunca $2^k$.
 \addtoc{Ejercicio 9}
 
 \noindent Para un conjunto $\mathcal{H}$ con $d_{VC} = 10$, ¿que tamaño muestral se necesita (según la cota de generalización)
-para tener un 95\% de confianza ($\sigma$) de que el error de generalización ($\varepsilon$) sea como mucho $0.05$?
+para tener un 95\% de confianza ($\delta$) de que el error de generalización ($\varepsilon$) sea como mucho $0.05$?
 
 \answer
 
+Para obtener el tamaño de la muestra mínimo con la que se obtenga una buena generalización podemos calcular la complejidad
+de la muestra, la cuál depende de $\varepsilon$ y $\delta$. La expresión es la siguiente:
 
+\begin{equation}
+\label{eq:sample_complexity}
+	N \geq \frac{8}{\varepsilon^2} \ln \Bigg( \frac{4 \big( (2N)^{d_{\text{VC}}} + 1 \big)}{\delta} \Bigg)
+\end{equation}
+
+Ahora hay que fijar los valors de los parámetros, sabiendo que $\varepsilon = 0.05$, $\delta = 0.05$ y $d_{VC} = 10$. 
+Como la resolución se tiene que ir haciendo de forma iterativa, se va a fijar que, inicialmente, $N = 1000$.
+
+Antes de empezar con la resolución iterativa, vamos a tomar en cuenta algunas consideraciones.
+Es importante destacar que la expresión de la parte izquierda resultante se va a redondear para evitar tener decimales. La
+resolución se realizará escogiendo un $N$ e intentando ver si con ese valor se cumple la desigualdad. En caso de que se
+cumpla, se parará. En caso contrario se escogerá como nuevo $N$ el valor obtenido en la parte derecha y se repetirá el cálculo.
+Una vez dicho esto, veamos el proceso:
+
+\[ 1000 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 1000)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 1000 \ngeq 257251 \]
+
+\[ 257251 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 257251)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 257251 \ngeq 434853 \]
+
+\[ 434853 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 434853)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 434853 \ngeq 451651 \]
+
+\[ 451651 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 451651)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 451651 \ngeq 452864 \]
+
+\[ 452864 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 452864)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 452864 \ngeq 452950 \]
+
+\[ 452950 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 452950)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 452950 \ngeq 452956 \]
+
+\[ 452956 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 452956)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 452956 \ngeq 452957 \]
+
+\[ 452957 \geq \frac{8}{0.05^2} \ln \Bigg( \frac{4 \big( (2 \cdot 452957)^{10} + 1 \big)}{0.05} \Bigg)
+\Rightarrow 452957 \geq 452957 \]
+
+Con el resultado obtenido, podemos afirmar con un 95\% de confianza que con una muestra de tamaño $N = 452957$ tendremos
+un error de generalización $\varepsilon$ que como mucho será 0.05.
 
 \section*{Ejercicio 10}
 \addtoc{Ejercicio 10}
@@ -446,6 +487,8 @@ contras de aplicar los principios de inducción ERM y SRM para lograr el objetiv
 cada uno de ellos.
 
 \answer
+
+Al aplicar ERM
 
 \newpage
 
