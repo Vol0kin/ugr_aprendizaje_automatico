@@ -171,18 +171,13 @@ Veamos qué significa todo esto sobre la desigualdad de Hoeffding aplicada al pr
 \end{equation}
 
 \begin{itemize}[label=\textbullet]
-	\item  La parte de ``probablemente'' hace referencia a una alta probabilidad. En la expresión mostrada en
-	\eqref{eq:hoeffding}, se puede ver una probabilidad de que algo malo suceda, es decir, que la
+	\item  La parte de ``probablemente'' hace referencia a una probabilidad. Esto se puede ver en la expresión dada
+	por \eqref{eq:hoeffding} como la probabilidad de que algo malo suceda. Este evento malo es que la
 	diferencia 	entre los valores de \ein{}$(h)$ y \eout{}$(h)$ sea mayor que un $\varepsilon$ dado, o lo que es lo mismo,
 	que los errores disten mucho entre sí. Como en la 	expresión de la parte derecha nos encontramos con un exponencial
-	negativo, con los valores adecuados de $\varepsilon$ y $N$ podemos hacer que esa probabilidad de que algo malo pase sea
-	pequeña.
-	Por tanto, la probabilidad de que la diferencia sea menor que $\varepsilon$ vendría dada por:
-	
-	\[\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h) - \text{E}_{out}(h) \; | \; < \varepsilon) \geq 1 - 2e^{-2\varepsilon^2N}\]
-	
-	\noindent la cuál sí que tendría un valor muy alto, siendo por tanto más ``probable'' que esa diferencia sea menor que
-	$\varepsilon$.
+	negativo, con los valores adecuados de $\varepsilon$ y $N$ podemos hacer que la probabilidad de que ese mal evento
+	suceda sea pequeña, y por tanto, que la probabilidad del caso contrario (que la diferencia entre los valores 
+	de \ein{}$(h)$ y \eout{}$(h)$) sea muy probable (tenga una probabilidad más alta).
 	\item La parte de ``aproximada'' indica que \ein{}$(h)$ no es exactamente igual que \eout{}$(h)$,
 	pero que ambos valores están muy próximos. Esta aproximación viene dada por el valor de $\varepsilon$.
 \end{itemize}
@@ -195,6 +190,117 @@ representativa de la población, van a ser diferentes.
 Si pudiésemos aprender de toda la población directamente, en ese caso $\varepsilon$ sería 0, ya que los dos errores serían
 iguales, pero habría que pagar muchos costes de tiempo, potencia de cómputo y almacenamiento. Por tanto, al estar siempre
 aprendiendo de una muestra y no de la población entera nos vamos a encontrar con estos dos problemas.
+
+\section*{Ejercicio 4}
+\addtoc{Ejercicio 4}
+
+\noindent Suponga un conjunto de datos $\mathcal{D}$ de 25 ejemplos extraídos de una función desconocida
+$f : \mathcal{X} \rightarrow \mathcal{Y}$, donde $\mathcal{X} = \mathbb{R}$ e $\mathcal{Y} = \lbrace -1, +1 \rbrace$.
+Para aprender $f$ usamos un conjunto simple de hipótesis $\mathcal{H} = \lbrace h_1 , h_2 \rbrace$ donde $h_1$ es la función
+constante igual a $+1$ y $h_2$ la función constante igual a $-1$. Consideramos dos algoritmos de aprendizaje, S(smart) y
+C(crazy). S elige la hipótesis que mejor ajusta los datos y C elige deliberadamente la otra hipótesis.
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item ¿Puede S producir una hipótesis que garantice mejor comportamiento que la aleatoria sobre cualquier punto fuera
+	de la muestra? Justificar la respuesta.
+\end{enumerate}
+
+\answer
+
+No se puede garantizar. Se puede intentar afirmar que, con alta probabilidad, S sea capaz de generalizar mejor que C debido
+a que escoge aquella hipótesis que mejor ajusta los datos. Ahora bien, garantizar que pueda tener un mejor comportamiento
+sobre cualquier punto fuera de la muestra es algo muy difícil, por no decir casi imposible. Partiendo de que la muestra puede
+no representar lo suficientemente bien la población, S puede equivocarse entonces y escoger una hipótesis con la que obtenga
+muy buenos resultados en la muestra, pero que al generalizar luego, obtenga un error fuera de la muestra muy elevado, haciendo
+por tanto que no sea mejor sobre cualquier punto fuera de la muestra. Además, en el aprendizaje siempre nos encontramos con
+incertidumbre, ya que nunca se puede afirmar con toda seguridad que los resultados obtenidos son perfectos y posteriormente
+no se cometerán errores al predecir nuevos datos. Y además, no existe ningún algoritmo que nos garantice un mejor aprendizaje
+que otro en todos los casos, ya que según el teorema de \textbf{No-Free-Lunch}, existirá una distribución de probabilidad 
+$\mathsf{P}$ en la que el algoritmo de aprendizaje $\mathcal{A}$ falle, pero en la que otro obtendrá unos buenos resultados.
+
+\section*{Ejercicio 5}
+\addtoc{Ejercicio 5}
+
+\noindent Con el mismo enunciado de la pregunta 4:
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Asumir desde ahora que todos los ejemplos en $\mathcal{D}$ tienen $y_n = +1$. ¿Es posible que
+	la hipótesis que produce C sea mejor que la hipótesis que produce S? Justificar la respuesta.
+\end{enumerate}
+
+\answer
+
+Puede suceder que la hipótesis producida por C sea mejor que la escogida por S. Para verlo más claro, siguiendo lo que
+se nos ha dicho en el enunciado sobre los $y_n$ en $\mathcal{D}$, podemos suponer un caso extremo en el que las etiquetas
+fuera de la muestra sean todas $y_n = -1$. En este caso, S escogería una hipótesis que funciona muy bien en la muestra,
+ya que clasifica todos los datos bien, mientras que C sería pésimo y no clasificaría nada bien. Sin embargo, debido
+a que la muestra no es lo suficientemente representativa de la población (de hecho, es una muy mala representación),
+al intentar generalizar nos encontraríamos que S tiene un rendimiento pésimo ya que no clasificaría nada bien, 
+mientras que C, al haber escogido la hipótesis en las que todas las etiquetas son $y_n = -1$ estaría acertando todos los
+casos, siendo por tanto la hipótesis que tiene un rendimiento mejor fuera de la muestra de entrenamiento.
+
+
+\section*{Ejercicio 6}
+\addtoc{Ejercicio 6}
+
+\noindent Considere la cota para la probabilidad de la hipótesis solución $g$ de un problema de aprendizaje, a partir de la
+desigualdad generalizada de Hoeffding para una clase finita de hipótesis:
+
+\[\mathbb{P}(  | \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon) < \delta \]
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item ¿Cuál es el algoritmo de aprendizaje que se usa para elegir $g$?
+\end{enumerate}
+
+\answer
+
+El algoritmo de aprendizaje que se utiliza para elegir la función $g$ es indiferente, ya que este va a ir recorriendo el
+conjunto de hipótesis $\mathcal{H}$ (las cuáles están prefijadas de antes) y escogerá una hipótesis final $g$, la cual
+será la mejor de entre todas las hipótesis.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Si elegimos $g$ de forma aleatoria ¿seguiría verificando la desigualdad?
+\end{enumerate}
+
+\answer
+
+Aún habiendo escogido una función aleatoria como $g$, la desigualdad se seguiría cumpliendo, ya que la cota es aplicable
+sobre cualquier hipótesis de la clase de funciones $\mathcal{H}$. Esta cota, $\delta$, viene dada por la siguiente expresión:
+
+\[ \delta = 2 \; | \mathcal{H} | \; e^{-2 \varepsilon^2 N} \]
+
+Como se puede ver, la cota no depende de la hipótesis final ($g$ no aparece en ningún lado de la expresión), si no que
+depende de todas las hipótesis de $\mathcal{H}$, entre las cuales, eso sí, se encuentra $g$. Como $g$ se elige del
+conjunto de hipótesis, si esta condición se cumple de forma genérica para cualquiera de las hipótesis, entonces también
+se cumplirá para $g$, sea cuál sea la forma en la que se escoge.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item ¿Depende $g$ del algoritmo usado?
+\end{enumerate}
+
+\answer
+
+La hipótesis final $g$ depende del algoritmo utlizado, ya que cada uno va a recorrer el conjunto de hipótesis de una forma
+diferente. Por ejemplo, habrá algoritmos como el Gradiente Descendente que irán recorriendo iterativamente las hipótesis
+hasta dar con una que sea buena. Otros, como las Ecuaciones Normales darán directamente con la solución al resolver un
+sistema de ecuaciones.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item ¿Es una cota ajustada o una cota laxa?
+\end{enumerate}
+
+\answer
+
+La cota es laxa (pesimista). Esta cota se obtiene suponiendo que si se da que la diferencia de errores con la 
+hipótesis $g$ es mayor que un $\varepsilon$ dado es porque alguna de las hipótesis del conjunto tiene una diferencia de
+errores superior a ese valor. La cota se obtiene mediante la desigualdad de Boole, ya que se supone que la probabilidad de la
+unión de los eventos (que para alguna hipótesis la diferencia supere el valor de $\varepsilon$) es menor o igual que la
+sumatoria de las probabilidades individuales, lo cuál resulta en la expresión
+$2 \; | \mathcal{H} | \; e^{-2 \varepsilon^2 N}$. Este valor, sin embargo, tiene algunos problemas. Al acotar la unión de esta
+forma se supone que todas las hipótesis son disjuntas; es decir, que no tienen una interesección, cuando en la realidad puede
+ser que las hipótesis se solapen, y por tanto, el valor real de la unión de las probabilidades de los eventos sea mucho
+menor que el de la sumatoria.
+
 
 \section*{Ejercicio 7}
 \addtoc{Ejercicio 7}
@@ -229,8 +335,15 @@ Para empezar, la expresión de la parte izquierda, una vez escogida la hipótesi
 
 Ahora lo que queremos hacer es encontrar una cota para la probabilidad de \eqref{eq:hoeffding_g} que tenga en cuenta todas
 las posibles funciones de la clase, y que además no dependa de la $g$ escogida (puede ser cualquiera dentro de la clase).
-Para obtener una cota podemos utilizar la desigualdad de Boole, la cuál nos dice que para un conjunto finito de eventos, la
-probabilidad de que al menos uno suceda (en este caso, que algún
+
+Sabemos mediante la teoría de probabilidad que si ha sucedido que
+$| \; \text{E}_{in}(g) - \text{E}_{out}(g) \; | \; > \varepsilon$ (evento $A$) es porque se ha dado que, para alguna otra
+función $h_i \in \mathcal{H}$, ha sucedido que $| \; \text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon$
+(evento $B$). Esto en probabilidad y en lógica se conoce como implicación, lo cuál se puede expresar como $A \Rightarrow B$.
+Se sabe que si $A \Rightarrow B$ es que $\mathbb{P}(A) \leq \mathbb{P}(B)$.
+
+Como queremos acotar la probabilidad de nuestro evento $A$, podemos utilizar la desigualdad de Boole, 
+la cuál nos dice que para un conjunto finito de eventos, la probabilidad de que al menos uno suceda (en este caso, que algún
 $\mathbb{P}(\mathcal{D}: | \; \text{E}_{in}(h_i) - \text{E}_{out}(h_i) \; | \; > \varepsilon)$) es menor o igual que la suma
 de las probabilidades de los eventos (debido a que algunos eventos pueden no ser disjuntos). Dicho de otra forma:
 
@@ -255,9 +368,84 @@ Así que, combinando las expresiones \eqref{eq:hoeffding_g} y \eqref{eq:union_bo
 Esta expresión ya sí que puede ser aplicada para clases con una o más hipótesis, siempre y cuando el número de éstas
 sea finito, ya que se tiene en cuenta la cardinalidad de la clase de funciones $\mathcal{H}$.
 
+\section*{Ejercicio 8}
+\addtoc{Ejercicio 8}
+
+\noindent Si queremos mostrar que $k$* es un punto de ruptura para una clase de funciones $\mathcal{H}$ cuáles de las
+siguientes afirmaciones nos servirían para ello:
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Mostrar que existe un conjunto de $k$* puntos $x_1, \dots, x_{k\text{*}}$ que $\mathcal{H}$ puede separar 
+	(``shatter'').
+\end{enumerate}
+
+\answer
+
+No nos sirve, ya que el punto de ruptura, por definición, es justamente un conjunto de puntos de tamaño $k$* que no puede
+separar, y aquí se está planteando la situación contraria.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Mostrar que $\mathcal{H}$ puede separar cualquier conjunto de $k$* puntos.
+\end{enumerate}
+
+\answer
+
+De nuevo, esto tampoco nos sirve, ya que el punto de ruptura es para demostrar que hay un conjunto de puntos de tamaño
+$k$* que $\mathcal{H}$ no puede separar. Si se intenta demostrar que se puede separar cualquier conjunto de puntos, entonces
+se está haciendo justo lo contrario.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Mostrar un conjunto de $k$* puntos  $x_1, \dots, x_{k\text{*}}$ que $\mathcal{H}$ no puede separar.
+\end{enumerate}
+
+\answer
+
+Sí que nos serviría, ya que mostrar que $\mathcal{H}$ no puede separar un conjunto de $k$* puntos nos indicaría que exite una
+dicotomía de esos puntos que no se puede separar, con lo cuál, $m_\mathcal{H}(k\text{*}) < 2^{k\text{*}}$.
+Es decir, que para ese conjunto de puntos, no se podrían obtener todas las posibles dicotomías.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Mostrar que $\mathcal{H}$ no puede separar ningún conjunto de $k$* puntos.
+\end{enumerate}
+
+\answer
+
+No nos serviría. Primero porque un conjunto de puntos siempre se puede separar al menos en dos clases (todos los puntos
+pertenecientes a una clase o a la otra). Segundo porque potencialmente existen infinitas configuraciones de $k$* puntos, 
+aunque el número máximo de dicotomías para cada configuración viene dado por $2^{k\text{*}}$. Encontes, puede que exista 
+alguna configuración no separable por $\mathcal{H}$, pero definitivamente habrá otra que sí que podrá ser
+separada.
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Mostrar que $m_\mathcal{H}(k) = 2^{k\text{*}}$.
+\end{enumerate}
+
+\answer
+
+De nuevo, no nos serviría. Que $k$* sea un punto de ruptura no significa que, a partir de entonces, $\forall k > k$* 
+el número máximo de dicotomías que se puedan separar satisfactoriamente sea $2^{k\text{*}}$, si no que el número máximo de
+dicotomías separables viene dado por $m_\mathcal{H}(k) < 2^k$. Puede haber más de $2^{k\text{*}}$ dicotomías separables,
+pero nunca $2^k$.
+
+\section*{Ejercicio 9}
+\addtoc{Ejercicio 9}
+
+\noindent Para un conjunto $\mathcal{H}$ con $d_{VC} = 10$, ¿que tamaño muestral se necesita (según la cota de generalización)
+para tener un 95\% de confianza ($\sigma$) de que el error de generalización ($\varepsilon$) sea como mucho $0.05$?
+
+\answer
 
 
 
+\section*{Ejercicio 10}
+\addtoc{Ejercicio 10}
+
+\noindent Considere que le dan una nuestra de tamaño N de datos etiquetados $\lbrace -1, +1 \rbrace$ y le piden que
+encuentre la función que mejor ajuste dichos datos. Dado que desconoce la verdadera función $f$, discuta los pros y 
+contras de aplicar los principios de inducción ERM y SRM para lograr el objetivo. Valore las consecuencias de aplicar
+cada uno de ellos.
+
+\answer
 
 \newpage
 
