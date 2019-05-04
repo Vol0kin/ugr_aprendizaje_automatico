@@ -488,15 +488,51 @@ cada uno de ellos.
 
 \answer
 
-Al aplicar ERM
+Los \textbf{pros} de utilizar ERM es que, si tenemos una muestra lo suficientemente grande (tenemos más datos que el mínimo
+necesario para generalizar bien, el cuál viene dado por la complejidad de la muestra) y la clase de funciones $\mathcal{H}$ es
+finita (es decir, que el valor $d_{VC}$ es finito), entonces ERM permite obtener una buena hipótesis que generalice bien.
+La \textbf{contra} es que, para que esto suceda, se tienen que dar las dos condiciones anteriores, ya que en caso de que por
+ejemplo no se dé la primera, ERM no garantiza que se pueda llevar a cabo un aprendizaje correcto (es decir, que se consiga
+el menor error posible fuera de la muestra), y en caso de que el valor $d_{VC}$ no sea finitio, no se puede aprender utilizando
+ERM. Además, ERM de por sí, sin aplicar técnicas de regularización, no tiene forma de controlar el \textit{overfitting}, con lo
+cuál, aunque se encuentre una hipótesis que explique perfectamente los puntos de la muestra de entrenamiento, puede que el
+error fuera de la muestra sea muy elevado porque ha memorizado la muestra.
+
+SRM, en cambio, es un criterio de aprendizaje más general que ERM. Algunos de los \textbf{pros} es que puede ser aplicado
+por ejemplo cuando dada una clase de funciones $\mathcal{H}$, se dé que $d_{VC} = \infty$, ya que permite ir recorriendo las
+subclases que la componen (las cuáles se sabe que tienen un valor $d_{VC}$ finito y más pequeño) y escoger una en la que el
+error obtenido después de aplicar el criterio ERM para ésta junto con la penalización de esa subclase $\mathcal{H}_i$ sea la
+mínima. Por tanto, con esto, se puede obtener la clase más simple que explique mejor los datos. Otro de ellos es que se puede
+aplicar también cuando la clase de funciones tenga un valor $d_{VC}$ finito pero que el conjunto de datos sea demasiado pequeño
+como para aplicar ERM, por los mismos motivos que antes. Además, SRM tiene la ventaja de que al elegir la subclase más simple
+posible de entre las posibles, la probabilidad de que se produzca \textit{overfitting} es menor. Por \textbf{contra}, SMR
+es más complejo de implementar, además de que se necesitan más recursos de tiempo y de cómputo para, en caso de encontrarnos
+ante una clase de funciones con $d_{VC} = \infty$, encontrar la mejor subclase.
+
+Por tanto, como una pequeña conclusión de cuál aplicar, si disponemos del número suficiente de datos, y el valor $d_{VC}$ de
+la clase de funciones $\mathcal{H}$ es finito, podemos aplicar ERM, ya que nos permitirá obtener una muy buena hipótesis
+en muy poco tiempo. En cambio, si la clase es infinita, o no disponemos de la cantidad suficiente de datos, deberíamos aplicar
+SMR, con las correspondientes penalizaciones.
+
 
 \newpage
 
 \begin{thebibliography}{5}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\bibitem{boole-inequality}
+Wikipedia. \textit{Desigualdad de Boole}
+\\\url{https://en.wikipedia.org/wiki/Boole\%27s_inequality}
+
+\bibitem{pac}
+Wikipedia. \textit{Aprendizaje PAC}
+\\\url{https://en.wikipedia.org/wiki/Probably_approximately_correct_learning}
+
+\bibitem{SRM}
+Structural Risk Minimization
+\\\url{http://www.svms.org/srm/}
+
+\bibitem{learning-from-data}
+Yaser S. Abu-Mostafa, Malig Magdon-Ismail, Hsuan-Tien Lin. \textit{Learning From Data}. Capítulo 1: \textit{The Learning Problem.} Sección 1.3: \textit{Is Learning Feasible?} Páginas 22-24.
 
 \end{thebibliography}
 
