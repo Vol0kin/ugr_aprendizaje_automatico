@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.decomposition import PCA               # Reducir dimensiones
 from sklearn.preprocessing import StandardScaler    # Escalar los datos
 from sklearn.model_selection import StratifiedKFold # Particionar las muestras
+import seaborn as sns
 
 def read_data_values(in_file, separator=None):
     """
@@ -70,32 +71,6 @@ def stratify_k_fold(k, X, y):
         yield X_train, y_train, X_test, y_test
         
 
-def scale_data(data, scaler=None):
-    """
-    Funcion para normalizar el conjunto de datos restando la media y dividiendo
-    entre la desviacion tipica utilizando un objeto de escalado ya creado o uno
-    nuevo
-    
-    :param data Conjunto de datos a transformar
-    :param scaler Objeto de escalado utilizado (por defecto None)
-    
-    :return Devuelve el escalado aplicado y los datos transformados
-    """
-    
-    if scaler == None:
-        scaler = StandardScaler()
-        scaler.fit(data)
-    
-    transformed_data = scaler.transform(data)
-    
-    return scaler, transformed_data
-    
-
-def pca_dimensionality_reduction(data, pca=None):
-    
-    if pca == None:
-        
-
 # Establecer la semilla aleatoria
 np.random.seed(1)
 
@@ -110,7 +85,9 @@ print(data.shape)
 print(labels.shape)
 
 # Escalar los datos (restar la media de cada caracteristica y dividir entre desviacion tipica)
-scaler, data = scale_data(data)
+scaler = StandardScaler()
+scaler.fit(data)
+data = scaler.transform(data)
 
 
 # Reducir la dimensionalidad de los datos
@@ -123,3 +100,6 @@ print('Componentes ', pca.components_.shape)
 
 print(data_trans.shape)
 print(data_trans)
+
+sample = read_data_values('datos/airfoil_self_noise.dat', separator='\t')
+sns.pairplot(sample)
