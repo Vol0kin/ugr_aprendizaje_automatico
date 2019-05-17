@@ -19,17 +19,14 @@ def read_data_values(in_file, separator=None):
     :param in_file Archivo de entrada
     :param separator Separador que se utiliza en el archivo (por defecto None)
     
-    :return Devuelve los datos leidos del archivo
+    :return Devuelve los datos leidos del archivo en un DataFrame
     """
     
     # Cargar los datos en un DataFrame
     # Se indica que la primera columna no es el header
     df = pd.read_csv(in_file, sep=separator, header=None)
     
-    # Obtener los valores del DataFrame
-    data = df.values
-    
-    return data
+    return df
 
 
 def divide_data_labels(sample):
@@ -75,7 +72,8 @@ def stratify_k_fold(k, X, y):
 np.random.seed(1)
 
 # Lectura de los datos
-sample = read_data_values('datos/optdigits.tra', separator=None)
+df = read_data_values('datos/optdigits.tra', separator=None)
+sample = df.values
 
 # Obtener datos y etiquetas
 data, labels = divide_data_labels(sample)
@@ -101,5 +99,27 @@ print('Componentes ', pca.components_.shape)
 print(data_trans.shape)
 print(data_trans)
 
-sample = read_data_values('datos/airfoil_self_noise.dat', separator='\t')
-sns.pairplot(sample)
+df = read_data_values('datos/airfoil_self_noise.dat', separator='\t')
+# Asignamos nombres a las columnas (según los atributos)
+df.columns = ['Frequency', 'Angle of attack', 'Chord length',
+              'Free-stream velocity', 'SSD thickness', 'Sound Pressure']
+
+# Informacion sobre numero de filas, columnas y valores nulos
+print('Num. de valores del conjunto de datos y valores faltantes:')
+print(df.info())
+
+# Obtener número de valores únicos por atributo
+print('\nNumero de valores distintos por atributo')
+
+for atribute in column_names:
+    print(atribute + ': ' + str(df[atribute].unique().shape[0]))
+
+# Mostrar los valores mínimos de cada atributo
+print('\nValores minimos de cada atributo:')
+print(df.min())
+
+# Mostrar los valores máximos de cada atributo
+print('\nValores maximos de cada atributo:')
+print(df.max())
+
+sns.pairplot(df)
