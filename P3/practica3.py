@@ -25,9 +25,8 @@ def read_data_values(in_file, separator=None):
     # Cargar los datos en un DataFrame
     # Se indica que la primera columna no es el header
     df = pd.read_csv(in_file, sep=separator, header=None)
-    
-    return df
 
+    return df
 
 def divide_data_labels(sample):
     """
@@ -42,6 +41,7 @@ def divide_data_labels(sample):
     labels = sample [:, -1]
     
     return data, labels
+
 
 
 def stratify_k_fold(k, X, y):
@@ -101,8 +101,9 @@ print(data_trans)
 
 df = read_data_values('datos/airfoil_self_noise.dat', separator='\t')
 # Asignamos nombres a las columnas (según los atributos)
-df.columns = ['Frequency', 'Angle of attack', 'Chord length',
+column_names = ['Frequency', 'Angle of attack', 'Chord length',
               'Free-stream velocity', 'SSD thickness', 'Sound Pressure']
+df.columns = column_names
 
 # Informacion sobre numero de filas, columnas y valores nulos
 print('Num. de valores del conjunto de datos y valores faltantes:')
@@ -123,3 +124,4 @@ print('\nValores maximos de cada atributo:')
 print(df.max())
 
 sns.pairplot(df)
+print(df.head())
