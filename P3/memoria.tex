@@ -356,6 +356,207 @@ datos:
         \PY{n}{df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/train_head.png}
+\caption{Tabla con las 5 primeras muestras del conjunto de training.}
+\end{figure}
+
+    Antes de proseguir, vamos a dividir los datos en los conjuntos de
+training y test, ya que en este caso disponemos solo de un conjunto de
+datos (no viene separado por defecto). Para esto, vamos a crear primero
+una función que nos permita dividir los datos que tenemos en las
+características (a lo que llamaremos \(\mathbf{X}\)) y las etiquetas (a
+lo que llamaremos \(y\)). Una vez hecha esta separación, podremos
+dividir los datos en los dos conjuntos anteriormente mencionados. Vamos
+a hacer que el 80\% de los datos se quede en training y que el 20\% de
+los datos esté en test. Por tanto, en resumidas cuentas, estamos
+haciendo \emph{hold-out}, ya que nos quedamos con una parte de los datos
+para poder estimar un E\(_{test}\) que nos permita acotar E\(_{out}\)
+posteriormente. Esto tiene sus efectos negativos, como que por ejemplo
+tengamos menos datos con los que entrenar y que los resultados pueden
+ser un poco peores por este motivo, pero al menos tenemos una capacidad
+para probar como de bueno es nuestro ajuste fuera de la muestra con la
+que lo hemos entrenado.
+
+Con esto dicho, vamos a ver como ser haría:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{} Función para dividir los datos en train y test}
+        \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
+        
+        \PY{k}{def} \PY{n+nf}{divide\PYZus{}data\PYZus{}labels}\PY{p}{(}\PY{n}{input\PYZus{}data}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+        \PY{l+s+sd}{    Funcion que divide una muestra en los datos y las etiquetas}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    :param input\PYZus{}data Conjunto de valores que se quieren separar}
+        \PY{l+s+sd}{                      juntados en un DataFrame}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    :return Devuelve los datos y las etiquetas}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+            
+            \PY{c+c1}{\PYZsh{}Obtener los valores}
+            \PY{n}{values} \PY{o}{=} \PY{n}{input\PYZus{}data}\PY{o}{.}\PY{n}{values}
+            
+            \PY{c+c1}{\PYZsh{} Obtener datos y etiquetas}
+            \PY{n}{X} \PY{o}{=} \PY{n}{values}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+            \PY{n}{y} \PY{o}{=} \PY{n}{values}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+            
+            \PY{k}{return} \PY{n}{X}\PY{p}{,} \PY{n}{y}
+        
+        \PY{c+c1}{\PYZsh{} Obtener valores X, Y}
+        \PY{n}{X}\PY{p}{,} \PY{n}{y} \PY{o}{=} \PY{n}{divide\PYZus{}data\PYZus{}labels}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Dividir los datos en training y test}
+        \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{,} 
+                        \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{shuffle}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+    Con los datos ya cargados y divididos en los conjuntos de training y
+test, vamos a obtener cierta información sobre éstos. En problemas de
+este tipo nos interesa conocer por ejemplo si en ciertos casos faltan
+datos (no se ha podido obtener información sobre todos los atributos
+debido a que es imposible hacerlo, han habido errores a la hora de
+tomarlos o no se disponía de las herramientas necesarias), el número de
+valores distintos, los rangos de los datos (valores mínimos y máximos
+para cada atributo), si existe algún tipo de correlación entre las
+variables, etc.
+
+Vamos a comenzar estudiando primero las características más simples,
+para adentrarnos luego en el estudio de la correlación. Empecemos
+mirando información del conjunto training\footnote{El módulo que se ha utilizado para obtener la información resumida no viene instalado por defecto en el entorno de \textit{conda} y no se puede instalar en éste. Se puede instalar mediante pip, pero como tal, no se encuentra disponible para \textit{conda}. Por tanto, al no poder utilizarlo en Spyder, no se incluirá esta funcionalidad en el código entregado.}:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{} Clase para mostrar información de DataFrames resumida}
+        \PY{k+kn}{from} \PY{n+nn}{pandas\PYZus{}summary} \PY{k}{import} \PY{n}{DataFrameSummary}
+        \PY{k+kn}{from} \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{core}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k}{import} \PY{n}{display}
+        
+        \PY{c+c1}{\PYZsh{} Crear información resumida sobre los datos de training}
+        \PY{n}{train\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n}{column\PYZus{}names}\PY{p}{,}
+                                \PY{n}{data}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{c\PYZus{}}\PY{p}{[}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{]}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Crear un DataFrame de resumen y mostrarlo}
+        \PY{n}{train\PYZus{}sum} \PY{o}{=} \PY{n}{DataFrameSummary}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{)}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+        \PY{n}{display}\PY{p}{(}\PY{n}{train\PYZus{}sum}\PY{p}{)}
+\end{Verbatim}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{img/train_summary.png}
+\caption{Tabla que contiene el resumen de los datos de training.}
+\end{figure}
+
+    Aquí podemos ver que para ninguna de las variables faltan datos, lo cuál
+nos ahorra tiempo extra de procesado en el que tendríamos que insertar
+valores a partir de algún valor estadístico (valores medios, por
+ejemplo).
+
+También podemos ver información sobre como varían los datos, tanto los
+de entrada como los de salida. Vemos que, por ejemplo,
+\textbf{Frequency} es una característica que varía mucho, ya que tiene
+unos valores mínimos y máximos muy dispares, además de tener una
+desviación típica muy elevada. Posiblemente este atributo contenga
+\emph{outliers}, pero al no disponer de demasiados datos, y al ser tan
+pocos los posibles valores anómalos, no merece la pena intentar
+eliminarlos. Observando el resto de características, nos encontramos con
+unos valores que varían menos y cuyos rangos de valores más pequeño. Lo
+sorprendente es que, para los datos de entrada, tenemos que hay muy
+pocos valores únicos (no repetidos). Esto se puede deber a que no se han
+medido los valores con suficiente precisión o a que no exista una
+verdadera variabilidad entre ellos. Para los datos de salida, en cambio,
+nos encontramos que hay un montón de valores distintos. Esto es normal,
+ya que, al ser valores reales, hay muchos posibles valores. De aquí
+podemos concluir que, a pesar de que nos encontremos ante un problema
+con variable reales, parece que los valores que toman las variables de
+entrada están discretizados, es decir, que no son exactamente contínuos.
+
+Pasemos ahora a analizar el conjunto de datos de entrenamiento. Para
+obtener suficiente información, vamos a fijarnos solo en valores únicos
+y si faltan datos, teniendo en cuenta que nunca debemos obtener
+información completa sobre los datos de test, ya que se supone que nunca
+serán conocidos y que nunca deberíamos verlos. A continuación, podemos
+ver esta información:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{c+c1}{\PYZsh{} Crear DataFrame con los datos de test}
+        \PY{n}{test\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n}{column\PYZus{}names}\PY{p}{,}
+                               \PY{n}{data}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{c\PYZus{}}\PY{p}{[}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test}\PY{p}{]}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Crear un DataFrame resumen y mostrar algunos}
+        \PY{c+c1}{\PYZsh{} valores estadísticos}
+        \PY{n}{test\PYZus{}sum} \PY{o}{=} \PY{n}{DataFrameSummary}\PY{p}{(}\PY{n}{test\PYZus{}df}\PY{p}{)}\PY{o}{.}\PY{n}{columns\PYZus{}stats}
+        \PY{n}{display}\PY{p}{(}\PY{n}{test\PYZus{}sum}\PY{p}{)}
+\end{Verbatim}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{img/test_summary.png}
+\caption{Tabla que contiene el resumen de los datos de test.}
+\end{figure}
+
+Como se puede ver, el número de valores únicos, para las variables de
+entrada, son muy próximos a los que teníamos anteriormente. En el caso
+de los valores de salida, podemos observar que hay mucha diversidad. Y,
+finalmente, como punto positivo, podemos ver que en ninguna de las
+muestras faltan datos.
+
+Una vez hecho este pequeño análisis, pasemos a observar ahora la
+correlación entre las variables. Vamos a intentar obtener, para cada una
+de las variables (tanto las de entrada como las de salida) el
+coeficiente de correlación de Pearson. El resultado se puede ver a
+continuación:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{c+c1}{\PYZsh{} Obtener gráfica de correlación de Pearson}
+        \PY{n}{corr} \PY{o}{=} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}
+        \PY{n}{corr}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{background\PYZus{}gradient}\PY{p}{(}\PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Spectral}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{img/tabla_correlacion.png}
+\caption{Tabla con los coeficientes de Pearson para cada par de variables.}
+\end{figure}
+            
+    Se puede ver que, en general, no existe una correlación entre la mayoría
+de las características. Sin embargo, sí que destacan dos casos, uno más
+que el otro. El primer caso es la relación que existe entre la
+característica \textbf{SSD thickness} y la característica \textbf{Angle
+of attack}. Estas dos características tienen una coeficiente de
+correlación de Pearson de \(0.75\), valor que es muy próximo a \(1\).
+Por tanto, podemos decir que existe cierta correlación entre ellas, ya
+que el crecimiento de una influirá en el crecimiento de la otra. Sin
+embargo, como el valor del coeficiente de Pearson no es 1, no podríamos
+asegurar con absoluta confianza que las 2 características estén
+correlacionadas, y que por tanto, sería necesario eliminar una de ellas.
+El segundo caso es \textbf{Chord length} y \textbf{Angle of attack}.
+Aquí lo que sucede es que el coeficiente de correlación de Pearson tiene
+un valor de aproximadamente \(-0.5\). Con lo cuál, a pesar de que existe
+cierta correlación negativa entre las dos variables (cuando crezca una,
+la otra decrecerá), no podríamos afirmar con un 100\% de confianza que
+estén totalmente correlacionadas, ya que el valor del coeficiente está
+en un punto medio.
+
+Para tener una mejor visión de todo lo que se acaba a discutir, vamos a
+ver un conjunto de gráficas en las que se pueden ver los valores de
+todas las variables dos a dos (es decir, se muestran gráficas para
+mostrar como cambia cada par de variables, que pueden ser tanto las
+características como la etiqueta de salida). Esto se puede ver a
+continuación:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} Módulo avanzado para dibujar gráficas}
+        \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+        
+        \PY{c+c1}{\PYZsh{} Crear pares de plots para cada 2 atributos}
+        \PY{c+c1}{\PYZsh{} También se incluyen las etiquetas}
+        \PY{n}{sns}\PY{o}{.}\PY{n}{set\PYZus{}style}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{whitegrid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{sns}\PY{o}{.}\PY{n}{pairplot}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Mostrar el plot}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
 \newpage
 
 \section{\textsc{Problema de Clasificación}}
