@@ -276,9 +276,9 @@
 
 \subsection{Descripción del problema}
 
-En este problema vamos a trabajar con el conjunto de datos \textit{Airfoil Self-Noise}, el cuál ha sido proporcionado por la NASA,
-y contiene los resultados de haber realizado un conjunto de pruebas aerodinámicas y acústicas en un túnel de viento sobre perfiles
-alares de dos y tres dimensiones.
+En este problema vamos a trabajar con el conjunto de datos \textit{Airfoil Self-Noise}\cite{airfoil}, el cuál ha sido proporcionado
+por la NASA, y contiene los resultados de haber realizado un conjunto de pruebas aerodinámicas y acústicas en un túnel de viento sobre
+perfiles alares de dos y tres dimensiones.
 
 El conjunto de datos está compuesto por 1503 filas y 6 columnas, los valores de las cuáles son todos números reales. Los datos de
 las 5 primeras columnas se corresponden con los datos de entrada, y la última columna se corresponde con la información de salida.
@@ -356,7 +356,7 @@ datos:
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.6]{img/train_head.png}
-\caption{Tabla con las 5 primeras muestras del conjunto de training para el problema de regresión.}
+\caption{Tabla con las 5 primeras muestras del para el problema de regresión.}
 \end{figure}
 
     Antes de proseguir, vamos a dividir los datos en los conjuntos de
@@ -758,7 +758,7 @@ Vamos a ver cuáles son estas funciones que se utilizan para crear los
 \emph{pipelines} que usaremos luego:
 
  \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Importar funcinalidades para crear pipelines}
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Importar funcionalidades para crear pipelines}
         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{pipeline} \PY{k}{import} \PY{n}{make\PYZus{}pipeline}
         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{pipeline} \PY{k}{import} \PY{n}{Pipeline}
         
@@ -1229,7 +1229,7 @@ simple, son muy buenos, y parece que aún queda margen de mejora.
 \subsection{Descripción del problema}\label{descripciuxf3n-del-problema}
 
     En este problema vamos a trabajar con el conjunto de datos \emph{Optical
-Recognition of Handwritten Digits}. Este conjunto de datos ya ha sido
+Recognition of Handwritten Digits}\cite{digits}. Este conjunto de datos ya ha sido
 preprocesado y contiene información sobre distintos dígitos manuscritos.
 Cada fila del conjunto de datos contiene 64 valores enteros que se
 encuentran en el rango \([0, 16]\) y un valor entero más que se
@@ -1273,7 +1273,7 @@ valores del conjunto de training. Todo esto se puede ver a continuación:
          \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{divide\PYZus{}data\PYZus{}labels}\PY{p}{(}\PY{n}{test\PYZus{}df}\PY{p}{)}
          
          \PY{c+c1}{\PYZsh{} Mostrar primeros valores del conjunto de training}
-         \PY{n}{display}\PY{p}{(}\PY{n}{test\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{display}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
 \begin{figure}[H]
@@ -1935,11 +1935,91 @@ han probado, el más adecuado al problema.
 
 \newpage
 
-\begin{thebibliography}{5}
+\begin{thebibliography}{22}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\bibitem{airfoil}
+UCI. \textit{Airfoil Self-Noise Data Set}
+\\\url{https://archive.ics.uci.edu/ml/datasets/airfoil+self-noise#}
+
+\bibitem{digits}
+UCI. \textit{Optical Recognition of Handwritten Digits Data Set}
+\\\url{https://archive.ics.uci.edu/ml/datasets/optical+recognition+of+handwritten+digits}
+
+\bibitem{pca}
+Scikit-Learn. \textit{PCA}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html}
+
+\bibitem{scaler}
+Scikit-Learn. \textit{StandardScaler}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html}
+
+\bibitem{pearson}
+Wikipedia. \textit{Coeficiente de correlación de Pearson}
+\\\url{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}
+
+\bibitem{linear-models}
+Scikit-Learn. \textit{1.1. Generalized Linear Models}
+\\\url{https://scikit-learn.org/stable/modules/linear_model.html}
+
+\bibitem{linear-regression}
+Scikit-Learn. \textit{LinearRegression}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression}
+
+\bibitem{ridge}
+Scikit-Learn. \textit{Ridge}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html#sklearn.linear_model.Ridge}
+
+\bibitem{linear-svr}
+Scikit-Learn. \textit{LinearSVR}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html#sklearn.svm.LinearSVR}
+
+\bibitem{pipeline}
+Scikit-Learn. \textit{Pipeline}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html}
+
+\bibitem{make-pipeline}
+Scikit-Learn. \textit{make\_pipeline}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html}
+
+\bibitem{model-evaluation}
+Scikit-Learn. \textit{3.3. Model evaluation: quantifying the quality of predictions}
+\\\url{https://scikit-learn.org/stable/modules/model_evaluation.html}
+
+\bibitem{svm}
+Scikit-Learn. \textit{1.4. Support Vector Machines}
+\\\url{https://scikit-learn.org/stable/modules/svm.html}
+
+\bibitem{regularization}
+Anuja Nagpal. \textit{L1 and L2 Regularization Methods}
+\\\url{https://towardsdatascience.com/l1-and-l2-regularization-methods-ce25e7fc831c}
+
+\bibitem{logistic-regression}
+Scikit-Learn. \textit{LogisticRegression}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html}
+
+\bibitem{svc}
+Scikit-Learn. \textit{LinearSVC}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html#sklearn.svm.LinearSVC}
+
+\bibitem{scaling}
+Scikit-Learn. \textit{Importance of Feature Scaling}
+\\\url{https://scikit-learn.org/stable/auto_examples/preprocessing/plot_scaling_importance.html}
+
+\bibitem{accuracy}
+Scikit-Learn. \textit{accuracy\_score}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html}
+
+\bibitem{mae}
+Scikit-Learn. \textit{mean\_absolute\_error}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html}
+
+\bibitem{confusion-sci}
+Scikit-Learn. \textit{confusion\_matrix}
+\\\url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html}
+
+\bibitem{confusion}
+Wikipedia. \textit{Confusion matrix}
+\\\url{https://en.wikipedia.org/wiki/Confusion_matrix}
 
 \end{thebibliography}
 
