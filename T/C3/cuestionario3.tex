@@ -1,0 +1,230 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[spanish,es-nodecimaldot]{babel}	% Utilizar español
+\usepackage[utf8]{inputenc}					% Caracteres UTF-8
+\usepackage{graphicx}						% Imagenes
+\usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
+\usepackage{fancyhdr}						% Modificar encabezados y pies de pagina
+\usepackage{float}							% Insertar figuras
+\usepackage[textwidth=390pt]{geometry}		% Anchura de la pagina
+\usepackage[nottoc]{tocbibind}				% Referencias (no incluir num pagina indice en Indice)
+\usepackage{enumitem}						% Permitir enumerate con distintos simbolos
+\usepackage[T1]{fontenc}					% Usar textsc en sections
+\usepackage{amsmath}						% Símbolos matemáticos
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+% no accents in math operators
+\unaccentedoperators
+
+% Comando para poner el nombre de la asignatura
+\newcommand{\asignatura}{Aprendizaje Automático}
+\newcommand{\autor}{Vladislav Nikolov Vasilev}
+
+% Comandos utilies
+\newcommand{\answer}{\noindent\textbf{Solución}}
+\newcommand{\ein}{E$_{in}$}
+\newcommand{\eout}{E$_{out}$}
+\newcommand{\addtoc}[1]{\addcontentsline{toc}{section}{#1}}
+
+% Configuracion de encabezados y pies de pagina
+\pagestyle{fancy}
+\lhead{\autor{}}
+\rhead{\asignatura{}}
+\lfoot{Grado en Ingeniería Informática}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}		% Linea cabeza de pagina
+\renewcommand{\footrulewidth}{0.4pt}		% Linea pie de pagina
+
+\begin{document}
+\pagenumbering{gobble}
+
+% Pagina de titulo
+\begin{titlepage}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\includegraphics[scale=0.5]{img/ugr.png}\\
+
+\textsc{\Large \asignatura{}\\[0.2cm]}
+\textsc{GRADO EN INGENIERÍA INFORMÁTICA}\\[1cm]
+
+\noindent\rule[-1ex]{\textwidth}{1pt}\\[1.5ex]
+\textsc{{\Huge TRABAJO 3\\[0.5ex]}}
+\textsc{{\Large Cuestiones de Teoría\\}}
+\noindent\rule[-1ex]{\textwidth}{2pt}\\[3.5ex]
+
+\end{minipage}
+
+\vspace{0.5cm}
+
+\begin{minipage}{\textwidth}
+
+\centering
+
+\textbf{Autor}\\ {\autor{}}\\[2.5ex]
+\textbf{Rama}\\ {Computación y Sistemas Inteligentes}\\[2.5ex]
+\vspace{0.3cm}
+
+\includegraphics[scale=0.3]{img/etsiit.jpeg}
+
+\vspace{0.7cm}
+\textsc{Escuela Técnica Superior de Ingenierías Informática y de Telecomunicación}\\
+\vspace{1cm}
+\textsc{Curso 2018-2019}
+\end{minipage}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\tableofcontents
+\thispagestyle{empty}				% No usar estilo en la pagina de indice
+
+\newpage
+
+\setlength{\parskip}{1em}
+
+\section*{Ejercicio 1}
+\addtoc{Ejercicio 1}
+
+\noindent ¿Podría considerarse Bagging como una técnica para estimar el error de predicción de un
+modelo de aprendizaje? Diga si o no con argumentos. En caso afirmativo compárela con
+validación cruzada.
+
+\answer
+
+\section*{Ejercicio 2}
+\addtoc{Ejercicio 2}
+
+\noindent Considere que dispone de un conjunto de datos linealmente separable. Recuerde que una
+vez establecido un orden sobre los datos, el algoritmo perceptron encuentra un hiperplano
+separador interando sobre los datos y adaptando los pesos de acuerdo al algoritmo
+
+\begin{algorithm}[H]
+\caption{Perceptron}
+\begin{algorithmic}[1]
+\State \textbf{Entradas}: $(\mathbf{x}_i, y_i) = 1, \dots, n \; , \; w=0, \; k = 0$
+\Repeat
+	\State $k \gets (k + 1) \; \mod \; n$
+	\If{$\text{sign}(y_i) \neq \text{sign}(\mathbf{w}^T\mathbf{x}_i)$}
+		\State $\mathbf{w} \gets \mathbf{w} + y_i\mathbf{x}_i$
+	\EndIf
+\Until{todos los puntos bien clasificados}
+\end{algorithmic}
+\end{algorithm}
+
+\noindent Modificar este pseudo-código para adaptarlo a un algoritmo simple de SVM, considerando
+que en cada iteración adaptamos los pesos de acuerdo al caso peor clasificado de toda la
+muestra. Justificar adecuadamente/matematicamente el resultado, mostrando que al final
+del entrenamiento solo estaremos adaptando los vectores soporte.
+
+\answer
+
+\section*{Ejercicio 3}
+\addtoc{Ejercicio 3}
+
+\noindent Considerar un modelo SVM y los siguientes datos de entrenamiento: Clase-1:$\lbrace (1,1),$
+$(2,2),(2,0) \rbrace$, Clase-2:$\lbrace (0,0),(1,0),(0,1) \rbrace$
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Dibujar los puntos y construir por inspección el vector de pesos para el hiperplano óptimo y el margen óptimo.
+\end{enumerate}
+
+\answer
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item ¿Cuáles son los vectores soporte?
+\end{enumerate}
+
+\answer
+
+\begin{enumerate}[resume,label=\textit{\alph*})]
+	\item Construir la solución en el espacio dual. Comparar la solución con la del apartado (a)
+\end{enumerate}
+
+\answer
+
+
+
+\section*{Ejercicio 4}
+\addtoc{Ejercicio 4}
+
+\noindent ¿Cúal es el criterio de optimalidad en la construcción de un árbol? Analice un clasificador
+en árbol en términos de sesgo y varianza. ¿Que estrategia de mejora propondría?
+
+\answer
+
+\section*{Ejercicio 5}
+\addtoc{Ejercicio 5}
+
+\noindent ¿Cómo influye la dimensión del vector de entrada en los modelos: SVM, RF, Boosting and
+NN?
+
+\answer
+
+\section*{Ejercicio 6}
+\addtoc{Ejercicio 6}
+
+\noindent El método de Boosting representa una forma alternativa en la búsqueda del mejor clasificador
+respecto del enfoque tradicional implementado por los algoritmos PLA, SVM, NN, etc. a)
+Identifique de forma clara y concisa las novedades del enfoque; b) Diga las razones profundas
+por las que la técnica funciona produciendo buenos ajustes (no ponga el algoritmo); c)
+Identifique sus principales debilidades; d) ¿Cuál es su capacidad de generalización comparado
+con SVM?
+
+\answer
+
+\section*{Ejercicio 7}
+\addtoc{Ejercicio 7}
+
+\noindent Discuta pros y contras de los clasificadores SVM y Random Forest (RF). Considera que
+SVM por su construcción a través de un problema de optimización debería ser un mejor
+clasificador que RF. Justificar las respuestas.
+
+\answer
+
+\section*{Ejercicio 8}
+\addtoc{Ejercicio 8}
+
+\noindent ¿Cuál es a su criterio lo que permite a clasificadores como Random Forest basados en
+un conjunto de clasificadores simples aprender de forma más eficiente? ¿Cuales son las
+mejoras que introduce frente a los clasificadores simples? ¿Es Random Forest óptimo en
+algún sentido? Justifique con precisión las contestaciones.
+
+\answer
+
+\section*{Ejercicio 9}
+\addtoc{Ejercicio 9}
+
+\noindent En un experimento para determinar la distribución del tamaño de los peces en un lago, se
+decide echar una red para capturar una muestra representativa. Así se hace y se obtiene
+una muestra suficientemente grande de la que se pueden obtener conclusiones estadísticas
+sobre los peces del lago. Se obtiene la distribución de peces por tamaño y se entregan las
+conclusiones. Discuta si las conclusiones obtenidas servirán para el objetivo que se persigue
+e identifique si hay algo que lo impida.
+
+\answer
+
+\section*{Ejercicio 10}
+\addtoc{Ejercicio 10}
+
+\noindent Identifique que pasos daría y en que orden para conseguir con el menor esfuerzo posible un
+buen modelo de red neuronal a partir una muestra de datos. Justifique los pasos propuestos,
+el orden de los mismos y argumente que son adecuados para conseguir un buen óptimo.
+Considere que tiene suficientes datos tanto para el ajuste como para el test.
+
+\answer
+
+\newpage
+
+\begin{thebibliography}{5}
+
+\bibitem{nombre-referencia}
+Texto referencia
+\\\url{https://url.referencia.com}
+
+\end{thebibliography}
+
+\end{document}
+
