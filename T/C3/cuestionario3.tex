@@ -133,11 +133,127 @@ $(2,2),(2,0) \rbrace$, Clase-2:$\lbrace (0,0),(1,0),(0,1) \rbrace$
 
 \answer
 
+Primero vamos a dibujar los puntos para ver como se ditribuyen en el espacio:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/points.png}
+\caption{Dibujo con los puntos de las dos clases en el espacio.}
+\end{figure}
+
+Se puede ver claramente que los puntos de los dos clases son linealmente separables, ya que perfectamente se pueden separar mediante
+un hiperplano que pase en medio de ellas.
+
+Para intentar obtener un hiperplano óptimo, vamos a suponer que éste tiene que pasar entre los puntos de las dos clases que estén más
+cerca entre sí (es decir, que tiene que pasar entre los vectores soporte). Estos puntos son, para la Clase-1, el $(1, 1)$ y el
+$(2, 0)$, y para la Clase-2 son el $(0,1)$ y el $(1, 0)$. Por tanto, sabiendo que el hiperplano óptimo tiene que pasar entre estos
+puntos, dejando la mayor cantidad de margen a cada lado, podemos suponer que pasará justo en el punto medio para cada par de puntos
+que están a la misma altura y son de clases diferentes. Es decir, que para los puntos $(0, 1)$ y $(1, 1)$ (los cuáles son de
+diferente clase), sabemos que seguramente ese hiperplano pasará por el $(0.5, 1)$. Para los dos puntos de abajo, sabiendo que tiene
+que pasar entre los puntos $(0, 0)$ y $(1, 0)$, seguramente pasará por el punto $(1.5, 0)$, el cuál está justo en medio de los
+dos anteriores. Esto se puede ver mejor en la siguiente imagen:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/middle.png}
+\caption{Dibujo con los puntos medios entre los vectores soporte de las dos clases, representados en negro.}
+\end{figure}
+
+Ahora lo único que nos queda es obtener el hiperplano que separa las dos clases. Como ya sabemos los puntos por los que puede pasar,
+lo único que tenemos que obtener es la recta que pasa por esos dos puntos. Para eso podemos partir de la ecuación de la recta, la cuál
+viene dada por la forma:
+
+\begin{equation}
+\label{line}
+y = ax + b
+\end{equation}
+
+\noindent donde $a$ es la pendiente de la recta y $b$ el término independiente. Sustituyendo los valores de los puntos por $x$ e $y$
+en la expresión dada por \eqref{line}, obtenemos el siguiente sistema de ecuaciones:
+
+\begin{equation}
+\left.
+\begin{aligned}
+	1 &= 0.5a + b \\
+	0 &= 1.5a + b
+\end{aligned}
+\right\rbrace
+\end{equation}
+
+Ahora resolvemos el sistema de ecuaciones para obtener la solución:
+
+\begin{equation}
+\left.
+\begin{aligned}
+	1 - 0.5a &= b \\
+	-1.5a&= b
+\end{aligned}
+\right\rbrace
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+1 - 0.5a &= -1.5a \\
+1 &= -a \\
+\end{aligned}
+\end{equation}
+
+De aquí, obtenemos que:
+
+\begin{equation}
+\label{eq:answer}
+\left.
+\begin{aligned}
+a = -1 \\
+b = 1.5
+\end{aligned}
+\right\rbrace
+\end{equation}
+
+Y finalmente, con los resultados obtenidos en \eqref{eq:answer}, sustityendo en la expresión dada en \eqref{line}, obtenemos que la
+ecuación de la recta es la siguiente:
+
+\begin{equation}
+y = -x + 1.5
+\end{equation}
+
+Esta recta es, en un principio, el hiperplano óptimo que separa las dos clases. Para obtener los márgenes, lo único que tenemos que
+hacer es obtener rectas paralelas a las del hiperplano que pasen por los vectores soporte. Para ello, lo único que tenemos que
+modificar es el valor de $b$ que hemos obtenido con tal de obtener cada margen (el coeficiente libre indica el desplazamiento
+en el eje $X$ que hace la recta para cortar con este eje en $x = 0$). En los dos casos es muy fácil obtener estos valores de $b$,
+ya que algunos de los vectores soporte están sobre el eje $X$. Por tanto, tenemos que para la Clase-1, la recta que representa el
+margen es la siguiente:
+
+\begin{equation}
+y = -x + 2
+\end{equation}
+
+Para la Clase-2, la recta es la siguiente:
+
+\begin{equation}
+y = -x + 1
+\end{equation}
+
+Por tanto, veamos como quedaría gráficamente el resultado de pintar el hiperplano óptimo y los márgenes:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{img/hyperplane.png}
+\caption{Dibujo del hiperplano óptimo con las dos clases y los márgenes para cada clase.}
+\end{figure}
+
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item ¿Cuáles son los vectores soporte?
 \end{enumerate}
 
 \answer
+
+Los vectores soporte son los siguientes:
+
+\begin{itemize}[label=\textbullet]
+	\item Para la \textbf{Clase-1}, los vectores soporte son $(1, 1)$ y $(2, 0)$.
+	\item Para la \textbf{Clase-2}, los vectores soporte son $(0, 1)$ y $(1, 0)$.
+\end{itemize}
 
 \begin{enumerate}[resume,label=\textit{\alph*})]
 	\item Construir la solución en el espacio dual. Comparar la solución con la del apartado (a)
