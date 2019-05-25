@@ -2,7 +2,7 @@
 \usepackage[spanish,es-nodecimaldot]{babel}	% Utilizar español
 \usepackage[utf8]{inputenc}					% Caracteres UTF-8
 \usepackage{graphicx}						% Imagenes
-\usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
+\PassOptionsToPackage{hyphens}{url}\usepackage[hidelinks]{hyperref}			% Poner enlaces sin marcarlos en rojo
 \usepackage{fancyhdr}						% Modificar encabezados y pies de pagina
 \usepackage{float}							% Insertar figuras
 \usepackage[textwidth=390pt]{geometry}		% Anchura de la pagina
@@ -94,6 +94,34 @@ validación cruzada.
 
 \answer
 
+Bagging se podría considerar como una técnica para estimar el error de predicción de un modelo de aprendizaje.
+Esto se debe a que, a partir de una muestra, se eligen mediante \textit{bootstrapping} un número $B$ de conjuntos de entrenamiento
+(es decir, conjuntos en los que hay datos con repetición), y se entrenan $B$ árboles con estas muestras de entrenamiento. El resto
+de elementos de la muestra que no han sido escogidos para formar las muestras de entrenamiento se utilizan como test (es decir, para
+cada árbol, se mira cuáles son los elementos de la muestra original que no han sido utilizados en el entrenamiento, y se escogen
+posteriormente para hacer el test y obtener alguna métrica del error o de la precisión del árbol de manera individual). Finalmente,
+se realiza la media con todos los resultados obtenidos para cada modelo.
+
+Esto que se ha descrito en el párrafo anterior es muy parecido a lo que se hace con la validación cruzada. Ambos tienen una parte
+de los datos con la que entrenan el modelo y una parte con la que obtienen alguna métrica sobre el modelo, para luego juntar todas
+las métricas, hacer una media de éstas y obtener un valor que nos permita estimar el error de predicción del modelo.
+
+Sin embargo, existen algunas diferencias:
+
+\begin{itemize}[label=\textbullet]
+	\item En la validación cruzada no hay datos repetidos ya que se hacen una serie de $k$ particiones disjuntas. En cambio, al
+	utilizar \textit{bootstrapping} en Bagging, al escoger datos de la muestra con repetición, existen muy altas probabilidades
+	de que se repita algún dato.
+	\item En la validación cruzada se hacen $k$ particiones disjuntas y se prueba el mismo modelo con todas ellas agrupando
+	los datos en una parte de training y una de test, haciendo que la partición de test sea cada vez diferente para las $k$
+	particiones que se han creado. En cambio, con Bagging se entrenan una serie de $B$ modelos con un solo
+	conjunto de entrenamiento cada uno y se prueba con un conjunto de test solo. Es decir, en vez de tener un único modelo que
+	se va entrenando con cada una de las particiones de entrenamiento, se tienen $B$ modelos.
+	\item En la validación cruzada se puede elegir qué parte de los datos estará en la parte de test, al poder elegir el tamaño
+	de las particiones. En cambio, en Bagging aproximadamente 2/3 de los datos de la muestra original serán usados como training,
+	mientras que aproximadamente el 1/3 restante será utilizado para test para cada modelo.
+\end{itemize}
+
 \section*{Ejercicio 2}
 \addtoc{Ejercicio 2}
 
@@ -120,6 +148,20 @@ muestra. Justificar adecuadamente/matematicamente el resultado, mostrando que al
 del entrenamiento solo estaremos adaptando los vectores soporte.
 
 \answer
+
+\begin{algorithm}[H]
+\caption{Perceptron-SVM}
+\begin{algorithmic}
+\State \textbf{Entradas}: $(x_i, y_i), i = 1, ..., n; \; w = 0, \; k = 0$
+\Repeat
+  \State $k \gets (k + 1) \mod n$
+  \State $peor \gets$ peor clasificado
+  \If{$y_{peor} \cdot w^t \cdot x_{peor} < 1$}
+    \State $w \gets y_{peor} \cdot x_{peor}$
+  \EndIf
+\Until{convergencia}
+\end{algorithmic}
+\end{algorithm}
 
 \section*{Ejercicio 3}
 \addtoc{Ejercicio 3}
@@ -271,10 +313,53 @@ en árbol en términos de sesgo y varianza. ¿Que estrategia de mejora propondr�
 
 \answer
 
+En un principio, el árbol óptimo és el árbol más pequeño capaz de clasificar correctamente todas las instancias. Sin embargo,
+intentar obtener este árbol representa un problema NP-completo, con lo cuál computacionalmente es inviable intentar obtenerlo
+y hay que intentar utilizar otras técnicas para intentar conseguir árboles subóptimos. Para intentar aprender estos árboles,
+podemos utilizar técnicas basadas en heurísticas greedy, las cuáles han demostrado ofrecer unos buenos resultados en general.
+La construcción de árboles de esta forma es muy simple: para cada variable, se obtiene la forma en la que esa variable particiona
+los datos en clases y se escoge la mejor variable según un determinado criterio. Esa variable forma un nuevo nodo e indica que para
+decidir sobre la clase a la que pertenece una instancia, se va a preguntar sobre su valor. Esto se hace de forma recursiva hasta que
+no queden más instancias que clasificar.
+
+Existen distintas métricas que se puden utilizar para ver cómo de bien una variable divide un conjunto de datos. Una de ellas
+son por ejemplo la \textbf{entropía}, que mide el desorden o falta de información en un nodo, lo cuál significa que cuanto más
+equilibradas estén las clases en un conjunto de datos (que las proporciones de datos que pertenecen a una u otra clase sean más o
+menos las mismas) significa que hay una entropía alta, y por tanto, no se tiene mucha información, ya las dos clases son casi
+equiprobables o están muy cerca de serlo. Existen otras medidas también, como el \textbf{índice de Gini} y el \textbf{error de
+clasificación}, las cuáles se utilizan en algunos algoritmos de aprendizaje. Sin embargo, la que nos interesa es la entropía,
+ya que uno de los algoritmos más importantes, el \textbf{ID3} utiliza esta métrica. Más concretamente, utiliza la \textbf{ganancia
+de información}, que es el concepto opuesto a la entropía.
+
+La idea básica del \textbf{ID3} es escoger aquellas variables que maximicen la ganancia de información. Es decir, queremos
+que la variable separe los datos restantes en conjuntos que tengan una entropía lo más pequeña posible, y que por tanto, la mayoría o
+todos los elementos de ese conjunto sean de la misma clase (con lo cuál habrá más orden). Así que, para eso, se van escogiendo
+aquellos atributos que ofrezcan una mayor ganancia de información y se va construyendo el árbol, de forma que si en alguno de los
+conjuntos solo quedan elementos de una clase se crea un nodo hoja con la etiqueta de esa clase. Esto se hace de forma recursiva hasta
+que no queden ejemplos por clasificar; es decir, se repite el proceso de escoger una variable con la mayor ganancia de información
+y ver como se distribuyen posteriormente los datos. Si se da que quedan ejemplos por clasificar pero no quedan atributos, se escoge
+la clase mayoritaria en ese nodo.
+
+Analizando un árbol con los valores de sesgo y varianza, podemos ver que los árboles van a presentar en general un \textbf{sesgo
+bajo}, ya que no están asumiendo nada o casi nada sobre la función objetivo, con lo cuál son capaces de aprender casi cualquier
+función que se desee a diferencia de otros modelos como por ejemplo los lineales, los cuáles sí que imponen restricciones sobre la
+función objetivo (que esta sea lineal). Sin embargo, los árboles suelen presentar una \textbf{alta varianza} debido a que entrenarlos
+con una muestra de datos o con otra nos produciría modelos muy diferentes (los nodos y las hojas podrían ser completamente
+diferentes).
+
+Debido a que existe una alta varianza en este modelo, podemos intentar disminuirlo a costa de aumentar un poco el sesgo, lo cuál se
+conoce como el \textit{bias-variance trade-off}. Para realizarlo, lo que se suele hacer es podar el árbol, eliminando aquellos nodos
+que no son muy informativos. Con esto, además, se consigue hacer que el tamaño del árbol se vea reducido efectivamente. Esta poda
+puede realizarse mientras se construye el árbol o una vez construido, comprobando el error que se obtiene de validación cruzada. En
+el primer caso, se comprueba como va disminuyendo el error a medida que se crea el árbol, y si se da el caso de que en un momento
+disminuye muy poco, se deja de construir (lo cuál es conocido como \textbf{early stopping}). En el otro caso, a partir del árbol
+construido, se quita cada vez el nodo del árbol que más mejore la precisión con el conjunto de validación hasta que la precisión
+que se obtiene sobre este conjunto empiece a empeorar. Esta segunda técnica también es conocida como \textbf{post-prunnning}.
+
 \section*{Ejercicio 5}
 \addtoc{Ejercicio 5}
 
-\noindent ¿Cómo influye la dimensión del vector de entrada en los modelos: SVM, RF, Boosting and
+\noindent ¿Cómo influye la dimensión del vector de entrada en los modelos: SVM, RF, Boosting y
 NN?
 
 \answer
@@ -336,9 +421,17 @@ Considere que tiene suficientes datos tanto para el ajuste como para el test.
 
 \begin{thebibliography}{5}
 
-\bibitem{nombre-referencia}
-Texto referencia
-\\\url{https://url.referencia.com}
+\bibitem{dlt}
+Wikipedia. \textit{Decision Tree Learning}
+\\\url{https://en.wikipedia.org/wiki/Decision_tree_learning}
+
+\bibitem{bias-variance}
+Jason Brownlee. \textit{Gentle Introduction to the Bias-Variance Trade-Off in Machine Learning}
+\\\url{https://machinelearningmastery.com/gentle-introduction-to-the-bias-variance-trade-off-in-machine-learning/}
+
+\bibitem{prunning}
+DISPLAYR. \textit{Machine Learning: Pruning Decision Trees}
+\\\url{https://www.displayr.com/machine-learning-pruning-decision-trees/}
 
 \end{thebibliography}
 
