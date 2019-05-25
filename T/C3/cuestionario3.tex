@@ -150,18 +150,44 @@ del entrenamiento solo estaremos adaptando los vectores soporte.
 \answer
 
 \begin{algorithm}[H]
-\caption{Perceptron-SVM}
-\begin{algorithmic}
-\State \textbf{Entradas}: $(x_i, y_i), i = 1, ..., n; \; w = 0, \; k = 0$
+\caption{Perceptron adaptado a SVM}
+\begin{algorithmic}[1]
+\State \textbf{Entradas}: $(x_i, y_i), i = 1, ..., n; \; w = 0$
 \Repeat
-  \State $k \gets (k + 1) \mod n$
-  \State $peor \gets$ peor clasificado
-  \If{$y_{peor} \cdot w^t \cdot x_{peor} < 1$}
-    \State $w \gets y_{peor} \cdot x_{peor}$
-  \EndIf
-\Until{convergencia}
+	\State $peor \gets 1$
+	\For{$k \gets 1$ \textbf{to} $n$}
+		\If{$y_{k} \mathbf{w}^T  \mathbf{x}_{k} < y_{peor} \mathbf{w}^T  \mathbf{x}_{peor}$}
+			\State $peor \gets k$
+		\EndIf
+	\EndFor
+	\If{$y_{peor} \mathbf{w}^T  \mathbf{x}_{peor} < 1$}
+		\State $\mathbf{w} \gets \mathbf{w} + y_{peor} \mathbf{x}_{peor}$
+	\EndIf
+\Until{condición de parada}
 \end{algorithmic}
 \end{algorithm}
+
+Con el pseudocódigo ya visto, vamos a intentar justificar brevemente el por qué de cada cosa. 
+SVM, al igual que hace el Perceptrón, comprueba si los signos del valor predicho y el real se corresponden. Esto se hace mediante
+el producto $y_n\mathbf{w}^T\mathbf{x}_n$. Si los signos coinciden, el producto es positivo, y si no, es negativo. Sin embargo,
+en SVM también se intenta maximizar el margen que se deja a cada lado del hiperplano. Los vectores soporte siempre se encontrarán
+encima del margen, y por tanto para ellos se da que $y_n\mathbf{w}^T\mathbf{x}_n = 1$. Para el resto de puntos que están más allá
+de los márgenes, el valor del producto será siempre mayor estricto que 1, independientemente de a qué lado caiga. Sin embargo, si
+un punto cae dentro del margen, su distancia será menor que 1. 
+
+El algoritmo recorre todos los puntos y busca aquél cuyo producto $y_n\mathbf{w}^T\mathbf{x}_n$ sea el más pequeño, el cuál
+considerará como el peor clasificado. Después de eso, comprueba si es menor que 1, y en caso de serlo, modifica $\mathbf{w}$ en una
+cierta cantidad. Aquél punto que se considere el peor clasificado será o bien uno que esté \textbf{incorrectamente clasificado} y esté
+muy alejado del hiperplano, o bien uno que, estando todos los otros puntos correctamente clasificados, éste se encuentre dentro del
+margen, siendo por tanto su distancia al hiperplano menor que 1. De esta forma, al principio el hiperplano se irá ajustando para
+que todos los puntos estén bien clasificados, ya que siempre el peor clasificado será uno que no haya sido clasificado correctamente.
+Después de eso, los peores clasificados serán aquellos que caigan dentro del margen, y por tanto, el hiperplano irá iterando sobre
+los vectores soporte hasta encontrar los correctos y conseguir ajustarse correctamente. Con lo cuál, como resumen, primero se irá
+situando el hiperplano en un lugar adecuado, y una vez hecho esto, se irá ajustando para maximizar el margen. Es importante decir que
+en este algoritmo no se contempla que los datos no sean \textbf{linealmente separables} y que haya puntos que no se puedan extraer del
+margen. Para ello, habría que considerar una tolerancia de violación del margen (un valor de error) y ver cuál es su valor para todos
+los puntos.
+
 
 \section*{Ejercicio 3}
 \addtoc{Ejercicio 3}
@@ -364,6 +390,25 @@ NN?
 
 \answer
 
+\begin{itemize}[label=\textbullet]
+	\item En \textbf{SVM} la dimensión no influye en una gran medida. En caso de clasificación lineal, y si los datos son linealmente
+	separables, se puede conseguir un hiperplano óptimo que deje suficiente margen a los lados, con lo cuál la dimensión VC de ese
+	modelo será menor a la dimensión del vector de entrada. Si en cambio no se pueden separa linealmente los datos, se pueden utilizar
+	\textit{kernels}, los cuáes transformarán el espacio de entrada de dimensión $d$ en un espacio con una dimensión mucho mayor. Por
+	tanto, en estos casos al trabar con un número de dimensiones mucho mayor que el de entrada, no influye mucho cuántas dimensiones
+	tenía el vector de entrada, ya que ahora habrán muchas más independientemente de que fuesen muchas o pocas.
+	\item En \textbf{RF} la dimensión no influye mucho ya que se utilizan un subconjunto de las características para aprender un
+	árbol en vez de intentar utilizarlas todas, con lo cuál, por muy grande que sea el vector de entrada, solo se usará una parte
+	de él.
+	\item \textbf{Boosting} no se ve influido por la dimensión del vector de entrada. Esto se debe a que el enfoque de este modelo
+	es construir un modelo complejo a partir de modelos más simples los cuáles son \textit{weak classifiers} (clasificadores que
+	funcionan un poco mejor que uno aleatorio). Como este tipo de clasificadores normalmente son \textit{stumps} (árboles de un
+	solo nodo), solo se mira una característica. Con lo cuál, tener muchas o pocas no influye mucho.
+	\item En \textbf{NN} la dimensión del vector de entrada influye en el modelo, ya que va a influir tanto en la dimensión VC
+	como en el error de generalización. También influye a la hora de escoger el número de \textit{hidden layers}, ya que hay que
+	intentar escogerlo teniendo en cuenta el número de datos que tengamos y el número de dimensiones que tengan éstos.
+\end{itemize}
+
 \section*{Ejercicio 6}
 \addtoc{Ejercicio 6}
 
@@ -375,6 +420,31 @@ Identifique sus principales debilidades; d) ¿Cuál es su capacidad de generaliz
 con SVM?
 
 \answer
+
+\begin{enumerate}[label=\textit{\alph*})]
+	\item Este nuevo enfoque pretende conseguir crear un modelo robusto a partir de modelos simples o \textit{weak classifiers}.
+	Es decir, pretende obtener un modelo más complejo a partir de modelos muy simples que clasifican un poco mejor que un
+	modelo que clasifica de forma aleatoria. Se realiza mediante un proceso iterativo en el que se ajusta un clasificador simple
+	a una muestra de datos ponderada (los datos tienen un peso según su historia). Si el nuevo modelo clasifica bien los datos,
+	se disminuye el peso asociado a estos. Si clasifica incorrectamente una serie de datos, se les añade más peso para que 
+	posteriormente se pueda corregir ese error.
+	\item Esta técnica produce unos buenos ajustes ya que en cada iteración se intenta ajustar un clasificador que sea capaz de
+	clasificar bien los datos en los que anterioremnte fallaba. Al componer luego múltiples clasificadores simples, se tiene un
+	modelo que es capaz de explicar muy bien todos los datos, ya que cada uno de los clasificadores simples explica una parte
+	de los datos.
+	\item Una de las principlaes debilidades es que si se utiliza un \textit{weak classifier} demasiado complejo se
+	puede producir \textit{overfitting}, ya que cada uno de los clasificadores intentará explicar los datos lo mejor posible, o
+	si utiliza un \textit{weak classifier} demasiado simple se puede llegar a que el modelo se queda muy corto (\textit{underfitting})
+	o a que se produzca \textit{overfitting} debido a que no se deje suficiente margen. Otro problema que tiene es que es una
+	técnica muy susceptible al ruido uniforme, ya que es muy probable que le asigne muchas veces pesos altos a datos con ruido
+	y que por tanto se termine adaptando a éstos, clasificando posteriormente peor.
+	\item Boosting tiene una muy buena capacidad de generalización comparándolo con otros modelos como SVM, siendo aproximadamente
+	igual de buena que la de SVM. Es una técnica que, partiendo de un \textit{weak classifier} adecuado, permite también obtener un
+	muy buen margen al igual que hace SVM con datos linealmente separables. Por tanto, Boosting va a permitir generalizar muy bien,
+	ya que con un número suficiente de iteraciones, se puede obtener un buen valor de margen. También, es uno de los pocos modelos que
+	llegado un punto en el que se da que E$_{in} = 0$, si se siguen realizando iteraciones se puede seguir reduciendo E$_{out}$
+	más y más, hasta un cierto límite.
+\end{enumerate}
 
 \section*{Ejercicio 7}
 \addtoc{Ejercicio 7}
@@ -407,6 +477,27 @@ e identifique si hay algo que lo impida.
 
 \answer
 
+En un principio, parece que todo el planteamiento es correcto, y por tanto, en un principio, las conclusiones que se vayan
+a extraer al haber tomado la muestra parecen ser correctas. Sin embargo, al volver a pensar en todo el proceso, nos damos
+cuenta de que hay ciertos aspectos que puede que no hayan sido considerados, ya que no se han mencionado en el planteamiento
+del problema.
+
+El primero de ellos es que en ningún momento se ha hablado del tamaño de la red utilizada. Si la red es muy grande lo que va a
+pasar es que vamos a poder capturar los peces más grandes del lago sin ningún tipo de problema. Sin embargo, al ser tan grande,
+los peces pequeños van a pasar de largo y no van a poder se capturados. Por tanto, nuestra muestra solo contendrá peces grandes
+de cierto tamaño que no sean capaces de pasar por nuestra red. Puede que haya muchos peces grandes, pero muchos más peces que sean
+menores que éstos y que no hayamos podido capturar por nuestra red. Si se da esto, podemos decir que la muestra que hemos extraído
+no representa lo suficientemente bien a la población, y que al intentar algún tipo de conclusión estadística sobre ésta como por
+ejemplo la distribución de los peces por tamaño, nos estaremos equivocando.
+
+Otro aspecto que a lo mejor no ha sido considerado a la hora de realizar el experimento es la zona del lago en la que se ha realizado.
+Si el experimento se ha realizado a lo largo de todo el lago, entonces no hay ningún problema, ya que se extraen peces de zonas
+diferentes del lago, las cuáles pueden tener sus propias peculiaridades y hacer que los peces que haya en esa zona sean diferentes.
+En cambio, si los peces solo se han extraído de una zona del lago, estamos tomando una muestra de solo una pequeña parte de la
+población, con lo cuál, las conclusiones que extraigamos a partir de esta muestra pueden ser ciertas solo para \textbf{una parte de
+la población}, y difícilmente se podría concluir algo sobre toda la población en general a partir de estas observaciones.
+
+
 \section*{Ejercicio 10}
 \addtoc{Ejercicio 10}
 
@@ -419,7 +510,7 @@ Considere que tiene suficientes datos tanto para el ajuste como para el test.
 
 \newpage
 
-\begin{thebibliography}{5}
+\begin{thebibliography}{7}
 
 \bibitem{dlt}
 Wikipedia. \textit{Decision Tree Learning}
@@ -432,6 +523,18 @@ Jason Brownlee. \textit{Gentle Introduction to the Bias-Variance Trade-Off in Ma
 \bibitem{prunning}
 DISPLAYR. \textit{Machine Learning: Pruning Decision Trees}
 \\\url{https://www.displayr.com/machine-learning-pruning-decision-trees/}
+
+\bibitem{svm}
+The University of Utah. \textit{Support Vector Machines}
+\\\url{http://svivek.com/teaching/machine-learning/fall2018/slides/svm/svm-intro.pdf}
+
+\bibitem{svm2}
+Wikipedia. \textit{Support Vector Machine}
+\\\url{https://en.wikipedia.org/wiki/Support-vector_machine}
+
+\bibitem{boosting}
+Wikipedia. \textit{Boosting}
+\\\url{https://en.wikipedia.org/wiki/Boosting_(machine_learning)}
 
 \end{thebibliography}
 
